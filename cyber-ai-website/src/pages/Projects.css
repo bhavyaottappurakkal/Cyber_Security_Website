@@ -1,0 +1,107 @@
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 24px;
+}
+
+.project-detail-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 30px;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.project-detail-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--teal-300);
+}
+
+.pdc-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pdc-proj-icon { font-size: 2.2rem; }
+
+.pdc-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pdc-proj-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--charcoal-950);
+  line-height: 1.45;
+}
+
+.pdc-proj-desc {
+  font-size: 0.875rem;
+  color: var(--gray-500);
+  line-height: 1.65;
+}
+
+/* White Papers */
+.whitepapers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.whitepaper-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-top: 4px solid var(--logo-teal);
+  border-radius: var(--radius-2xl);
+  padding: 40px 36px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+  transition: var(--transition);
+}
+
+.whitepaper-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--teal-300);
+  border-top-color: var(--logo-teal);
+}
+
+.wp-icon {
+  font-size: 3rem;
+  flex-shrink: 0;
+}
+
+.wp-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.wp-title {
+  font-size: 1.3rem;
+  color: var(--charcoal-950);
+  line-height: 1.4;
+  font-weight: 700;
+}
+
+.wp-desc {
+  font-size: 0.95rem;
+  color: var(--gray-600);
+  line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+  .projects-grid { grid-template-columns: 1fr; }
+  .whitepaper-card { flex-direction: column; gap: 16px; padding: 24px; }
+}

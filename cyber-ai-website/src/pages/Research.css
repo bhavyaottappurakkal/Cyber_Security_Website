@@ -1,0 +1,201 @@
+.research-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 16px;
+}
+
+.research-overview-card {
+  border-radius: var(--radius-lg);
+  padding: 22px 18px;
+  text-align: center;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  background: var(--white);
+  box-shadow: var(--shadow-sm);
+}
+
+.research-overview-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+.area-blue {
+  background: linear-gradient(135deg, var(--teal-50), var(--white));
+  border: 1px solid var(--teal-200);
+}
+
+.area-cyan {
+  background: linear-gradient(135deg, rgba(82, 169, 188, 0.1), var(--white));
+  border: 1px solid rgba(82, 169, 188, 0.25);
+}
+
+.area-teal {
+  background: linear-gradient(135deg, rgba(39, 110, 125, 0.08), var(--white));
+  border: 1px solid rgba(39, 110, 125, 0.2);
+}
+
+.area-navy {
+  background: linear-gradient(135deg, rgba(20, 9, 3, 0.04), var(--white));
+  border: 1px solid rgba(20, 9, 3, 0.12);
+}
+
+.roc-num {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--teal-600);
+  margin-bottom: 8px;
+  letter-spacing: 0.08em;
+}
+
+.roc-icon { font-size: 2rem; margin-bottom: 10px; }
+
+.research-overview-card h4 {
+  font-size: 0.85rem;
+  color: var(--charcoal-950);
+  line-height: 1.45;
+  font-weight: 700;
+}
+
+/* Accordion */
+.research-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ra-item {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+.ra-item.open {
+  border-color: var(--teal-400);
+  box-shadow: var(--shadow-lg);
+}
+
+.ra-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 28px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: var(--transition-fast);
+  gap: 20px;
+}
+
+.ra-header:hover { background: var(--teal-50); }
+.ra-item.open .ra-header { background: rgba(82, 169, 188, 0.06); }
+
+.ra-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+  min-width: 0;
+}
+
+.ra-num {
+  font-family: var(--font-heading);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--teal-300);
+  flex-shrink: 0;
+  min-width: 36px;
+}
+
+.ra-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.ra-title-wrap { flex: 1; min-width: 0; }
+
+.ra-title {
+  font-size: 1.15rem;
+  color: var(--charcoal-950);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.ra-short {
+  font-size: 0.875rem;
+  color: var(--gray-500);
+  line-height: 1.45;
+}
+
+.ra-toggle {
+  font-size: 1.6rem;
+  color: var(--logo-teal);
+  font-weight: 400;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.ra-body {
+  padding: 0 28px 28px;
+  animation: fadeInUp 0.3s ease;
+}
+
+.ra-desc {
+  font-size: 0.95rem;
+  color: var(--gray-600);
+  line-height: 1.75;
+  margin-bottom: 24px;
+  padding-top: 4px;
+}
+
+.ra-key-areas h5 {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gray-500);
+  margin-bottom: 14px;
+}
+
+.ra-key-areas ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.ra-key-areas li {
+  font-size: 0.875rem;
+  color: var(--charcoal-800);
+  padding: 10px 14px;
+  background: var(--teal-50);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--teal-100);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  line-height: 1.45;
+  font-weight: 500;
+}
+
+.ra-key-areas li::before {
+  content: '→';
+  color: var(--logo-teal);
+  font-weight: 800;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+@media (max-width: 768px) {
+  .ra-header { padding: 18px 20px; gap: 12px; }
+  .ra-left { gap: 12px; }
+  .ra-num { display: none; }
+  .ra-body { padding: 0 20px 20px; }
+  .ra-key-areas ul { grid-template-columns: 1fr; }
+  .research-overview-grid { grid-template-columns: repeat(2, 1fr); }
+}

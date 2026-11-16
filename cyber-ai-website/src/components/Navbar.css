@@ -1,0 +1,373 @@
+/* ===================================================
+   HEADER & NAVBAR (EXACT REFERENCE DESIGN)
+   - Top Utility Bar: "AMRITA VISHWA VIDYAPEETHAM • AMRITAPURI"
+   - Main Header: Official Logo + Desktop Nav + Clean Box Menu Icon
+   - Full Directory Drawer
+   =================================================== */
+
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: var(--white);
+  transition: all 0.3s ease;
+}
+
+.site-header.header-scrolled {
+  box-shadow: 0 4px 20px rgba(16, 45, 51, 0.08);
+}
+
+/* ── Top Utility Bar ── */
+.top-utility-bar {
+  background: #edf5f6;
+  border-bottom: 1px solid #dcebec;
+  height: 36px;
+  display: flex;
+  align-items: center;
+}
+
+.top-utility-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.top-utility-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #4b646c;
+  text-transform: uppercase;
+  font-family: var(--font-sans);
+}
+
+.dot-sep {
+  color: var(--logo-teal);
+  font-size: 0.9rem;
+}
+
+.top-utility-right {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.top-utility-link {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #4b646c;
+  text-transform: uppercase;
+  font-family: var(--font-sans);
+  transition: var(--transition-fast);
+}
+
+.top-utility-link:hover {
+  color: var(--teal-700);
+}
+
+/* ── Main Navbar ── */
+.main-navbar {
+  height: 82px;
+  background: var(--white);
+  border-bottom: 1px solid #e1edef;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+}
+
+/* Brand Logo */
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.navbar-logo-img {
+  height: 52px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+/* Desktop Navigation */
+.desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.desk-link {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1e333b;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  transition: var(--transition-fast);
+  font-family: var(--font-sans);
+}
+
+.desk-link:hover {
+  color: var(--teal-700);
+  background: var(--teal-50);
+}
+
+.desk-link.active {
+  color: var(--teal-800);
+  background: var(--teal-100);
+  font-weight: 700;
+}
+
+/* ── Menu Toggle Button (Square Box with 3 Lines) ── */
+.menu-toggle-btn {
+  width: 46px;
+  height: 46px;
+  border: 1.5px solid #d3e5e8;
+  border-radius: 8px;
+  background: var(--white);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  padding: 0;
+  outline: none;
+}
+
+.menu-toggle-btn:hover {
+  border-color: var(--logo-teal);
+  background: var(--teal-50);
+  box-shadow: 0 2px 8px rgba(82, 169, 188, 0.2);
+}
+
+.menu-toggle-btn .bar {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #102d33;
+  border-radius: 2px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: center;
+}
+
+.menu-toggle-btn.open .bar-1 {
+  transform: translateY(7px) rotate(45deg);
+  background: var(--logo-teal);
+}
+
+.menu-toggle-btn.open .bar-2 {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.menu-toggle-btn.open .bar-3 {
+  transform: translateY(-7px) rotate(-45deg);
+  background: var(--logo-teal);
+}
+
+/* ── Full Navigation Drawer Overlay ── */
+.nav-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 45, 51, 0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1050;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.nav-drawer-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.nav-drawer-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  max-width: 460px;
+  background: var(--white);
+  box-shadow: -10px 0 40px rgba(16, 45, 51, 0.2);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-y: auto;
+}
+
+.nav-drawer-overlay.open .nav-drawer-panel {
+  transform: translateX(0);
+}
+
+.drawer-header {
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e5eff1;
+}
+
+.drawer-logo {
+  height: 44px;
+  width: auto;
+  object-fit: contain;
+}
+
+.drawer-close-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid #d3e5e8;
+  background: var(--teal-50);
+  color: #102d33;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 700;
+  transition: var(--transition-fast);
+}
+
+.drawer-close-btn:hover {
+  background: var(--logo-teal);
+  color: var(--white);
+  border-color: var(--logo-teal);
+}
+
+.drawer-content {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  flex: 1;
+}
+
+.drawer-section-title {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--teal-700);
+}
+
+.drawer-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.drawer-nav-link {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: var(--transition-fast);
+  border-bottom: 1px solid #f1f6f7;
+}
+
+.drawer-nav-link:hover {
+  background: var(--teal-50);
+  transform: translateX(4px);
+}
+
+.drawer-nav-link.active {
+  background: var(--teal-100);
+  border-color: var(--teal-200);
+}
+
+.drawer-num {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--teal-600);
+  width: 32px;
+}
+
+.drawer-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #102d33;
+  flex: 1;
+}
+
+.drawer-arrow {
+  color: var(--logo-teal);
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: transform 0.2s ease;
+}
+
+.drawer-nav-link:hover .drawer-arrow {
+  transform: translateX(3px);
+}
+
+.drawer-footer-info {
+  margin-top: auto;
+  padding-top: 24px;
+  border-top: 1px solid #e5eff1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.df-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.df-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6a828b;
+}
+
+.df-val {
+  font-size: 0.825rem;
+  color: #102d33;
+  line-height: 1.45;
+  font-weight: 500;
+}
+
+/* ── Responsive Header ── */
+@media (max-width: 1024px) {
+  .desktop-nav {
+    display: none;
+  }
+}
+
+@media (max-width: 680px) {
+  .top-utility-right {
+    display: none;
+  }
+  .navbar-logo-img {
+    height: 42px;
+  }
+  .main-navbar {
+    height: 72px;
+  }
+}

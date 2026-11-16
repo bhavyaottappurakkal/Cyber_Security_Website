@@ -1,0 +1,151 @@
+.leadership-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.faculty-leadership-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-left: 5px solid var(--logo-teal);
+  border-radius: var(--radius-2xl);
+  padding: 40px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  transition: var(--transition);
+}
+
+.faculty-leadership-card:hover {
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-3px);
+  border-color: var(--teal-300);
+  border-left-color: var(--logo-teal);
+}
+
+.flc-avatar {
+  flex-shrink: 0;
+}
+
+.avatar-placeholder {
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--logo-teal), #1b535f);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.2rem;
+  box-shadow: 0 8px 24px rgba(82, 169, 188, 0.35);
+}
+
+.flc-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.flc-info h3 {
+  font-size: 1.6rem;
+  color: var(--charcoal-950);
+}
+
+.flc-designation {
+  font-size: 1rem;
+  color: var(--teal-700);
+  font-weight: 600;
+}
+
+.flc-roles {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.flc-roles li {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  padding-left: 14px;
+  position: relative;
+  line-height: 1.5;
+}
+
+.flc-roles li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--logo-teal);
+  font-weight: 800;
+}
+
+.flc-expertise {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+/* Research Faculty Grid */
+.faculty-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+}
+
+.faculty-area-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 30px 24px;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.faculty-area-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--teal-300);
+}
+
+.fac-icon { font-size: 2.6rem; }
+
+.faculty-area-card h4 {
+  font-size: 1rem;
+  color: var(--charcoal-950);
+  line-height: 1.45;
+  font-weight: 700;
+}
+
+.fac-area {
+  font-size: 0.825rem;
+  color: var(--gray-500);
+  line-height: 1.5;
+}
+
+/* Faculty Note */
+.faculty-note {
+  background: var(--teal-50);
+  border: 1px solid var(--teal-200);
+  border-radius: var(--radius-xl);
+  padding: 36px;
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.fn-icon { font-size: 2.2rem; flex-shrink: 0; }
+
+.fn-content h4 { font-size: 1.2rem; color: var(--charcoal-950); margin-bottom: 8px; }
+.fn-content p { font-size: 0.95rem; color: var(--gray-600); line-height: 1.65; }
+
+@media (max-width: 768px) {
+  .faculty-leadership-card { flex-direction: column; gap: 20px; padding: 24px; }
+  .avatar-placeholder { width: 80px; height: 80px; font-size: 2.5rem; }
+  .faculty-note { flex-direction: column; }
+}

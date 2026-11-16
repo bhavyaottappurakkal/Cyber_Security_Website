@@ -1,0 +1,257 @@
+.placement-overview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.po-text h2 { margin: 12px 0; color: var(--charcoal-950); }
+.po-text p { margin-bottom: 14px; color: var(--gray-600); line-height: 1.7; }
+
+.po-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.po-stat {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 26px 20px;
+  text-align: center;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.po-stat:hover {
+  background: var(--white);
+  border-color: var(--teal-300);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+}
+
+.po-stat-num {
+  font-family: var(--font-heading);
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--teal-700);
+  line-height: 1;
+}
+
+.po-stat-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--charcoal-900);
+  margin: 6px 0 2px;
+}
+
+.po-stat-sub {
+  font-size: 0.775rem;
+  color: var(--gray-500);
+}
+
+/* Govt Partners */
+.gov-partners-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.gov-partner-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 34px 24px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gov-partner-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--teal-300);
+}
+
+.gpc-icon { font-size: 2.6rem; }
+.gpc-name {
+  font-family: var(--font-heading);
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--teal-700);
+}
+.gpc-full { font-size: 0.875rem; color: var(--charcoal-800); font-weight: 600; line-height: 1.4; }
+.gpc-desc { font-size: 0.8rem; color: var(--gray-500); line-height: 1.55; }
+
+/* Industry Partners */
+.industry-partners {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.industry-category {}
+
+.ic-category {
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--teal-700);
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--teal-200);
+}
+
+.ic-companies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.company-chip {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  padding: 9px 18px;
+  font-size: 0.875rem;
+  color: var(--charcoal-800);
+  font-weight: 600;
+  transition: var(--transition-fast);
+}
+
+.company-chip:hover {
+  background: var(--logo-teal);
+  color: var(--white);
+  border-color: var(--logo-teal);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-teal);
+}
+
+/* International Partners */
+.intl-partners-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.intl-partner-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  transition: var(--transition);
+}
+
+.intl-partner-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--teal-300);
+}
+
+.ipc-flag { font-size: 2.6rem; flex-shrink: 0; }
+
+.ipc-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ipc-info h4 { font-size: 1rem; color: var(--charcoal-950); line-height: 1.4; font-weight: 700; }
+.ipc-country { font-size: 0.8rem; color: var(--gray-500); }
+
+/* Testimonials */
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 28px;
+}
+
+.testimonial-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-2xl);
+  padding: 38px;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+}
+
+.testimonial-card:hover {
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-3px);
+  border-color: var(--teal-300);
+}
+
+.tc-quote {
+  font-size: 3rem;
+  color: var(--teal-300);
+  font-family: Georgia, serif;
+  line-height: 1;
+}
+
+.tc-text {
+  font-size: 0.95rem;
+  color: var(--charcoal-700);
+  line-height: 1.75;
+  font-style: italic;
+  flex: 1;
+}
+
+.tc-author {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-top: 20px;
+  border-top: 1px solid var(--gray-200);
+}
+
+.tc-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--logo-teal), #276e7d);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(82, 169, 188, 0.3);
+}
+
+.tc-name {
+  font-weight: 800;
+  color: var(--charcoal-950);
+  font-size: 0.95rem;
+}
+
+.tc-role {
+  font-size: 0.8rem;
+  color: var(--gray-500);
+  line-height: 1.4;
+}
+
+@media (max-width: 1024px) {
+  .placement-overview { grid-template-columns: 1fr; gap: 40px; }
+  .gov-partners-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .po-stats { grid-template-columns: 1fr 1fr; }
+  .testimonials-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .po-stats { grid-template-columns: 1fr; }
+}

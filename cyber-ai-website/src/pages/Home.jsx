@@ -1,0 +1,389 @@
+import { Link } from 'react-router-dom'
+import './Home.css'
+
+const keyHighlights = [
+  {
+    icon: '🛡️',
+    title: 'CORE Designation',
+    badge: 'Govt. of India',
+    desc: 'Designated as a Center of Relevance and Excellence (CORE) for Cybersecurity in India (Mission REACH, Govt. of India).',
+  },
+  {
+    icon: '🏆',
+    title: "Accredited 'A++' Grade",
+    badge: 'NAAC Accredited',
+    desc: "Accredited 'A++' Grade by NAAC.",
+  },
+  {
+    icon: '🌍',
+    title: "World's Top 100",
+    badge: 'THE Impact Rankings',
+    desc: 'Ranked in the World’s Top 100 Universities in Times Higher Education (THE) Impact Rankings.',
+  },
+  {
+    icon: '💡',
+    title: '100+ Patents Granted',
+    badge: 'Innovation Record',
+    desc: '100+ Patents Granted across Amrita Vishwa Vidyapeetham.',
+  },
+]
+
+const academicPrograms = [
+  {
+    name: 'B.Tech. in CSE (Cyber Security)',
+    level: 'Undergraduate Program',
+    desc: '4-year engineering program focused on systems security, network forensics, cryptography, and AI-driven defense.',
+    icon: '🎓',
+  },
+  {
+    name: 'M.Tech. in Cybersecurity',
+    level: 'Postgraduate Program',
+    desc: 'Advanced specialization in systems security, cloud security, and AI defense with international dual degrees.',
+    icon: '🔬',
+  },
+  {
+    name: 'Ph.D. in Cybersecurity',
+    level: 'Doctoral Program',
+    desc: 'Advanced research in Agentic AI, Sovereign AI, Cloud Trust Modeling, and Critical Infrastructure Protection.',
+    icon: '🔭',
+  },
+  {
+    name: 'Online MCA in Cybersecurity',
+    level: 'Amrita Online',
+    desc: 'Globally recognized flexible postgraduate degree program for domestic and international students and working professionals.',
+    icon: '💻',
+  },
+]
+
+const researchFocusAreas = [
+  { name: 'Agentic AI Systems', icon: '🤖' },
+  { name: 'Physical AI and Intelligent Autonomous Systems', icon: '🦾' },
+  { name: 'AI Sovereignty and Trusted AI Infrastructure', icon: '🔐' },
+  { name: 'Cloud Computing & Hypervisor Security', icon: '☁️' },
+  { name: 'Internet of Things (IoT) Security', icon: '📡' },
+  { name: 'Cryptography', icon: '🔑' },
+  { name: 'Healthcare Security', icon: '🏥' },
+  { name: 'Big Data Analytics', icon: '📊' },
+  { name: 'Automotive Security', icon: '🚗' },
+  { name: 'Security Data Visualization', icon: '📈' },
+  { name: 'Security Education', icon: '📚' },
+]
+
+const insideCenterItems = [
+  {
+    title: 'Partners',
+    tag: 'Strategic Alliances',
+    icon: '🤝',
+    desc: 'Strategic research partnerships with premier global universities and Indian government organizations such as the Indian Space Research Organisation (ISRO) and the Department of Science and Technology (DST).',
+    link: '/placements',
+    linkText: 'Explore Partners & Collaborations',
+  },
+  {
+    title: 'Placements',
+    tag: 'Industry Outcomes',
+    icon: '💼',
+    desc: 'Consistent high-quality placements managed by the Directorate of Corporate & Industry Relations (CIR) across top multinational technology and cybersecurity firms.',
+    link: '/placements',
+    linkText: 'View Placement Records & Recruiters',
+  },
+  {
+    title: 'Publications',
+    tag: 'Research Impact',
+    icon: '📄',
+    desc: 'Extensive research contributions published in internationally renowned journals and conferences.',
+    link: '/projects',
+    linkText: 'Explore Projects & White Papers',
+  },
+]
+
+export default function Home() {
+  return (
+    <div className="home-page-ref">
+      {/* ── 1. HERO BANNER (MATCHING REFERENCE IMAGE) ── */}
+      <section className="ref-hero-section">
+        <div className="container ref-hero-container">
+          <div className="ref-hero-grid">
+            
+            {/* Left Column: Editorial Headline & Content */}
+            <div className="ref-hero-left">
+              {/* Center of Relevance Tag */}
+              <div className="ref-hero-tag">
+                <span className="ref-tag-line"></span>
+                <span className="ref-tag-text">CENTER OF RELEVANCE &amp; EXCELLENCE</span>
+              </div>
+
+              {/* Main Headline (Editorial Serif Typography) */}
+              <h1 className="ref-hero-title">
+                Amrita Center for <br />
+                <span className="ref-hero-teal">Cybersecurity Systems and Networks</span>
+              </h1>
+
+              {/* Subtitle / Description */}
+              <p className="ref-hero-desc">
+                Fostering innovative research and education in Cybersecurity and Artificial
+                Intelligence through partnerships across industry, academia, and the government.
+              </p>
+
+              {/* Action Buttons */}
+              <div className="ref-hero-actions">
+                <Link to="/research" className="btn-ref-primary">Explore Research</Link>
+                <Link to="/academics" className="btn-ref-secondary">Academic Programs</Link>
+              </div>
+
+              {/* Institutional Key Highlights Bar */}
+              <div className="ref-hero-highlights-strip">
+                <div className="strip-item">
+                  <span className="strip-num">CORE</span>
+                  <span className="strip-label">Mission REACH, Govt. of India</span>
+                </div>
+                <div className="strip-divider"></div>
+                <div className="strip-item">
+                  <span className="strip-num">A++ Grade</span>
+                  <span className="strip-label">Accredited by NAAC</span>
+                </div>
+                <div className="strip-divider"></div>
+                <div className="strip-item">
+                  <span className="strip-num">World&apos;s Top 100</span>
+                  <span className="strip-label">THE Impact Rankings</span>
+                </div>
+                <div className="strip-divider"></div>
+                <div className="strip-item">
+                  <span className="strip-num">100+ Patents</span>
+                  <span className="strip-label">Granted across Amrita</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Chamfered Image Frame with Cyber Radar Overlay */}
+            <div className="ref-hero-right">
+              <div className="ref-image-wrapper">
+                {/* Chamfered lab image container */}
+                <div className="ref-image-frame">
+                  <img 
+                    src="/hero-students.jpg" 
+                    alt="Cybersecurity research students working at Amrita Center" 
+                    className="ref-lab-img"
+                  />
+                  {/* Cyber Radar Rings Overlay */}
+                  <div className="cyber-radar-rings">
+                    <div className="radar-circle radar-c1"></div>
+                    <div className="radar-circle radar-c2"></div>
+                    <div className="radar-circle radar-c3"></div>
+                    <span className="radar-dot dot-1"></span>
+                    <span className="radar-dot dot-2"></span>
+                  </div>
+
+                  {/* Corner Accent Notch */}
+                  <div className="ref-corner-notch"></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ── 2. KEY HIGHLIGHTS SECTION ── */}
+      <section className="section ref-highlights-section">
+        <div className="container">
+          <div className="ref-section-header">
+            <span className="ref-sub-heading">Institutional Prestige</span>
+            <h2 className="ref-section-title">Key Institutional Highlights</h2>
+            <div className="ref-accent-bar"></div>
+          </div>
+
+          <div className="highlights-quad-grid">
+            {keyHighlights.map((h, i) => (
+              <div key={i} className="highlight-quad-card">
+                <div className="hqc-top">
+                  <span className="hqc-icon">{h.icon}</span>
+                  <span className="hqc-badge">{h.badge}</span>
+                </div>
+                <h3 className="hqc-title">{h.title}</h3>
+                <p className="hqc-desc">{h.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 3. WELCOME & INTRODUCTION ── */}
+      <section className="section ref-welcome-section">
+        <div className="container">
+          <div className="ref-welcome-box">
+            <div className="ref-welcome-grid">
+              
+              <div className="ref-welcome-content">
+                <span className="ref-sub-heading">Welcome &amp; Introduction</span>
+                <h2 className="ref-welcome-title">
+                  Amrita Center for Cybersecurity Systems and Networks
+                </h2>
+                <div className="ref-accent-bar ref-accent-bar-left"></div>
+
+                <p className="ref-welcome-lead">
+                  The Amrita Center for Cybersecurity Systems and Networks promotes partnerships between 
+                  industry, academia, and the government to foster innovative research and education in 
+                  cybersecurity, thus enhancing knowledge, deriving solutions, benefiting society, and 
+                  mitigating risks.
+                </p>
+
+                <p className="ref-welcome-p">
+                  The Center is supported by the Government of India through many of its Departments and 
+                  Mission REACH programs. As a designated <strong>Center of Relevance and Excellence (CORE)</strong> for 
+                  cybersecurity in India, the Center fosters a core group of experts who disseminate knowledge 
+                  across the ever-expanding frontiers of cybersecurity and AI.
+                </p>
+
+                {/* Online MCA Callout */}
+                <div className="ref-online-mca-banner">
+                  <div className="mca-badge-icon">🌐</div>
+                  <div className="mca-badge-info">
+                    <h4>Globally Recognized Online MCA Cybersecurity</h4>
+                    <p>
+                      The Center also offers the globally recognized Online MCA Cybersecurity program through 
+                      Amrita Online, attracting students and working professionals from around the world.
+                    </p>
+                  </div>
+                  <Link to="/academics" className="mca-cta-btn">View Program →</Link>
+                </div>
+              </div>
+
+              <div className="ref-welcome-aside">
+                <div className="ref-aside-card">
+                  <img src="/amrita-cyber-logo.jpg" alt="Amrita Logo" className="ref-aside-logo" />
+                  <div className="ref-aside-divider"></div>
+                  <div className="aside-points">
+                    <div className="ap-item">
+                      <span className="ap-num">01</span>
+                      <div>
+                        <strong>Mission REACH CORE</strong>
+                        <p>National Center of Relevance &amp; Excellence</p>
+                      </div>
+                    </div>
+                    <div className="ap-item">
+                      <span className="ap-num">02</span>
+                      <div>
+                        <strong>A++ Grade Accreditation</strong>
+                        <p>Awarded by NAAC with highest institutional rank</p>
+                      </div>
+                    </div>
+                    <div className="ap-item">
+                      <span className="ap-num">03</span>
+                      <div>
+                        <strong>World's Top 100</strong>
+                        <p>Times Higher Education (THE) Impact Rankings</p>
+                      </div>
+                    </div>
+                    <div className="ap-item">
+                      <span className="ap-num">04</span>
+                      <div>
+                        <strong>100+ Patents Granted</strong>
+                        <p>Pioneering discoveries across Amrita</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 4. QUICK OVERVIEW OF CORE SECTIONS ── */}
+
+      {/* CORE SECTION 1: ACADEMICS */}
+      <section className="section ref-core-academics">
+        <div className="container">
+          <div className="ref-section-header">
+            <span className="ref-sub-heading">Quick Overview · Core Section 01</span>
+            <h2 className="ref-section-title">Academics</h2>
+            <div className="ref-accent-bar"></div>
+            <p className="ref-section-lead">
+              Comprehensive undergraduate, postgraduate, doctoral, and online degree programs in Cybersecurity and AI.
+            </p>
+          </div>
+
+          <div className="ref-programs-grid">
+            {academicPrograms.map((prog, idx) => (
+              <div key={idx} className="ref-program-card">
+                <div className="rpc-top">
+                  <span className="rpc-icon">{prog.icon}</span>
+                  <span className="rpc-level">{prog.level}</span>
+                </div>
+                <h3 className="rpc-name">{prog.name}</h3>
+                <p className="rpc-desc">{prog.desc}</p>
+                <Link to="/academics" className="rpc-action">
+                  Learn More <span>→</span>
+                </Link>
+              </div>
+            ))}
+          </div>
+
+          <div className="ref-center-action">
+            <Link to="/academics" className="btn-ref-primary">View Full Academics Curriculum →</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* CORE SECTION 2: RESEARCH FOCUS */}
+      <section className="section ref-core-research">
+        <div className="container">
+          <div className="ref-section-header">
+            <span className="ref-sub-heading">Quick Overview · Core Section 02</span>
+            <h2 className="ref-section-title">Research Focus</h2>
+            <div className="ref-accent-bar"></div>
+            <p className="ref-section-lead">
+              Pioneering interdisciplinary research to protect digital assets of public and national importance.
+            </p>
+          </div>
+
+          <div className="ref-research-grid">
+            {researchFocusAreas.map((area, idx) => (
+              <div key={idx} className="ref-research-pill">
+                <span className="rrp-index">{idx < 9 ? `0${idx + 1}` : idx + 1}</span>
+                <span className="rrp-icon">{area.icon}</span>
+                <span className="rrp-name">{area.name}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="ref-center-action">
+            <Link to="/research" className="btn-ref-secondary">Explore All Detailed Research Descriptions →</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* CORE SECTION 3: INSIDE THE CENTER */}
+      <section className="section ref-core-inside">
+        <div className="container">
+          <div className="ref-section-header">
+            <span className="ref-sub-heading">Quick Overview · Core Section 03</span>
+            <h2 className="ref-section-title">Inside the Center</h2>
+            <div className="ref-accent-bar"></div>
+            <p className="ref-section-lead">
+              Global partnerships, exceptional placement outcomes, and internationally recognized research contributions.
+            </p>
+          </div>
+
+          <div className="ref-inside-grid">
+            {insideCenterItems.map((item, idx) => (
+              <div key={idx} className="ref-inside-card">
+                <div className="ric-header">
+                  <div className="ric-icon">{item.icon}</div>
+                  <span className="ric-tag">{item.tag}</span>
+                </div>
+                <h3 className="ric-title">{item.title}</h3>
+                <p className="ric-desc">{item.desc}</p>
+                <Link to={item.link} className="ric-link">
+                  {item.linkText}
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+    </div>
+  )
+}

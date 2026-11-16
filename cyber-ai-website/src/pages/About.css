@@ -1,0 +1,223 @@
+.about-overview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+}
+
+.about-overview-text h2 { margin: 12px 0; color: var(--charcoal-950); }
+.about-overview-text p { margin-bottom: 16px; }
+.about-overview-text strong { color: var(--charcoal-900); font-weight: 700; }
+
+.about-overview-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.overview-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 24px 20px;
+  text-align: center;
+  transition: var(--transition);
+}
+
+.overview-card:hover {
+  background: var(--white);
+  box-shadow: var(--shadow-md);
+  border-color: var(--teal-300);
+  transform: translateY(-3px);
+}
+
+.oc-icon { font-size: 2.2rem; margin-bottom: 10px; }
+.overview-card h4 { font-size: 1rem; color: var(--charcoal-950); margin-bottom: 6px; }
+.overview-card p { font-size: 0.8rem; color: var(--gray-500); line-height: 1.5; }
+
+/* Mission Vision */
+.mv-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.mv-card {
+  border-radius: var(--radius-2xl);
+  padding: 44px 38px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.mv-mission {
+  background: linear-gradient(135deg, var(--charcoal-950) 0%, var(--teal-900) 100%);
+  color: var(--white);
+  border-top: 4px solid var(--logo-teal);
+}
+
+.mv-vision {
+  background: linear-gradient(135deg, var(--teal-800) 0%, var(--teal-600) 100%);
+  color: var(--white);
+  border-top: 4px solid var(--teal-200);
+}
+
+.mv-icon {
+  font-size: 2.6rem;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.mv-card h3 {
+  color: var(--white);
+  margin-bottom: 16px;
+  font-size: 1.6rem;
+}
+
+.mv-card p {
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.75;
+  font-size: 1.05rem;
+}
+
+.vision-specifics {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.vision-specifics h5 {
+  color: var(--white);
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.vision-list {
+  list-style: decimal;
+  list-style-position: inside;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.vision-list li {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.55;
+}
+
+/* Inside */
+.inside-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.inside-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 34px 28px;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  position: relative;
+}
+
+.inside-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--teal-300);
+}
+
+.inside-num {
+  font-family: var(--font-heading);
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: var(--teal-300);
+  margin-bottom: 10px;
+  line-height: 1;
+}
+
+.inside-card h4 { font-size: 1.15rem; color: var(--charcoal-950); margin-bottom: 10px; }
+.inside-card p { font-size: 0.875rem; color: var(--gray-500); margin-bottom: 18px; line-height: 1.6; }
+
+.inside-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inside-list li {
+  font-size: 0.825rem;
+  color: var(--gray-700);
+  padding-left: 16px;
+  position: relative;
+  font-weight: 500;
+}
+
+.inside-list li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--logo-teal);
+  font-weight: 700;
+}
+
+/* Institution */
+.about-institution {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.ai-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.ai-stat {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(82, 169, 188, 0.25);
+  border-radius: var(--radius-lg);
+  padding: 26px;
+  text-align: center;
+  transition: var(--transition);
+}
+
+.ai-stat:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--logo-teal);
+  transform: translateY(-2px);
+}
+
+.ai-stat-num {
+  font-family: var(--font-heading);
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--teal-300);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.ai-stat-label {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+@media (max-width: 1024px) {
+  .about-overview { grid-template-columns: 1fr; gap: 40px; }
+  .mv-grid { grid-template-columns: 1fr; }
+  .about-institution { grid-template-columns: 1fr; gap: 40px; }
+}
+
+@media (max-width: 600px) {
+  .about-overview-cards { grid-template-columns: 1fr; }
+  .ai-stats { grid-template-columns: 1fr 1fr; }
+}
