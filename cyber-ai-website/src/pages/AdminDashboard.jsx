@@ -14,7 +14,7 @@ const ROLE_META = {
   content_editor: {
     label: "Content Editor",
     color: "role-content",
-    icon: "✏️",
+
     sections: [
       "overview",
       "aboutContent",
@@ -30,19 +30,19 @@ const ROLE_META = {
   about_editor: {
     label: "About Editor",
     color: "role-about",
-    icon: "📖",
+
     sections: ["overview", "aboutContent", "changePassword"],
   },
   event_editor: {
     label: "Event Editor",
     color: "role-event",
-    icon: "🗓️",
+
     sections: ["overview", "news", "events", "changePassword"],
   },
   custom: {
     label: "Custom Privileges",
     color: "role-custom",
-    icon: "⚙️",
+
     sections: [],
   },
 };
@@ -112,7 +112,6 @@ const INITIAL_DATA = {
       excerpt:
         "Groundbreaking research from Amrita reveals the systematic use of AI in orchestrating large-scale online scams.",
       tag: "Research",
-      icon: "🔬",
     },
     {
       id: 2,
@@ -121,7 +120,6 @@ const INITIAL_DATA = {
       excerpt:
         "Amrita researchers were recognized at the ACL 2026 Workshop for their innovative study on generative AI.",
       tag: "Achievement",
-      icon: "🏆",
     },
     {
       id: 3,
@@ -131,7 +129,6 @@ const INITIAL_DATA = {
       excerpt:
         "Amrita student Surendran from the amFOSS community has been selected for a UN open-source initiative.",
       tag: "Students",
-      icon: "🌍",
     },
     {
       id: 4,
@@ -141,7 +138,6 @@ const INITIAL_DATA = {
       excerpt:
         "The AI Safety Conclave held at Amrita produced a landmark white paper on ethical and safe AI.",
       tag: "Events",
-      icon: "📋",
     },
     {
       id: 5,
@@ -150,7 +146,6 @@ const INITIAL_DATA = {
       excerpt:
         "The Center announces Phase III of its comprehensive Student Induction Programme for the new B.Tech. batch.",
       tag: "Academics",
-      icon: "🎓",
     },
   ],
   events: [
@@ -158,7 +153,7 @@ const INITIAL_DATA = {
       id: 1,
       title: "AI Safety Conclave",
       desc: "High-level symposium addressing safe, ethical, and sovereign AI frameworks for India and the Global South.",
-      icon: "🛡️",
+
       type: "Annual Event",
       tags: "AI Safety, Policy, Ethics",
     },
@@ -166,7 +161,7 @@ const INITIAL_DATA = {
       id: 2,
       title: "InCTF — India Capture The Flag",
       desc: "India's premier national CTF cybersecurity competition organized by the Center.",
-      icon: "🏁",
+
       type: "Annual Competition",
       tags: "CTF, Competition, Students",
     },
@@ -174,7 +169,7 @@ const INITIAL_DATA = {
       id: 3,
       title: "ShaktiCon",
       desc: "International cybersecurity conference dedicated to empowering women in cybersecurity.",
-      icon: "⚡",
+
       type: "Annual Conference",
       tags: "Women in Cybersecurity, Conference, Training",
     },
@@ -185,63 +180,54 @@ const INITIAL_DATA = {
       name: "Satyanand Mishra",
       title: "IAS, Former Chief Information Commissioner of India",
       category: "Government",
-      icon: "🏛️",
     },
     {
       id: 2,
       name: "J. Satyanarayana",
       title: "Department of Electronics and IT (DeitY), Govt. of India",
       category: "Government",
-      icon: "🏛️",
     },
     {
       id: 3,
       name: "Vijay Bhatkar",
       title: "IIT Delhi, Architect of PARAM Supercomputers",
       category: "Academia",
-      icon: "🎓",
     },
     {
       id: 4,
       name: "Esther Dyson",
       title: "Founder of ICANN",
       category: "Industry",
-      icon: "🌐",
     },
     {
       id: 5,
       name: "Herbert Bos",
       title: "Vrije Universiteit Amsterdam, Netherlands",
       category: "Academia",
-      icon: "🎓",
     },
     {
       id: 6,
       name: "Ravi Sandhu",
       title: "University of Texas at San Antonio, USA",
       category: "Academia",
-      icon: "🎓",
     },
     {
       id: 7,
       name: "Gene Tsudik",
       title: "University of California, USA",
       category: "Academia",
-      icon: "🎓",
     },
     {
       id: 8,
       name: "K. Venkatesh Prasad",
       title: "Ford Motor Company, USA",
       category: "Industry",
-      icon: "🏭",
     },
     {
       id: 9,
       name: "Lipika Dey",
       title: "Tata Consultancy Services (TCS)",
       category: "Industry",
-      icon: "💼",
     },
   ],
   faculty: [
@@ -253,14 +239,14 @@ const INITIAL_DATA = {
         "Director, Center for Cybersecurity Systems and Networks, Amritapuri\nDirector, Technology Business Incubator (TBI), Amritapuri",
       expertise:
         "Cybersecurity, AI & Machine Learning, Cloud Security, IoT Security",
-      icon: "👩‍💼",
+
       isLeadership: "true",
     },
   ],
   researchAreas: [
     {
       id: 1,
-      icon: "🤖",
+
       title: "Agentic AI & Autonomous Cyber Defense",
       shortDesc:
         "Intelligent agents for autonomous threat detection and adaptive defense.",
@@ -268,7 +254,7 @@ const INITIAL_DATA = {
     },
     {
       id: 2,
-      icon: "🦾",
+
       title: "Physical AI and Embodied Intelligence",
       shortDesc:
         "AI for autonomous systems, robotics, drones, and intelligent machines.",
@@ -276,7 +262,7 @@ const INITIAL_DATA = {
     },
     {
       id: 3,
-      icon: "🔐",
+
       title: "AI Sovereignty and Trusted AI Infrastructure",
       shortDesc:
         "Sovereign AI platforms, federated learning, privacy-preserving architectures.",
@@ -284,7 +270,7 @@ const INITIAL_DATA = {
     },
     {
       id: 4,
-      icon: "☁️",
+
       title: "Cloud-Based Soft Sensors & Hypervisor Re-Architecture",
       shortDesc:
         "Security-enabled data object (SEDO) layer for insider threat protection.",
@@ -292,7 +278,7 @@ const INITIAL_DATA = {
     },
     {
       id: 5,
-      icon: "📡",
+
       title: "Internet of Things (IoT) and Security",
       shortDesc:
         "Secure device identification, registration, and concurrent event processing.",
@@ -300,7 +286,7 @@ const INITIAL_DATA = {
     },
     {
       id: 6,
-      icon: "🔑",
+
       title: "Cryptography & Boolean Functions",
       shortDesc:
         "Boolean function classification and higher-order nonlinearities.",
@@ -308,7 +294,7 @@ const INITIAL_DATA = {
     },
     {
       id: 7,
-      icon: "🏥",
+
       title: "Healthcare Security",
       shortDesc:
         "Securing connected medical devices, wearables, and implantable devices.",
@@ -316,7 +302,7 @@ const INITIAL_DATA = {
     },
     {
       id: 8,
-      icon: "📊",
+
       title: "Big Data Analytics Platform",
       shortDesc:
         "Distributed parallel database with auto-scalable ML analytics for IoT data.",
@@ -324,7 +310,7 @@ const INITIAL_DATA = {
     },
     {
       id: 9,
-      icon: "🚗",
+
       title: "Automotive Security",
       shortDesc:
         "Secure automotive infotainment platforms for safe inter-vehicular data exchange.",
@@ -332,7 +318,7 @@ const INITIAL_DATA = {
     },
     {
       id: 10,
-      icon: "🎓",
+
       title: "Security Education",
       shortDesc:
         "Innovative approaches to cybersecurity education, training, and awareness.",
@@ -342,28 +328,28 @@ const INITIAL_DATA = {
   highlights: [
     {
       id: 1,
-      icon: "🛡️",
+
       title: "CORE Designation",
       badge: "Govt. of India",
       desc: "Designated as a Center of Relevance and Excellence (CORE) for Cybersecurity in India.",
     },
     {
       id: 2,
-      icon: "🏆",
+
       title: "Accredited 'A++' Grade",
       badge: "NAAC Accredited",
       desc: "Accredited 'A++' Grade by NAAC.",
     },
     {
       id: 3,
-      icon: "🌍",
+
       title: "World's Top 100",
       badge: "THE Impact Rankings",
       desc: "Ranked in the World's Top 100 Universities in Times Higher Education (THE) Impact Rankings.",
     },
     {
       id: 4,
-      icon: "💡",
+
       title: "100+ Patents Granted",
       badge: "Innovation Record",
       desc: "100+ Patents Granted across Amrita Vishwa Vidyapeetham.",
@@ -456,8 +442,18 @@ export default function AdminDashboard() {
       return !!p[action];
     }
     if (userRole === "about_editor" && section === "aboutContent") return true;
-    if (userRole === "content_editor" && section !== "news" && section !== "events" && section !== "users") return true;
-    if (userRole === "event_editor" && (section === "news" || section === "events")) return true;
+    if (
+      userRole === "content_editor" &&
+      section !== "news" &&
+      section !== "events" &&
+      section !== "users"
+    )
+      return true;
+    if (
+      userRole === "event_editor" &&
+      (section === "news" || section === "events")
+    )
+      return true;
     return false;
   };
 
@@ -714,7 +710,10 @@ export default function AdminDashboard() {
   // ── About Page Handlers ──────────────────────────────────────────────────
   const saveAboutOverview = () => {
     if (!hasPrivilege("aboutContent", "edit")) {
-      showToast("Permission denied: You do not have edit privilege for About Page.", "error");
+      showToast(
+        "Permission denied: You do not have edit privilege for About Page.",
+        "error",
+      );
       return;
     }
     setData((prev) => ({
@@ -741,7 +740,10 @@ export default function AdminDashboard() {
 
   const saveAboutMissionVision = () => {
     if (!hasPrivilege("aboutContent", "edit")) {
-      showToast("Permission denied: You do not have edit privilege for About Page.", "error");
+      showToast(
+        "Permission denied: You do not have edit privilege for About Page.",
+        "error",
+      );
       return;
     }
     setData((prev) => ({
@@ -765,7 +767,10 @@ export default function AdminDashboard() {
 
   const saveAboutUnivTexts = () => {
     if (!hasPrivilege("aboutContent", "edit")) {
-      showToast("Permission denied: You do not have edit privilege for About Page.", "error");
+      showToast(
+        "Permission denied: You do not have edit privilege for About Page.",
+        "error",
+      );
       return;
     }
     setData((prev) => ({
@@ -773,7 +778,8 @@ export default function AdminDashboard() {
       aboutContent: {
         ...(prev.aboutContent || DEFAULT_ABOUT_CONTENT),
         university: {
-          ...(prev.aboutContent?.university || DEFAULT_ABOUT_CONTENT.university),
+          ...(prev.aboutContent?.university ||
+            DEFAULT_ABOUT_CONTENT.university),
           eyebrow: localAboutUniv.eyebrow,
           title: localAboutUniv.title,
           p1: localAboutUniv.p1,
@@ -787,7 +793,10 @@ export default function AdminDashboard() {
   const saveAboutItem = (type, itemData, mode) => {
     const actionRequired = mode === "add" ? "add" : "edit";
     if (!hasPrivilege("aboutContent", actionRequired)) {
-      showToast(`Permission denied: You cannot ${actionRequired} About items.`, "error");
+      showToast(
+        `Permission denied: You cannot ${actionRequired} About items.`,
+        "error",
+      );
       return;
     }
     setData((prev) => {
@@ -797,7 +806,9 @@ export default function AdminDashboard() {
         if (mode === "add") {
           ac.overviewCards = [...list, { ...itemData, id: newId(list) }];
         } else {
-          ac.overviewCards = list.map((i) => (i.id === itemData.id ? { ...itemData } : i));
+          ac.overviewCards = list.map((i) =>
+            i.id === itemData.id ? { ...itemData } : i,
+          );
         }
       } else if (type === "point") {
         const list = ac.vision?.specifics || [];
@@ -809,14 +820,21 @@ export default function AdminDashboard() {
         } else {
           ac.vision = {
             ...(ac.vision || {}),
-            specifics: list.map((i) => (i.id === itemData.id ? { ...itemData } : i)),
+            specifics: list.map((i) =>
+              i.id === itemData.id ? { ...itemData } : i,
+            ),
           };
         }
       } else if (type === "offering") {
         const list = ac.insideOfferings || [];
         const itemsArr = itemData.itemsText
-          ? itemData.itemsText.split("\n").map((s) => s.trim()).filter(Boolean)
-          : Array.isArray(itemData.items) ? itemData.items : [];
+          ? itemData.itemsText
+              .split("\n")
+              .map((s) => s.trim())
+              .filter(Boolean)
+          : Array.isArray(itemData.items)
+            ? itemData.items
+            : [];
         const formatted = {
           num: itemData.num || "01",
           title: itemData.title || "",
@@ -826,7 +844,9 @@ export default function AdminDashboard() {
         if (mode === "add") {
           ac.insideOfferings = [...list, { ...formatted, id: newId(list) }];
         } else {
-          ac.insideOfferings = list.map((i) => (i.id === itemData.id ? { ...formatted, id: itemData.id } : i));
+          ac.insideOfferings = list.map((i) =>
+            i.id === itemData.id ? { ...formatted, id: itemData.id } : i,
+          );
         }
       } else if (type === "stat") {
         const list = ac.university?.stats || [];
@@ -838,7 +858,9 @@ export default function AdminDashboard() {
         } else {
           ac.university = {
             ...(ac.university || {}),
-            stats: list.map((i) => (i.id === itemData.id ? { ...itemData } : i)),
+            stats: list.map((i) =>
+              i.id === itemData.id ? { ...itemData } : i,
+            ),
           };
         }
       }
@@ -850,7 +872,10 @@ export default function AdminDashboard() {
 
   const deleteAboutItem = (type, id) => {
     if (!hasPrivilege("aboutContent", "delete")) {
-      showToast("Permission denied: You do not have delete privilege for About Page.", "error");
+      showToast(
+        "Permission denied: You do not have delete privilege for About Page.",
+        "error",
+      );
       return;
     }
     setData((prev) => {
@@ -863,7 +888,9 @@ export default function AdminDashboard() {
           specifics: (ac.vision?.specifics || []).filter((i) => i.id !== id),
         };
       } else if (type === "offering") {
-        ac.insideOfferings = (ac.insideOfferings || []).filter((i) => i.id !== id);
+        ac.insideOfferings = (ac.insideOfferings || []).filter(
+          (i) => i.id !== id,
+        );
       } else if (type === "stat") {
         ac.university = {
           ...(ac.university || {}),
@@ -920,10 +947,15 @@ export default function AdminDashboard() {
       prev.map((u) =>
         u.id === userPrivilegeModal.userId
           ? { ...u, privileges: userPrivilegeModal.privileges }
-          : u
-      )
+          : u,
+      ),
     );
-    setUserPrivilegeModal({ show: false, userId: null, userName: "", privileges: {} });
+    setUserPrivilegeModal({
+      show: false,
+      userId: null,
+      userName: "",
+      privileges: {},
+    });
     showToast("User privileges updated successfully!");
   };
 
@@ -932,7 +964,11 @@ export default function AdminDashboard() {
       prev.map((u) => {
         if (u.id !== userId) return u;
         const currentAbout = u.privileges?.aboutContent || {};
-        const hasFull = currentAbout.view && currentAbout.add && currentAbout.edit && currentAbout.delete;
+        const hasFull =
+          currentAbout.view &&
+          currentAbout.add &&
+          currentAbout.edit &&
+          currentAbout.delete;
         const newAbout = hasFull
           ? { view: false, add: false, edit: false, delete: false }
           : { view: true, add: true, edit: true, delete: true };
@@ -943,7 +979,7 @@ export default function AdminDashboard() {
             aboutContent: newAbout,
           },
         };
-      })
+      }),
     );
     showToast("About Page privileges updated for user!");
   };
@@ -983,7 +1019,8 @@ export default function AdminDashboard() {
                 email: userForm.email,
                 role: userForm.role,
                 active: userForm.active,
-                privileges: userForm.privileges || getPrivilegesForRole(userForm.role),
+                privileges:
+                  userForm.privileges || getPrivilegesForRole(userForm.role),
                 ...(userForm.password ? { password: userForm.password } : {}),
               }
             : u,
@@ -1031,7 +1068,6 @@ export default function AdminDashboard() {
   // ─── Section Configs ──────────────────────────────────────────────────────
   const SECTION_CONFIGS = {
     news: {
-      icon: "📰",
       title: "News Articles",
       itemLabel: "News Item",
       desc: "Manage all news articles displayed on the News & Events page.",
@@ -1075,7 +1111,6 @@ export default function AdminDashboard() {
       ],
     },
     events: {
-      icon: "🗓️",
       title: "Flagship Events",
       itemLabel: "Event",
       desc: "Manage flagship events shown on the News & Events page.",
@@ -1102,7 +1137,6 @@ export default function AdminDashboard() {
       ],
     },
     speakers: {
-      icon: "🎤",
       title: "Distinguished Speakers",
       itemLabel: "Speaker",
       desc: "Manage the list of distinguished speakers and visitors.",
@@ -1139,7 +1173,6 @@ export default function AdminDashboard() {
       ],
     },
     faculty: {
-      icon: "👨‍🏫",
       title: "Faculty Members",
       itemLabel: "Faculty Member",
       desc: "Manage faculty profiles shown on the Faculty page.",
@@ -1187,7 +1220,6 @@ export default function AdminDashboard() {
       ],
     },
     researchAreas: {
-      icon: "🔬",
       title: "Research Areas",
       itemLabel: "Research Area",
       desc: "Manage the research focus areas shown on the Research page.",
@@ -1219,7 +1251,6 @@ export default function AdminDashboard() {
       ],
     },
     highlights: {
-      icon: "⭐",
       title: "Key Highlights",
       itemLabel: "Highlight",
       desc: "Manage the key institutional highlights shown on the Home page.",
@@ -1267,38 +1298,40 @@ export default function AdminDashboard() {
           {[
             {
               label: "About Items",
-              count: (data.aboutContent?.overviewCards?.length || 0) + (data.aboutContent?.insideOfferings?.length || 0),
-              icon: "📖",
+              count:
+                (data.aboutContent?.overviewCards?.length || 0) +
+                (data.aboutContent?.insideOfferings?.length || 0),
+
               section: "aboutContent",
             },
             {
               label: "News Items",
               count: data.news.length,
-              icon: "📰",
+
               section: "news",
             },
             {
               label: "Events",
               count: data.events.length,
-              icon: "🗓️",
+
               section: "events",
             },
             {
               label: "Speakers",
               count: data.speakers.length,
-              icon: "🎤",
+
               section: "speakers",
             },
             {
               label: "Faculty",
               count: data.faculty.length,
-              icon: "👨‍🏫",
+
               section: "faculty",
             },
             {
               label: "Research Areas",
               count: data.researchAreas.length,
-              icon: "🔬",
+
               section: "researchAreas",
             },
             ...(isAdmin
@@ -1306,7 +1339,7 @@ export default function AdminDashboard() {
                   {
                     label: "Users",
                     count: totalUsers,
-                    icon: "👥",
+
                     section: "users",
                   },
                 ]
@@ -1334,7 +1367,10 @@ export default function AdminDashboard() {
             <h3>Quick Actions</h3>
             <div className="qa-grid">
               {[
-                { label: "Edit About Page", section: "aboutContent", icon: "📖" },
+                {
+                  label: "Edit About Page",
+                  section: "aboutContent",
+                },
                 { label: "Add News", section: "news", icon: "➕" },
                 { label: "Add Event", section: "events", icon: "➕" },
                 { label: "Add Speaker", section: "speakers", icon: "➕" },
@@ -1342,10 +1378,10 @@ export default function AdminDashboard() {
                 {
                   label: "Add User",
                   section: "users",
-                  icon: "👤",
+
                   action: "addUser",
                 },
-                { label: "Edit Hero", section: "heroContent", icon: "✏️" },
+                { label: "Edit Hero", section: "heroContent" },
               ].map((a) => (
                 <button
                   key={a.label}
@@ -1380,11 +1416,21 @@ export default function AdminDashboard() {
           <div>
             <h2>📖 About Page Management</h2>
             <p>
-              Complete control to change, add, edit, and delete all About Page content, highlights, mission, vision, offerings, and statistics.
+              Complete control to change, add, edit, and delete all About Page
+              content, highlights, mission, vision, offerings, and statistics.
             </p>
           </div>
-          <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
-            <span className={`priv-badge ${canAdd && canEdit && canDelete ? "priv-full" : "priv-about"}`}>
+          <div
+            style={{
+              display: "flex",
+              gap: "10px",
+              alignItems: "center",
+              flexWrap: "wrap",
+            }}
+          >
+            <span
+              className={`priv-badge ${canAdd && canEdit && canDelete ? "priv-full" : "priv-about"}`}
+            >
               {canAdd && canEdit && canDelete
                 ? "👑 Full Privilege (Add/Edit/Del)"
                 : `Privileges: ${canAdd ? "Add " : ""}${canEdit ? "Edit " : ""}${canDelete ? "Delete" : ""}`}
@@ -1419,7 +1465,8 @@ export default function AdminDashboard() {
             className={`sub-tab ${aboutTab === "missionVision" ? "active" : ""}`}
             onClick={() => setAboutTab("missionVision")}
           >
-            🎯 Mission, Vision &amp; Specifics ({about.vision?.specifics?.length || 0})
+            🎯 Mission, Vision &amp; Specifics (
+            {about.vision?.specifics?.length || 0})
           </button>
           <button
             className={`sub-tab ${aboutTab === "inside" ? "active" : ""}`}
@@ -1431,18 +1478,32 @@ export default function AdminDashboard() {
             className={`sub-tab ${aboutTab === "university" ? "active" : ""}`}
             onClick={() => setAboutTab("university")}
           >
-            🌍 University Info &amp; Stats ({about.university?.stats?.length || 0})
+            🌍 University Info &amp; Stats (
+            {about.university?.stats?.length || 0})
           </button>
         </div>
 
         {/* Tab 1: Overview & Header */}
         {aboutTab === "overview" && (
           <div className="obj-form" style={{ maxWidth: "860px" }}>
-            <h3 style={{ margin: "0 0 10px", color: "#c9d1d9", fontSize: "1.1rem" }}>
+            <h3
+              style={{
+                margin: "0 0 10px",
+                color: "#c9d1d9",
+                fontSize: "1.1rem",
+              }}
+            >
               Hero Banner &amp; Main Overview Texts
             </h3>
-            <p style={{ margin: "0 0 16px", color: "#6e7681", fontSize: "0.85rem" }}>
-              Edit the title banner and main descriptive paragraphs at the top of the About page.
+            <p
+              style={{
+                margin: "0 0 16px",
+                color: "#6e7681",
+                fontSize: "0.85rem",
+              }}
+            >
+              Edit the title banner and main descriptive paragraphs at the top
+              of the About page.
             </p>
 
             <div className="form-group">
@@ -1450,20 +1511,32 @@ export default function AdminDashboard() {
               <input
                 value={localAboutOverview.badge || ""}
                 onChange={(e) =>
-                  setLocalAboutOverview({ ...localAboutOverview, badge: e.target.value })
+                  setLocalAboutOverview({
+                    ...localAboutOverview,
+                    badge: e.target.value,
+                  })
                 }
                 placeholder="ABOUT US"
                 disabled={!canEdit}
               />
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px" }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr 1fr",
+                gap: "12px",
+              }}
+            >
               <div className="form-group">
                 <label>Title Prefix</label>
                 <input
                   value={localAboutOverview.titlePrefix || ""}
                   onChange={(e) =>
-                    setLocalAboutOverview({ ...localAboutOverview, titlePrefix: e.target.value })
+                    setLocalAboutOverview({
+                      ...localAboutOverview,
+                      titlePrefix: e.target.value,
+                    })
                   }
                   placeholder="Amrita Center for"
                   disabled={!canEdit}
@@ -1474,7 +1547,10 @@ export default function AdminDashboard() {
                 <input
                   value={localAboutOverview.titleTeal || ""}
                   onChange={(e) =>
-                    setLocalAboutOverview({ ...localAboutOverview, titleTeal: e.target.value })
+                    setLocalAboutOverview({
+                      ...localAboutOverview,
+                      titleTeal: e.target.value,
+                    })
                   }
                   placeholder="Cybersecurity"
                   disabled={!canEdit}
@@ -1485,7 +1561,10 @@ export default function AdminDashboard() {
                 <input
                   value={localAboutOverview.titleSuffix || ""}
                   onChange={(e) =>
-                    setLocalAboutOverview({ ...localAboutOverview, titleSuffix: e.target.value })
+                    setLocalAboutOverview({
+                      ...localAboutOverview,
+                      titleSuffix: e.target.value,
+                    })
                   }
                   placeholder="Systems and Networks"
                   disabled={!canEdit}
@@ -1493,13 +1572,22 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "12px" }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 2fr",
+                gap: "12px",
+              }}
+            >
               <div className="form-group">
                 <label>Overview Section Eyebrow</label>
                 <input
                   value={localAboutOverview.eyebrow || ""}
                   onChange={(e) =>
-                    setLocalAboutOverview({ ...localAboutOverview, eyebrow: e.target.value })
+                    setLocalAboutOverview({
+                      ...localAboutOverview,
+                      eyebrow: e.target.value,
+                    })
                   }
                   placeholder="Overview"
                   disabled={!canEdit}
@@ -1510,7 +1598,10 @@ export default function AdminDashboard() {
                 <input
                   value={localAboutOverview.title || ""}
                   onChange={(e) =>
-                    setLocalAboutOverview({ ...localAboutOverview, title: e.target.value })
+                    setLocalAboutOverview({
+                      ...localAboutOverview,
+                      title: e.target.value,
+                    })
                   }
                   placeholder="Who We Are"
                   disabled={!canEdit}
@@ -1524,7 +1615,10 @@ export default function AdminDashboard() {
                 rows={3}
                 value={localAboutOverview.p1 || ""}
                 onChange={(e) =>
-                  setLocalAboutOverview({ ...localAboutOverview, p1: e.target.value })
+                  setLocalAboutOverview({
+                    ...localAboutOverview,
+                    p1: e.target.value,
+                  })
                 }
                 placeholder="The Amrita Center for Cybersecurity..."
                 disabled={!canEdit}
@@ -1537,7 +1631,10 @@ export default function AdminDashboard() {
                 rows={3}
                 value={localAboutOverview.p2 || ""}
                 onChange={(e) =>
-                  setLocalAboutOverview({ ...localAboutOverview, p2: e.target.value })
+                  setLocalAboutOverview({
+                    ...localAboutOverview,
+                    p2: e.target.value,
+                  })
                 }
                 placeholder="Supported by the Government of India..."
                 disabled={!canEdit}
@@ -1550,7 +1647,10 @@ export default function AdminDashboard() {
                 rows={2}
                 value={localAboutOverview.p3 || ""}
                 onChange={(e) =>
-                  setLocalAboutOverview({ ...localAboutOverview, p3: e.target.value })
+                  setLocalAboutOverview({
+                    ...localAboutOverview,
+                    p3: e.target.value,
+                  })
                 }
                 placeholder="The Center also offers the globally recognised Online MCA..."
                 disabled={!canEdit}
@@ -1562,7 +1662,9 @@ export default function AdminDashboard() {
                 💾 Save Overview Content
               </button>
             ) : (
-              <span className="text-muted">You do not have edit permission for this section.</span>
+              <span className="text-muted">
+                You do not have edit permission for this section.
+              </span>
             )}
           </div>
         )}
@@ -1570,11 +1672,27 @@ export default function AdminDashboard() {
         {/* Tab 2: Overview Cards */}
         {aboutTab === "cards" && (
           <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "16px",
+              }}
+            >
               <div>
-                <h3 style={{ margin: 0, color: "#c9d1d9", fontSize: "1.1rem" }}>Overview Highlight Cards</h3>
-                <p style={{ margin: "4px 0 0", color: "#6e7681", fontSize: "0.85rem" }}>
-                  Add, edit, or delete the recognition and highlight cards shown on the About page.
+                <h3 style={{ margin: 0, color: "#c9d1d9", fontSize: "1.1rem" }}>
+                  Overview Highlight Cards
+                </h3>
+                <p
+                  style={{
+                    margin: "4px 0 0",
+                    color: "#6e7681",
+                    fontSize: "0.85rem",
+                  }}
+                >
+                  Add, edit, or delete the recognition and highlight cards shown
+                  on the About page.
                 </p>
               </div>
               {canAdd && (
@@ -1638,8 +1756,16 @@ export default function AdminDashboard() {
                 </div>
               ))}
               {(!about.overviewCards || about.overviewCards.length === 0) && (
-                <p className="text-muted" style={{ gridColumn: "1 / -1", padding: "20px", textAlign: "center" }}>
-                  No overview cards yet. Click &quot;+ Add New Card&quot; to create one.
+                <p
+                  className="text-muted"
+                  style={{
+                    gridColumn: "1 / -1",
+                    padding: "20px",
+                    textAlign: "center",
+                  }}
+                >
+                  No overview cards yet. Click &quot;+ Add New Card&quot; to
+                  create one.
                 </p>
               )}
             </div>
@@ -1648,9 +1774,17 @@ export default function AdminDashboard() {
 
         {/* Tab 3: Mission & Vision */}
         {aboutTab === "missionVision" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "24px" }}
+          >
             <div className="obj-form" style={{ maxWidth: "860px" }}>
-              <h3 style={{ margin: "0 0 10px", color: "#c9d1d9", fontSize: "1.1rem" }}>
+              <h3
+                style={{
+                  margin: "0 0 10px",
+                  color: "#c9d1d9",
+                  fontSize: "1.1rem",
+                }}
+              >
                 Mission &amp; Vision Statements
               </h3>
               <div className="form-group">
@@ -1658,7 +1792,10 @@ export default function AdminDashboard() {
                 <input
                   value={localAboutMission.missionTitle || ""}
                   onChange={(e) =>
-                    setLocalAboutMission({ ...localAboutMission, missionTitle: e.target.value })
+                    setLocalAboutMission({
+                      ...localAboutMission,
+                      missionTitle: e.target.value,
+                    })
                   }
                   placeholder="Our Mission"
                   disabled={!canEdit}
@@ -1670,7 +1807,10 @@ export default function AdminDashboard() {
                   rows={3}
                   value={localAboutMission.missionText || ""}
                   onChange={(e) =>
-                    setLocalAboutMission({ ...localAboutMission, missionText: e.target.value })
+                    setLocalAboutMission({
+                      ...localAboutMission,
+                      missionText: e.target.value,
+                    })
                   }
                   placeholder="Promoting partnership among industry, academia, and the government..."
                   disabled={!canEdit}
@@ -1682,7 +1822,10 @@ export default function AdminDashboard() {
                 <input
                   value={localAboutMission.visionTitle || ""}
                   onChange={(e) =>
-                    setLocalAboutMission({ ...localAboutMission, visionTitle: e.target.value })
+                    setLocalAboutMission({
+                      ...localAboutMission,
+                      visionTitle: e.target.value,
+                    })
                   }
                   placeholder="Our Vision"
                   disabled={!canEdit}
@@ -1694,7 +1837,10 @@ export default function AdminDashboard() {
                   rows={3}
                   value={localAboutMission.visionText || ""}
                   onChange={(e) =>
-                    setLocalAboutMission({ ...localAboutMission, visionText: e.target.value })
+                    setLocalAboutMission({
+                      ...localAboutMission,
+                      visionText: e.target.value,
+                    })
                   }
                   placeholder="By way of research and academics, develop an ecosystem..."
                   disabled={!canEdit}
@@ -1706,7 +1852,10 @@ export default function AdminDashboard() {
                 <input
                   value={localAboutMission.specificsLabel || ""}
                   onChange={(e) =>
-                    setLocalAboutMission({ ...localAboutMission, specificsLabel: e.target.value })
+                    setLocalAboutMission({
+                      ...localAboutMission,
+                      specificsLabel: e.target.value,
+                    })
                   }
                   placeholder="Specifically:"
                   disabled={!canEdit}
@@ -1718,19 +1867,37 @@ export default function AdminDashboard() {
                   💾 Save Mission &amp; Vision Texts
                 </button>
               ) : (
-                <span className="text-muted">You do not have edit permission for this section.</span>
+                <span className="text-muted">
+                  You do not have edit permission for this section.
+                </span>
               )}
             </div>
 
             {/* Specifically Points List with Add/Edit/Delete */}
             <div style={{ maxWidth: "860px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "16px",
+                }}
+              >
                 <div>
-                  <h3 style={{ margin: 0, color: "#c9d1d9", fontSize: "1.1rem" }}>
+                  <h3
+                    style={{ margin: 0, color: "#c9d1d9", fontSize: "1.1rem" }}
+                  >
                     Vision Focus Points (&quot;Specifically&quot;)
                   </h3>
-                  <p style={{ margin: "4px 0 0", color: "#6e7681", fontSize: "0.85rem" }}>
-                    Add, edit, or delete the numbered focus points under the Vision card.
+                  <p
+                    style={{
+                      margin: "4px 0 0",
+                      color: "#6e7681",
+                      fontSize: "0.85rem",
+                    }}
+                  >
+                    Add, edit, or delete the numbered focus points under the
+                    Vision card.
                   </p>
                 </div>
                 {canAdd && (
@@ -1756,7 +1923,9 @@ export default function AdminDashboard() {
                     <tr>
                       <th style={{ width: "60px" }}>#</th>
                       <th>Focus Point Description</th>
-                      <th style={{ width: "140px", textAlign: "right" }}>Actions</th>
+                      <th style={{ width: "140px", textAlign: "right" }}>
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1765,9 +1934,14 @@ export default function AdminDashboard() {
                         <td>
                           <span className="badge badge-navy">0{idx + 1}</span>
                         </td>
-                        <td style={{ color: "#e6edf3", lineHeight: "1.5" }}>{pt.text}</td>
+                        <td style={{ color: "#e6edf3", lineHeight: "1.5" }}>
+                          {pt.text}
+                        </td>
                         <td>
-                          <div className="row-actions" style={{ justifyContent: "flex-end" }}>
+                          <div
+                            className="row-actions"
+                            style={{ justifyContent: "flex-end" }}
+                          >
                             {canEdit && (
                               <button
                                 className="btn-edit"
@@ -1802,7 +1976,8 @@ export default function AdminDashboard() {
                         </td>
                       </tr>
                     ))}
-                    {(!about.vision?.specifics || about.vision.specifics.length === 0) && (
+                    {(!about.vision?.specifics ||
+                      about.vision.specifics.length === 0) && (
                       <tr>
                         <td colSpan={3} className="empty-row">
                           No focus points defined yet.
@@ -1819,13 +1994,27 @@ export default function AdminDashboard() {
         {/* Tab 4: Inside the Center Offerings */}
         {aboutTab === "inside" && (
           <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "16px",
+              }}
+            >
               <div>
                 <h3 style={{ margin: 0, color: "#c9d1d9", fontSize: "1.1rem" }}>
                   Inside the Center Offerings
                 </h3>
-                <p style={{ margin: "4px 0 0", color: "#6e7681", fontSize: "0.85rem" }}>
-                  Manage the 4 pillars (Academic Excellence, Research &amp; Innovation, Partners, Placements) or add new offerings.
+                <p
+                  style={{
+                    margin: "4px 0 0",
+                    color: "#6e7681",
+                    fontSize: "0.85rem",
+                  }}
+                >
+                  Manage the 4 pillars (Academic Excellence, Research &amp;
+                  Innovation, Partners, Placements) or add new offerings.
                 </p>
               </div>
               {canAdd && (
@@ -1904,18 +2093,35 @@ export default function AdminDashboard() {
 
         {/* Tab 5: University Info & Stats */}
         {aboutTab === "university" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "24px" }}
+          >
             <div className="obj-form" style={{ maxWidth: "860px" }}>
-              <h3 style={{ margin: "0 0 10px", color: "#c9d1d9", fontSize: "1.1rem" }}>
+              <h3
+                style={{
+                  margin: "0 0 10px",
+                  color: "#c9d1d9",
+                  fontSize: "1.1rem",
+                }}
+              >
                 University Section Texts
               </h3>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "12px" }}>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 2fr",
+                  gap: "12px",
+                }}
+              >
                 <div className="form-group">
                   <label>Eyebrow</label>
                   <input
                     value={localAboutUniv.eyebrow || ""}
                     onChange={(e) =>
-                      setLocalAboutUniv({ ...localAboutUniv, eyebrow: e.target.value })
+                      setLocalAboutUniv({
+                        ...localAboutUniv,
+                        eyebrow: e.target.value,
+                      })
                     }
                     placeholder="Amrita Vishwa Vidyapeetham"
                     disabled={!canEdit}
@@ -1926,7 +2132,10 @@ export default function AdminDashboard() {
                   <input
                     value={localAboutUniv.title || ""}
                     onChange={(e) =>
-                      setLocalAboutUniv({ ...localAboutUniv, title: e.target.value })
+                      setLocalAboutUniv({
+                        ...localAboutUniv,
+                        title: e.target.value,
+                      })
                     }
                     placeholder="Part of a World-Class University"
                     disabled={!canEdit}
@@ -1962,19 +2171,37 @@ export default function AdminDashboard() {
                   💾 Save University Texts
                 </button>
               ) : (
-                <span className="text-muted">You do not have edit permission for this section.</span>
+                <span className="text-muted">
+                  You do not have edit permission for this section.
+                </span>
               )}
             </div>
 
             {/* University Stats with Add, Edit, Delete */}
             <div style={{ maxWidth: "860px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "16px",
+                }}
+              >
                 <div>
-                  <h3 style={{ margin: 0, color: "#c9d1d9", fontSize: "1.1rem" }}>
+                  <h3
+                    style={{ margin: 0, color: "#c9d1d9", fontSize: "1.1rem" }}
+                  >
                     University Statistics &amp; Accreditations
                   </h3>
-                  <p style={{ margin: "4px 0 0", color: "#6e7681", fontSize: "0.85rem" }}>
-                    Add, edit, or delete the statistics displayed in the dark university section.
+                  <p
+                    style={{
+                      margin: "4px 0 0",
+                      color: "#6e7681",
+                      fontSize: "0.85rem",
+                    }}
+                  >
+                    Add, edit, or delete the statistics displayed in the dark
+                    university section.
                   </p>
                 </div>
                 {canAdd && (
@@ -1994,7 +2221,13 @@ export default function AdminDashboard() {
                 )}
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "14px" }}>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
+                  gap: "14px",
+                }}
+              >
                 {(about.university?.stats || []).map((s) => (
                   <div
                     key={s.id}
@@ -2007,13 +2240,30 @@ export default function AdminDashboard() {
                       position: "relative",
                     }}
                   >
-                    <div style={{ fontSize: "1.8rem", fontWeight: "800", color: "#93cfe0", marginBottom: "4px" }}>
+                    <div
+                      style={{
+                        fontSize: "1.8rem",
+                        fontWeight: "800",
+                        color: "#93cfe0",
+                        marginBottom: "4px",
+                      }}
+                    >
                       {s.n}
                     </div>
-                    <div style={{ fontSize: "0.8rem", color: "#8b949e", marginBottom: "12px", minHeight: "36px" }}>
+                    <div
+                      style={{
+                        fontSize: "0.8rem",
+                        color: "#8b949e",
+                        marginBottom: "12px",
+                        minHeight: "36px",
+                      }}
+                    >
                       {s.l}
                     </div>
-                    <div className="row-actions" style={{ justifyContent: "center" }}>
+                    <div
+                      className="row-actions"
+                      style={{ justifyContent: "center" }}
+                    >
                       {canEdit && (
                         <button
                           className="btn-edit"
@@ -2297,10 +2547,12 @@ export default function AdminDashboard() {
                   }}
                 >
                   <option value="content_editor">
-                    ✏️ Content Editor — About, Hero, Highlights, Speakers, Faculty, Research, Contact
+                    ✏️ Content Editor — About, Hero, Highlights, Speakers,
+                    Faculty, Research, Contact
                   </option>
                   <option value="about_editor">
-                    📖 About Editor — Complete privilege on About Page (Add, Edit, Delete)
+                    📖 About Editor — Complete privilege on About Page (Add,
+                    Edit, Delete)
                   </option>
                   <option value="event_editor">
                     🗓️ Event Editor — News &amp; Events only
@@ -2309,15 +2561,25 @@ export default function AdminDashboard() {
                     👑 Administrator — Full access to all sections &amp; users
                   </option>
                   <option value="custom">
-                    ⚙️ Custom Privileges — Granular section &amp; action permissions
+                    ⚙️ Custom Privileges — Granular section &amp; action
+                    permissions
                   </option>
                 </select>
               </div>
 
               {/* Privilege Configuration Panel */}
               <div className="form-group">
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-                  <label style={{ margin: 0 }}>Section Privileges &amp; Action Permissions</label>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "6px",
+                  }}
+                >
+                  <label style={{ margin: 0 }}>
+                    Section Privileges &amp; Action Permissions
+                  </label>
                   <button
                     type="button"
                     className="btn-priv-quick"
@@ -2326,10 +2588,17 @@ export default function AdminDashboard() {
                         ...f,
                         privileges: {
                           ...(f.privileges || getPrivilegesForRole(f.role)),
-                          aboutContent: { view: true, add: true, edit: true, delete: true },
+                          aboutContent: {
+                            view: true,
+                            add: true,
+                            edit: true,
+                            delete: true,
+                          },
                         },
                       }));
-                      showToast("Full About privilege enabled (Add, Edit, Delete)!");
+                      showToast(
+                        "Full About privilege enabled (Add, Edit, Delete)!",
+                      );
                     }}
                   >
                     ⭐ Grant Full About Privilege
@@ -2338,24 +2607,32 @@ export default function AdminDashboard() {
 
                 <div className="privilege-box">
                   {/* About Page privilege row */}
-                  <div className="privilege-row" style={{ borderLeft: "3px solid #52a9bc" }}>
+                  <div
+                    className="privilege-row"
+                    style={{ borderLeft: "3px solid #52a9bc" }}
+                  >
                     <div className="priv-title-group">
                       <span>📖</span>
                       <span>About Page</span>
-                      <span className="priv-badge priv-about">Key Privilege</span>
+                      <span className="priv-badge priv-about">
+                        Key Privilege
+                      </span>
                     </div>
                     <div className="priv-actions-group">
                       {["view", "add", "edit", "delete"].map((act) => (
                         <label key={act} className="priv-checkbox-label">
                           <input
                             type="checkbox"
-                            checked={userForm.privileges?.aboutContent?.[act] ?? true}
+                            checked={
+                              userForm.privileges?.aboutContent?.[act] ?? true
+                            }
                             onChange={(e) => {
                               const val = e.target.checked;
                               setUserForm((f) => ({
                                 ...f,
                                 privileges: {
-                                  ...(f.privileges || getPrivilegesForRole(f.role)),
+                                  ...(f.privileges ||
+                                    getPrivilegesForRole(f.role)),
                                   aboutContent: {
                                     ...(f.privileges?.aboutContent || {}),
                                     [act]: val,
@@ -2372,14 +2649,54 @@ export default function AdminDashboard() {
 
                   {/* Other sections in privilege box */}
                   {[
-                    { key: "heroContent", label: "Hero / Home", icon: "🏠", hasAddDelete: false },
-                    { key: "highlights", label: "Highlights", icon: "⭐", hasAddDelete: true },
-                    { key: "news", label: "News", icon: "📰", hasAddDelete: true },
-                    { key: "events", label: "Events", icon: "🗓️", hasAddDelete: true },
-                    { key: "speakers", label: "Speakers", icon: "🎤", hasAddDelete: true },
-                    { key: "faculty", label: "Faculty", icon: "👨‍🏫", hasAddDelete: true },
-                    { key: "researchAreas", label: "Research Areas", icon: "🔬", hasAddDelete: true },
-                    { key: "contactInfo", label: "Contact Info", icon: "📞", hasAddDelete: false },
+                    {
+                      key: "heroContent",
+                      label: "Hero / Home",
+                      icon: "🏠",
+                      hasAddDelete: false,
+                    },
+                    {
+                      key: "highlights",
+                      label: "Highlights",
+                      icon: "⭐",
+                      hasAddDelete: true,
+                    },
+                    {
+                      key: "news",
+                      label: "News",
+                      icon: "📰",
+                      hasAddDelete: true,
+                    },
+                    {
+                      key: "events",
+                      label: "Events",
+                      icon: "🗓️",
+                      hasAddDelete: true,
+                    },
+                    {
+                      key: "speakers",
+                      label: "Speakers",
+                      icon: "🎤",
+                      hasAddDelete: true,
+                    },
+                    {
+                      key: "faculty",
+                      label: "Faculty",
+                      icon: "👨‍🏫",
+                      hasAddDelete: true,
+                    },
+                    {
+                      key: "researchAreas",
+                      label: "Research Areas",
+                      icon: "🔬",
+                      hasAddDelete: true,
+                    },
+                    {
+                      key: "contactInfo",
+                      label: "Contact Info",
+                      icon: "📞",
+                      hasAddDelete: false,
+                    },
                   ].map((sec) => (
                     <div key={sec.key} className="privilege-row">
                       <div className="priv-title-group">
@@ -2390,13 +2707,16 @@ export default function AdminDashboard() {
                         <label className="priv-checkbox-label">
                           <input
                             type="checkbox"
-                            checked={userForm.privileges?.[sec.key]?.view ?? false}
+                            checked={
+                              userForm.privileges?.[sec.key]?.view ?? false
+                            }
                             onChange={(e) => {
                               const val = e.target.checked;
                               setUserForm((f) => ({
                                 ...f,
                                 privileges: {
-                                  ...(f.privileges || getPrivilegesForRole(f.role)),
+                                  ...(f.privileges ||
+                                    getPrivilegesForRole(f.role)),
                                   [sec.key]: {
                                     ...(f.privileges?.[sec.key] || {}),
                                     view: val,
@@ -2411,13 +2731,16 @@ export default function AdminDashboard() {
                           <label className="priv-checkbox-label">
                             <input
                               type="checkbox"
-                              checked={userForm.privileges?.[sec.key]?.add ?? false}
+                              checked={
+                                userForm.privileges?.[sec.key]?.add ?? false
+                              }
                               onChange={(e) => {
                                 const val = e.target.checked;
                                 setUserForm((f) => ({
                                   ...f,
                                   privileges: {
-                                    ...(f.privileges || getPrivilegesForRole(f.role)),
+                                    ...(f.privileges ||
+                                      getPrivilegesForRole(f.role)),
                                     [sec.key]: {
                                       ...(f.privileges?.[sec.key] || {}),
                                       add: val,
@@ -2432,13 +2755,16 @@ export default function AdminDashboard() {
                         <label className="priv-checkbox-label">
                           <input
                             type="checkbox"
-                            checked={userForm.privileges?.[sec.key]?.edit ?? false}
+                            checked={
+                              userForm.privileges?.[sec.key]?.edit ?? false
+                            }
                             onChange={(e) => {
                               const val = e.target.checked;
                               setUserForm((f) => ({
                                 ...f,
                                 privileges: {
-                                  ...(f.privileges || getPrivilegesForRole(f.role)),
+                                  ...(f.privileges ||
+                                    getPrivilegesForRole(f.role)),
                                   [sec.key]: {
                                     ...(f.privileges?.[sec.key] || {}),
                                     edit: val,
@@ -2453,13 +2779,16 @@ export default function AdminDashboard() {
                           <label className="priv-checkbox-label">
                             <input
                               type="checkbox"
-                              checked={userForm.privileges?.[sec.key]?.delete ?? false}
+                              checked={
+                                userForm.privileges?.[sec.key]?.delete ?? false
+                              }
                               onChange={(e) => {
                                 const val = e.target.checked;
                                 setUserForm((f) => ({
                                   ...f,
                                   privileges: {
-                                    ...(f.privileges || getPrivilegesForRole(f.role)),
+                                    ...(f.privileges ||
+                                      getPrivilegesForRole(f.role)),
                                     [sec.key]: {
                                       ...(f.privileges?.[sec.key] || {}),
                                       delete: val,
@@ -2576,7 +2905,9 @@ export default function AdminDashboard() {
                 <span className="status-pill status-active">● Active</span>
               </td>
               <td>
-                <span className="priv-badge priv-full">👑 Full Privilege (All)</span>
+                <span className="priv-badge priv-full">
+                  👑 Full Privilege (All)
+                </span>
               </td>
               <td>
                 <span className="text-muted">Protected</span>
@@ -2646,22 +2977,47 @@ export default function AdminDashboard() {
                   </td>
                   <td>
                     {u.role === "admin" ? (
-                      <span className="priv-badge priv-full">👑 Full Privilege (All)</span>
+                      <span className="priv-badge priv-full">
+                        👑 Full Privilege (All)
+                      </span>
                     ) : (
-                      <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "5px",
+                        }}
+                      >
                         {u.privileges?.aboutContent?.view &&
                         u.privileges?.aboutContent?.add &&
                         u.privileges?.aboutContent?.edit &&
                         u.privileges?.aboutContent?.delete ? (
-                          <span className="priv-badge priv-full">📖 About: Add / Edit / Del</span>
+                          <span className="priv-badge priv-full">
+                            📖 About: Add / Edit / Del
+                          </span>
                         ) : u.privileges?.aboutContent?.edit ? (
-                          <span className="priv-badge priv-about">📖 About: Edit Only</span>
+                          <span className="priv-badge priv-about">
+                            📖 About: Edit Only
+                          </span>
                         ) : u.privileges?.aboutContent?.view ? (
-                          <span className="priv-badge">📖 About: View Only</span>
+                          <span className="priv-badge">
+                            📖 About: View Only
+                          </span>
                         ) : (
-                          <span className="text-muted" style={{ fontSize: "0.75rem" }}>No About Access</span>
+                          <span
+                            className="text-muted"
+                            style={{ fontSize: "0.75rem" }}
+                          >
+                            No About Access
+                          </span>
                         )}
-                        <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: "6px",
+                            flexWrap: "wrap",
+                          }}
+                        >
                           <button
                             type="button"
                             className="btn-priv-quick"
@@ -2922,7 +3278,9 @@ export default function AdminDashboard() {
       {aboutItemModal.show && (
         <div
           className="form-modal-overlay"
-          onClick={() => setAboutItemModal({ show: false, type: "", mode: "add", item: {} })}
+          onClick={() =>
+            setAboutItemModal({ show: false, type: "", mode: "add", item: {} })
+          }
         >
           <div className="form-modal" onClick={(e) => e.stopPropagation()}>
             <div className="form-modal-header">
@@ -2931,14 +3289,21 @@ export default function AdminDashboard() {
                 {aboutItemModal.type === "card"
                   ? "Overview Card"
                   : aboutItemModal.type === "point"
-                  ? "Vision Focus Point"
-                  : aboutItemModal.type === "offering"
-                  ? "Inside Offering"
-                  : "University Statistic"}
+                    ? "Vision Focus Point"
+                    : aboutItemModal.type === "offering"
+                      ? "Inside Offering"
+                      : "University Statistic"}
               </h3>
               <button
                 className="form-close"
-                onClick={() => setAboutItemModal({ show: false, type: "", mode: "add", item: {} })}
+                onClick={() =>
+                  setAboutItemModal({
+                    show: false,
+                    type: "",
+                    mode: "add",
+                    item: {},
+                  })
+                }
               >
                 ✕
               </button>
@@ -3008,7 +3373,13 @@ export default function AdminDashboard() {
 
               {aboutItemModal.type === "offering" && (
                 <>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 3fr", gap: "10px" }}>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr 3fr",
+                      gap: "10px",
+                    }}
+                  >
                     <div className="form-group">
                       <label>Number</label>
                       <input
@@ -3101,7 +3472,14 @@ export default function AdminDashboard() {
             <div className="form-modal-footer">
               <button
                 className="btn-cancel"
-                onClick={() => setAboutItemModal({ show: false, type: "", mode: "add", item: {} })}
+                onClick={() =>
+                  setAboutItemModal({
+                    show: false,
+                    type: "",
+                    mode: "add",
+                    item: {},
+                  })
+                }
               >
                 Cancel
               </button>
@@ -3111,11 +3489,13 @@ export default function AdminDashboard() {
                   saveAboutItem(
                     aboutItemModal.type,
                     aboutItemModal.item,
-                    aboutItemModal.mode
+                    aboutItemModal.mode,
                   )
                 }
               >
-                {aboutItemModal.mode === "add" ? "+ Add to About" : "Save Changes"}
+                {aboutItemModal.mode === "add"
+                  ? "+ Add to About"
+                  : "Save Changes"}
               </button>
             </div>
           </div>
@@ -3129,18 +3509,29 @@ export default function AdminDashboard() {
             <div className="confirm-icon">🗑️</div>
             <h3>Delete About Item?</h3>
             <p>
-              Are you sure you want to delete <strong>{aboutDeleteModal.title}</strong>? This action cannot be undone.
+              Are you sure you want to delete{" "}
+              <strong>{aboutDeleteModal.title}</strong>? This action cannot be
+              undone.
             </p>
             <div className="confirm-actions">
               <button
                 className="btn-cancel"
-                onClick={() => setAboutDeleteModal({ show: false, type: "", id: null, title: "" })}
+                onClick={() =>
+                  setAboutDeleteModal({
+                    show: false,
+                    type: "",
+                    id: null,
+                    title: "",
+                  })
+                }
               >
                 Cancel
               </button>
               <button
                 className="btn-delete-confirm"
-                onClick={() => deleteAboutItem(aboutDeleteModal.type, aboutDeleteModal.id)}
+                onClick={() =>
+                  deleteAboutItem(aboutDeleteModal.type, aboutDeleteModal.id)
+                }
               >
                 Delete Item
               </button>
@@ -3153,24 +3544,62 @@ export default function AdminDashboard() {
       {userPrivilegeModal.show && (
         <div
           className="form-modal-overlay"
-          onClick={() => setUserPrivilegeModal({ show: false, userId: null, userName: "", role: "content_editor", privileges: {} })}
+          onClick={() =>
+            setUserPrivilegeModal({
+              show: false,
+              userId: null,
+              userName: "",
+              role: "content_editor",
+              privileges: {},
+            })
+          }
         >
-          <div className="form-modal" style={{ maxWidth: "680px" }} onClick={(e) => e.stopPropagation()}>
+          <div
+            className="form-modal"
+            style={{ maxWidth: "680px" }}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="form-modal-header">
               <div>
-                <h3 style={{ margin: 0 }}>⚙️ Configure Privileges: {userPrivilegeModal.userName}</h3>
-                <span className="text-muted">Grant or restrict permissions for each section.</span>
+                <h3 style={{ margin: 0 }}>
+                  ⚙️ Configure Privileges: {userPrivilegeModal.userName}
+                </h3>
+                <span className="text-muted">
+                  Grant or restrict permissions for each section.
+                </span>
               </div>
               <button
                 className="form-close"
-                onClick={() => setUserPrivilegeModal({ show: false, userId: null, userName: "", role: "content_editor", privileges: {} })}
+                onClick={() =>
+                  setUserPrivilegeModal({
+                    show: false,
+                    userId: null,
+                    userName: "",
+                    role: "content_editor",
+                    privileges: {},
+                  })
+                }
               >
                 ✕
               </button>
             </div>
             <div className="form-modal-body">
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontSize: "0.85rem", color: "#c9d1d9", fontWeight: "600" }}>About Page Privilege</span>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: "0.85rem",
+                    color: "#c9d1d9",
+                    fontWeight: "600",
+                  }}
+                >
+                  About Page Privilege
+                </span>
                 <button
                   type="button"
                   className="btn-priv-quick"
@@ -3179,7 +3608,12 @@ export default function AdminDashboard() {
                       ...prev,
                       privileges: {
                         ...prev.privileges,
-                        aboutContent: { view: true, add: true, edit: true, delete: true },
+                        aboutContent: {
+                          view: true,
+                          add: true,
+                          edit: true,
+                          delete: true,
+                        },
                       },
                     }))
                   }
@@ -3189,7 +3623,10 @@ export default function AdminDashboard() {
               </div>
 
               <div className="privilege-box">
-                <div className="privilege-row" style={{ borderLeft: "3px solid #52a9bc" }}>
+                <div
+                  className="privilege-row"
+                  style={{ borderLeft: "3px solid #52a9bc" }}
+                >
                   <div className="priv-title-group">
                     <span>📖</span>
                     <span>About Page</span>
@@ -3200,7 +3637,11 @@ export default function AdminDashboard() {
                       <label key={act} className="priv-checkbox-label">
                         <input
                           type="checkbox"
-                          checked={userPrivilegeModal.privileges?.aboutContent?.[act] ?? true}
+                          checked={
+                            userPrivilegeModal.privileges?.aboutContent?.[
+                              act
+                            ] ?? true
+                          }
                           onChange={(e) => {
                             const val = e.target.checked;
                             setUserPrivilegeModal((prev) => ({
@@ -3222,14 +3663,54 @@ export default function AdminDashboard() {
                 </div>
 
                 {[
-                  { key: "heroContent", label: "Hero / Home", icon: "🏠", hasAddDelete: false },
-                  { key: "highlights", label: "Highlights", icon: "⭐", hasAddDelete: true },
-                  { key: "news", label: "News", icon: "📰", hasAddDelete: true },
-                  { key: "events", label: "Events", icon: "🗓️", hasAddDelete: true },
-                  { key: "speakers", label: "Speakers", icon: "🎤", hasAddDelete: true },
-                  { key: "faculty", label: "Faculty", icon: "👨‍🏫", hasAddDelete: true },
-                  { key: "researchAreas", label: "Research Areas", icon: "🔬", hasAddDelete: true },
-                  { key: "contactInfo", label: "Contact Info", icon: "📞", hasAddDelete: false },
+                  {
+                    key: "heroContent",
+                    label: "Hero / Home",
+                    icon: "🏠",
+                    hasAddDelete: false,
+                  },
+                  {
+                    key: "highlights",
+                    label: "Highlights",
+                    icon: "⭐",
+                    hasAddDelete: true,
+                  },
+                  {
+                    key: "news",
+                    label: "News",
+                    icon: "📰",
+                    hasAddDelete: true,
+                  },
+                  {
+                    key: "events",
+                    label: "Events",
+                    icon: "🗓️",
+                    hasAddDelete: true,
+                  },
+                  {
+                    key: "speakers",
+                    label: "Speakers",
+                    icon: "🎤",
+                    hasAddDelete: true,
+                  },
+                  {
+                    key: "faculty",
+                    label: "Faculty",
+                    icon: "👨‍🏫",
+                    hasAddDelete: true,
+                  },
+                  {
+                    key: "researchAreas",
+                    label: "Research Areas",
+                    icon: "🔬",
+                    hasAddDelete: true,
+                  },
+                  {
+                    key: "contactInfo",
+                    label: "Contact Info",
+                    icon: "📞",
+                    hasAddDelete: false,
+                  },
                 ].map((sec) => (
                   <div key={sec.key} className="privilege-row">
                     <div className="priv-title-group">
@@ -3240,7 +3721,10 @@ export default function AdminDashboard() {
                       <label className="priv-checkbox-label">
                         <input
                           type="checkbox"
-                          checked={userPrivilegeModal.privileges?.[sec.key]?.view ?? false}
+                          checked={
+                            userPrivilegeModal.privileges?.[sec.key]?.view ??
+                            false
+                          }
                           onChange={(e) => {
                             const val = e.target.checked;
                             setUserPrivilegeModal((prev) => ({
@@ -3261,7 +3745,10 @@ export default function AdminDashboard() {
                         <label className="priv-checkbox-label">
                           <input
                             type="checkbox"
-                            checked={userPrivilegeModal.privileges?.[sec.key]?.add ?? false}
+                            checked={
+                              userPrivilegeModal.privileges?.[sec.key]?.add ??
+                              false
+                            }
                             onChange={(e) => {
                               const val = e.target.checked;
                               setUserPrivilegeModal((prev) => ({
@@ -3282,7 +3769,10 @@ export default function AdminDashboard() {
                       <label className="priv-checkbox-label">
                         <input
                           type="checkbox"
-                          checked={userPrivilegeModal.privileges?.[sec.key]?.edit ?? false}
+                          checked={
+                            userPrivilegeModal.privileges?.[sec.key]?.edit ??
+                            false
+                          }
                           onChange={(e) => {
                             const val = e.target.checked;
                             setUserPrivilegeModal((prev) => ({
@@ -3303,7 +3793,10 @@ export default function AdminDashboard() {
                         <label className="priv-checkbox-label">
                           <input
                             type="checkbox"
-                            checked={userPrivilegeModal.privileges?.[sec.key]?.delete ?? false}
+                            checked={
+                              userPrivilegeModal.privileges?.[sec.key]
+                                ?.delete ?? false
+                            }
                             onChange={(e) => {
                               const val = e.target.checked;
                               setUserPrivilegeModal((prev) => ({
@@ -3329,7 +3822,15 @@ export default function AdminDashboard() {
             <div className="form-modal-footer">
               <button
                 className="btn-cancel"
-                onClick={() => setUserPrivilegeModal({ show: false, userId: null, userName: "", role: "content_editor", privileges: {} })}
+                onClick={() =>
+                  setUserPrivilegeModal({
+                    show: false,
+                    userId: null,
+                    userName: "",
+                    role: "content_editor",
+                    privileges: {},
+                  })
+                }
               >
                 Cancel
               </button>
@@ -3346,7 +3847,6 @@ export default function AdminDashboard() {
         <div className="sidebar-header">
           {sidebarOpen && (
             <div className="sidebar-brand">
-             
               <div>
                 <div className="brand-title">CyberAdmin</div>
                 <div className="brand-sub">Admin Dashboard</div>
@@ -3428,7 +3928,7 @@ export default function AdminDashboard() {
               rel="noopener noreferrer"
               className="view-site-btn"
             >
-              🌐 View Site
+              View Site
             </a>
           </div>
         </div>

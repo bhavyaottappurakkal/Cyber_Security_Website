@@ -18,25 +18,21 @@ export const DEFAULT_ABOUT_CONTENT = {
   overviewCards: [
     {
       id: 1,
-      icon: '🛡️',
       title: 'CORE Center',
       desc: 'Designated Center of Relevance & Excellence for Cybersecurity in India under Mission REACH, Govt. of India',
     },
     {
       id: 2,
-      icon: '🏆',
       title: 'NAAC A++ Grade',
       desc: 'Highest accreditation grade by the National Assessment and Accreditation Council of India',
     },
     {
       id: 3,
-      icon: '🌍',
       title: "World's Top 100",
       desc: "Ranked in the World's Top 100 Universities in Times Higher Education (THE) Impact Rankings",
     },
     {
       id: 4,
-      icon: '💡',
       title: '100+ Patents',
       desc: 'Patents granted across Amrita Vishwa Vidyapeetham spanning various domains of technology',
     },
@@ -227,50 +223,6 @@ export default function About() {
             <div className="ah-title-rule" />
           </div>
 
-          <div className="about-hero-right" aria-hidden="true">
-            <div className="ah-icon-wrap">
-              <svg className="ah-circuit" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="20" cy="100" r="4" fill="#52a9bc" opacity="0.6" />
-                <circle cx="180" cy="80" r="4" fill="#52a9bc" opacity="0.6" />
-                <circle cx="100" cy="10" r="4" fill="#52a9bc" opacity="0.4" />
-                <circle cx="40" cy="160" r="3" fill="#52a9bc" opacity="0.4" />
-                <circle cx="160" cy="150" r="3" fill="#52a9bc" opacity="0.4" />
-                <line x1="20" y1="100" x2="55" y2="100" stroke="#52a9bc" strokeWidth="1.5" opacity="0.4" />
-                <line x1="145" y1="80" x2="180" y2="80" stroke="#52a9bc" strokeWidth="1.5" opacity="0.4" />
-                <line x1="100" y1="10" x2="100" y2="45" stroke="#52a9bc" strokeWidth="1.5" opacity="0.4" />
-                <line x1="40" y1="150" x2="60" y2="150" stroke="#52a9bc" strokeWidth="1.5" opacity="0.4" />
-                <line x1="140" y1="140" x2="160" y2="150" stroke="#52a9bc" strokeWidth="1.5" opacity="0.4" />
-              </svg>
-              <svg className="ah-shield" viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M60 4 L108 24 L108 72 C108 100 86 124 60 136 C34 124 12 100 12 72 L12 24 Z"
-                  fill="none"
-                  stroke="#52a9bc"
-                  strokeWidth="4"
-                  strokeLinejoin="round"
-                  opacity="0.9"
-                />
-                <path
-                  d="M60 18 L96 34 L96 72 C96 94 80 112 60 122 C40 112 24 94 24 72 L24 34 Z"
-                  fill="rgba(82,169,188,0.12)"
-                  stroke="#52a9bc"
-                  strokeWidth="2"
-                  strokeLinejoin="round"
-                  opacity="0.6"
-                />
-                <rect x="43" y="72" width="34" height="26" rx="4" fill="#52a9bc" opacity="0.85" />
-                <path
-                  d="M49 72 L49 62 C49 52 71 52 71 62 L71 72"
-                  fill="none"
-                  stroke="#52a9bc"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                />
-                <circle cx="60" cy="82" r="4" fill="white" opacity="0.9" />
-                <rect x="58" y="84" width="4" height="7" rx="1" fill="white" opacity="0.9" />
-              </svg>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -290,7 +242,6 @@ export default function About() {
             <div className="aov-right">
               {(overviewCards || []).map((c) => (
                 <div className="aov-card" key={c.id}>
-                  <div className="aov-card-icon">{c.icon}</div>
                   <div className="aov-card-body">
                     <h4 className="aov-card-title">{c.title}</h4>
                     <p className="aov-card-desc">{c.desc}</p>
@@ -316,7 +267,6 @@ export default function About() {
             {/* Mission */}
             <div className="mv-panel mv-panel-mission">
               <div className="mv-panel-accent" />
-              <div className="mv-panel-icon">🎯</div>
               <h3 className="mv-panel-heading">{mission?.title || 'Our Mission'}</h3>
               <p className="mv-panel-text">{mission?.text}</p>
             </div>
@@ -324,7 +274,6 @@ export default function About() {
             {/* Vision */}
             <div className="mv-panel mv-panel-vision">
               <div className="mv-panel-accent mv-panel-accent-teal" />
-              <div className="mv-panel-icon">🔭</div>
               <h3 className="mv-panel-heading">{vision?.title || 'Our Vision'}</h3>
               <p className="mv-panel-text">{vision?.text}</p>
               {vision?.specifics && vision.specifics.length > 0 && (
