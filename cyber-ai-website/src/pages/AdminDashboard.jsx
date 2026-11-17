@@ -1,11 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { DEFAULT_ABOUT_CONTENT } from "./About";
 import "./AdminDashboard.css";
 
 // ─── Role Definitions ─────────────────────────────────────────────────────────
 // admin        → full access to everything including user management
-// content_editor → can edit hero, highlights, speakers, faculty, research, contact — NOT events/news/users
+// content_editor → can edit about, hero, highlights, speakers, faculty, research, contact — NOT events/news/users
+// about_editor   → can ONLY edit About page (full Add, Edit, Delete privileges)
 // event_editor   → can ONLY edit news and events
+// custom         → customizable privileges per section and action
 const ROLE_META = {
   admin: { label: "Admin", color: "role-admin", icon: "👑", sections: "ALL" },
   content_editor: {
@@ -14,6 +17,7 @@ const ROLE_META = {
     icon: "✏️",
     sections: [
       "overview",
+      "aboutContent",
       "heroContent",
       "highlights",
       "speakers",
@@ -23,13 +27,79 @@ const ROLE_META = {
       "changePassword",
     ],
   },
+  about_editor: {
+    label: "About Editor",
+    color: "role-about",
+    icon: "📖",
+    sections: ["overview", "aboutContent", "changePassword"],
+  },
   event_editor: {
     label: "Event Editor",
     color: "role-event",
     icon: "🗓️",
     sections: ["overview", "news", "events", "changePassword"],
   },
+  custom: {
+    label: "Custom Privileges",
+    color: "role-custom",
+    icon: "⚙️",
+    sections: [],
+  },
 };
+
+function getPrivilegesForRole(role) {
+  if (role === "admin") {
+    return {
+      aboutContent: { view: true, add: true, edit: true, delete: true },
+      heroContent: { view: true, add: true, edit: true, delete: true },
+      highlights: { view: true, add: true, edit: true, delete: true },
+      news: { view: true, add: true, edit: true, delete: true },
+      events: { view: true, add: true, edit: true, delete: true },
+      speakers: { view: true, add: true, edit: true, delete: true },
+      faculty: { view: true, add: true, edit: true, delete: true },
+      researchAreas: { view: true, add: true, edit: true, delete: true },
+      contactInfo: { view: true, add: true, edit: true, delete: true },
+    };
+  }
+  if (role === "about_editor") {
+    return {
+      aboutContent: { view: true, add: true, edit: true, delete: true },
+      heroContent: { view: false, add: false, edit: false, delete: false },
+      highlights: { view: false, add: false, edit: false, delete: false },
+      news: { view: false, add: false, edit: false, delete: false },
+      events: { view: false, add: false, edit: false, delete: false },
+      speakers: { view: false, add: false, edit: false, delete: false },
+      faculty: { view: false, add: false, edit: false, delete: false },
+      researchAreas: { view: false, add: false, edit: false, delete: false },
+      contactInfo: { view: false, add: false, edit: false, delete: false },
+    };
+  }
+  if (role === "event_editor") {
+    return {
+      aboutContent: { view: false, add: false, edit: false, delete: false },
+      heroContent: { view: false, add: false, edit: false, delete: false },
+      highlights: { view: false, add: false, edit: false, delete: false },
+      news: { view: true, add: true, edit: true, delete: true },
+      events: { view: true, add: true, edit: true, delete: true },
+      speakers: { view: false, add: false, edit: false, delete: false },
+      faculty: { view: false, add: false, edit: false, delete: false },
+      researchAreas: { view: false, add: false, edit: false, delete: false },
+      contactInfo: { view: false, add: false, edit: false, delete: false },
+    };
+  }
+  // content_editor
+  return {
+    aboutContent: { view: true, add: true, edit: true, delete: true },
+    heroContent: { view: true, add: false, edit: true, delete: false },
+    highlights: { view: true, add: true, edit: true, delete: true },
+    news: { view: false, add: false, edit: false, delete: false },
+    events: { view: false, add: false, edit: false, delete: false },
+    speakers: { view: true, add: true, edit: true, delete: true },
+    faculty: { view: true, add: true, edit: true, delete: true },
+    researchAreas: { view: true, add: true, edit: true, delete: true },
+    contactInfo: { view: true, add: false, edit: true, delete: false },
+  };
+}
 
 // ─── Initial Site Data ────────────────────────────────────────────────────────
 const INITIAL_DATA = {
@@ -313,11 +383,13 @@ const INITIAL_DATA = {
     email: "cyber@am.amrita.edu",
     mapEmbed: "https://maps.google.com/?q=Amritapuri+Campus+Kerala",
   },
+  aboutContent: DEFAULT_ABOUT_CONTENT,
 };
 
 // ─── All Sections (admin sees all) ───────────────────────────────────────────
 const ALL_SECTIONS = [
   { key: "overview", label: "Dashboard", icon: "📊" },
+  { key: "aboutContent", label: "About Page", icon: "📖" },
   { key: "heroContent", label: "Hero / Home", icon: "🏠" },
   { key: "highlights", label: "Key Highlights", icon: "⭐" },
   { key: "news", label: "News", icon: "📰" },
@@ -366,14 +438,43 @@ export default function AdminDashboard() {
   // Sections visible to current user
   const visibleSections = ALL_SECTIONS.filter((s) => {
     if (s.adminOnly && !isAdmin) return false;
-    if (ROLE_META[userRole].sections === "ALL") return true;
-    return ROLE_META[userRole].sections.includes(s.key);
+    if (ROLE_META[userRole]?.sections === "ALL") return true;
+    if (currentUser?.privileges && currentUser.privileges[s.key]) {
+      const p = currentUser.privileges[s.key];
+      return typeof p === "boolean" ? p : !!p.view;
+    }
+    const roleSections = ROLE_META[userRole]?.sections;
+    return Array.isArray(roleSections) && roleSections.includes(s.key);
   });
+
+  const hasPrivilege = (section, action = "edit") => {
+    if (isAdmin) return true;
+    if (!currentUser) return false;
+    if (currentUser.privileges && currentUser.privileges[section]) {
+      const p = currentUser.privileges[section];
+      if (typeof p === "boolean") return p;
+      return !!p[action];
+    }
+    if (userRole === "about_editor" && section === "aboutContent") return true;
+    if (userRole === "content_editor" && section !== "news" && section !== "events" && section !== "users") return true;
+    if (userRole === "event_editor" && (section === "news" || section === "events")) return true;
+    return false;
+  };
 
   const [activeSection, setActiveSection] = useState("overview");
   const [data, setData] = useState(() => {
     const saved = localStorage.getItem("adminSiteData");
-    return saved ? JSON.parse(saved) : INITIAL_DATA;
+    if (!saved) return INITIAL_DATA;
+    try {
+      const parsed = JSON.parse(saved);
+      return {
+        ...INITIAL_DATA,
+        ...parsed,
+        aboutContent: parsed.aboutContent || INITIAL_DATA.aboutContent,
+      };
+    } catch {
+      return INITIAL_DATA;
+    }
   });
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [editingItem, setEditingItem] = useState(null);
@@ -386,6 +487,56 @@ export default function AdminDashboard() {
   const [localHero, setLocalHero] = useState({ ...INITIAL_DATA.heroContent });
   const [localContact, setLocalContact] = useState({
     ...INITIAL_DATA.contactInfo,
+  });
+
+  // About Page state & local copies
+  const [aboutTab, setAboutTab] = useState("overview"); // overview, cards, missionVision, inside, university
+  const [localAboutOverview, setLocalAboutOverview] = useState({
+    badge: "ABOUT US",
+    titlePrefix: "Amrita Center for",
+    titleTeal: "Cybersecurity",
+    titleSuffix: "Systems and Networks",
+    eyebrow: "Overview",
+    title: "Who We Are",
+    p1: "",
+    p2: "",
+    p3: "",
+  });
+  const [localAboutMission, setLocalAboutMission] = useState({
+    missionTitle: "Our Mission",
+    missionText: "",
+    visionTitle: "Our Vision",
+    visionText: "",
+    specificsLabel: "Specifically:",
+  });
+  const [localAboutUniv, setLocalAboutUniv] = useState({
+    eyebrow: "Amrita Vishwa Vidyapeetham",
+    title: "Part of a World-Class University",
+    p1: "",
+    p2: "",
+  });
+
+  // Modal for About items (Cards, Points, Inside Offerings, Stats)
+  const [aboutItemModal, setAboutItemModal] = useState({
+    show: false,
+    type: "", // 'card' | 'point' | 'offering' | 'stat'
+    mode: "add", // 'add' | 'edit'
+    item: {},
+  });
+  const [aboutDeleteModal, setAboutDeleteModal] = useState({
+    show: false,
+    type: "",
+    id: null,
+    title: "",
+  });
+
+  // Quick privilege edit modal for user management
+  const [userPrivilegeModal, setUserPrivilegeModal] = useState({
+    show: false,
+    userId: null,
+    userName: "",
+    role: "content_editor",
+    privileges: {},
   });
 
   // Password change
@@ -405,6 +556,7 @@ export default function AdminDashboard() {
     password: "",
     role: "content_editor",
     active: true,
+    privileges: getPrivilegesForRole("content_editor"),
   });
   const [userFormError, setUserFormError] = useState("");
   const [editingUser, setEditingUser] = useState(null);
@@ -427,13 +579,43 @@ export default function AdminDashboard() {
     saveStoredUsers(users);
   }, [users]);
 
-  // ── Sync hero / contact local copies ────────────────────────────────────
+  // ── Sync hero / contact / about local copies ────────────────────────────
   useEffect(() => {
     setLocalHero({ ...data.heroContent });
   }, [data.heroContent]);
   useEffect(() => {
     setLocalContact({ ...data.contactInfo });
   }, [data.contactInfo]);
+
+  useEffect(() => {
+    if (data.aboutContent) {
+      const ac = data.aboutContent;
+      setLocalAboutOverview({
+        badge: ac.hero?.badge || "ABOUT US",
+        titlePrefix: ac.hero?.titlePrefix || "Amrita Center for",
+        titleTeal: ac.hero?.titleTeal || "Cybersecurity",
+        titleSuffix: ac.hero?.titleSuffix || "Systems and Networks",
+        eyebrow: ac.overview?.eyebrow || "Overview",
+        title: ac.overview?.title || "Who We Are",
+        p1: ac.overview?.p1 || "",
+        p2: ac.overview?.p2 || "",
+        p3: ac.overview?.p3 || "",
+      });
+      setLocalAboutMission({
+        missionTitle: ac.mission?.title || "Our Mission",
+        missionText: ac.mission?.text || "",
+        visionTitle: ac.vision?.title || "Our Vision",
+        visionText: ac.vision?.text || "",
+        specificsLabel: ac.vision?.specificsLabel || "Specifically:",
+      });
+      setLocalAboutUniv({
+        eyebrow: ac.university?.eyebrow || "Amrita Vishwa Vidyapeetham",
+        title: ac.university?.title || "Part of a World-Class University",
+        p1: ac.university?.p1 || "",
+        p2: ac.university?.p2 || "",
+      });
+    }
+  }, [data.aboutContent]);
 
   // ── Toast ────────────────────────────────────────────────────────────────
   const showToast = useCallback((msg, type = "success") => {
@@ -529,6 +711,171 @@ export default function AdminDashboard() {
     showToast("Password updated successfully!");
   };
 
+  // ── About Page Handlers ──────────────────────────────────────────────────
+  const saveAboutOverview = () => {
+    if (!hasPrivilege("aboutContent", "edit")) {
+      showToast("Permission denied: You do not have edit privilege for About Page.", "error");
+      return;
+    }
+    setData((prev) => ({
+      ...prev,
+      aboutContent: {
+        ...(prev.aboutContent || DEFAULT_ABOUT_CONTENT),
+        hero: {
+          badge: localAboutOverview.badge,
+          titlePrefix: localAboutOverview.titlePrefix,
+          titleTeal: localAboutOverview.titleTeal,
+          titleSuffix: localAboutOverview.titleSuffix,
+        },
+        overview: {
+          eyebrow: localAboutOverview.eyebrow,
+          title: localAboutOverview.title,
+          p1: localAboutOverview.p1,
+          p2: localAboutOverview.p2,
+          p3: localAboutOverview.p3,
+        },
+      },
+    }));
+    showToast("Overview & Header content saved!");
+  };
+
+  const saveAboutMissionVision = () => {
+    if (!hasPrivilege("aboutContent", "edit")) {
+      showToast("Permission denied: You do not have edit privilege for About Page.", "error");
+      return;
+    }
+    setData((prev) => ({
+      ...prev,
+      aboutContent: {
+        ...(prev.aboutContent || DEFAULT_ABOUT_CONTENT),
+        mission: {
+          title: localAboutMission.missionTitle,
+          text: localAboutMission.missionText,
+        },
+        vision: {
+          ...(prev.aboutContent?.vision || DEFAULT_ABOUT_CONTENT.vision),
+          title: localAboutMission.visionTitle,
+          text: localAboutMission.visionText,
+          specificsLabel: localAboutMission.specificsLabel,
+        },
+      },
+    }));
+    showToast("Mission & Vision text saved!");
+  };
+
+  const saveAboutUnivTexts = () => {
+    if (!hasPrivilege("aboutContent", "edit")) {
+      showToast("Permission denied: You do not have edit privilege for About Page.", "error");
+      return;
+    }
+    setData((prev) => ({
+      ...prev,
+      aboutContent: {
+        ...(prev.aboutContent || DEFAULT_ABOUT_CONTENT),
+        university: {
+          ...(prev.aboutContent?.university || DEFAULT_ABOUT_CONTENT.university),
+          eyebrow: localAboutUniv.eyebrow,
+          title: localAboutUniv.title,
+          p1: localAboutUniv.p1,
+          p2: localAboutUniv.p2,
+        },
+      },
+    }));
+    showToast("University info saved!");
+  };
+
+  const saveAboutItem = (type, itemData, mode) => {
+    const actionRequired = mode === "add" ? "add" : "edit";
+    if (!hasPrivilege("aboutContent", actionRequired)) {
+      showToast(`Permission denied: You cannot ${actionRequired} About items.`, "error");
+      return;
+    }
+    setData((prev) => {
+      const ac = { ...(prev.aboutContent || DEFAULT_ABOUT_CONTENT) };
+      if (type === "card") {
+        const list = ac.overviewCards || [];
+        if (mode === "add") {
+          ac.overviewCards = [...list, { ...itemData, id: newId(list) }];
+        } else {
+          ac.overviewCards = list.map((i) => (i.id === itemData.id ? { ...itemData } : i));
+        }
+      } else if (type === "point") {
+        const list = ac.vision?.specifics || [];
+        if (mode === "add") {
+          ac.vision = {
+            ...(ac.vision || {}),
+            specifics: [...list, { ...itemData, id: newId(list) }],
+          };
+        } else {
+          ac.vision = {
+            ...(ac.vision || {}),
+            specifics: list.map((i) => (i.id === itemData.id ? { ...itemData } : i)),
+          };
+        }
+      } else if (type === "offering") {
+        const list = ac.insideOfferings || [];
+        const itemsArr = itemData.itemsText
+          ? itemData.itemsText.split("\n").map((s) => s.trim()).filter(Boolean)
+          : Array.isArray(itemData.items) ? itemData.items : [];
+        const formatted = {
+          num: itemData.num || "01",
+          title: itemData.title || "",
+          desc: itemData.desc || "",
+          items: itemsArr,
+        };
+        if (mode === "add") {
+          ac.insideOfferings = [...list, { ...formatted, id: newId(list) }];
+        } else {
+          ac.insideOfferings = list.map((i) => (i.id === itemData.id ? { ...formatted, id: itemData.id } : i));
+        }
+      } else if (type === "stat") {
+        const list = ac.university?.stats || [];
+        if (mode === "add") {
+          ac.university = {
+            ...(ac.university || {}),
+            stats: [...list, { ...itemData, id: newId(list) }],
+          };
+        } else {
+          ac.university = {
+            ...(ac.university || {}),
+            stats: list.map((i) => (i.id === itemData.id ? { ...itemData } : i)),
+          };
+        }
+      }
+      return { ...prev, aboutContent: ac };
+    });
+    setAboutItemModal({ show: false, type: "", mode: "add", item: {} });
+    showToast(mode === "add" ? "Item added to About Page!" : "Item updated!");
+  };
+
+  const deleteAboutItem = (type, id) => {
+    if (!hasPrivilege("aboutContent", "delete")) {
+      showToast("Permission denied: You do not have delete privilege for About Page.", "error");
+      return;
+    }
+    setData((prev) => {
+      const ac = { ...(prev.aboutContent || DEFAULT_ABOUT_CONTENT) };
+      if (type === "card") {
+        ac.overviewCards = (ac.overviewCards || []).filter((i) => i.id !== id);
+      } else if (type === "point") {
+        ac.vision = {
+          ...(ac.vision || {}),
+          specifics: (ac.vision?.specifics || []).filter((i) => i.id !== id),
+        };
+      } else if (type === "offering") {
+        ac.insideOfferings = (ac.insideOfferings || []).filter((i) => i.id !== id);
+      } else if (type === "stat") {
+        ac.university = {
+          ...(ac.university || {}),
+          stats: (ac.university?.stats || []).filter((i) => i.id !== id),
+        };
+      }
+      return { ...prev, aboutContent: ac };
+    });
+    setAboutDeleteModal({ show: false, type: "", id: null, title: "" });
+    showToast("Item deleted from About Page.", "info");
+  };
+
   // ── User Management ───────────────────────────────────────────────────────
   const openAddUser = () => {
     setEditingUser(null);
@@ -538,6 +885,7 @@ export default function AdminDashboard() {
       password: "",
       role: "content_editor",
       active: true,
+      privileges: getPrivilegesForRole("content_editor"),
     });
     setUserFormError("");
     setShowUserForm(true);
@@ -551,9 +899,53 @@ export default function AdminDashboard() {
       password: "",
       role: u.role,
       active: u.active,
+      privileges: u.privileges || getPrivilegesForRole(u.role),
     });
     setUserFormError("");
     setShowUserForm(true);
+  };
+
+  const openUserPrivilegeModal = (u) => {
+    setUserPrivilegeModal({
+      show: true,
+      userId: u.id,
+      userName: u.name,
+      role: u.role,
+      privileges: u.privileges || getPrivilegesForRole(u.role),
+    });
+  };
+
+  const saveUserPrivileges = () => {
+    setUsers((prev) =>
+      prev.map((u) =>
+        u.id === userPrivilegeModal.userId
+          ? { ...u, privileges: userPrivilegeModal.privileges }
+          : u
+      )
+    );
+    setUserPrivilegeModal({ show: false, userId: null, userName: "", privileges: {} });
+    showToast("User privileges updated successfully!");
+  };
+
+  const toggleAboutFullPrivilege = (userId) => {
+    setUsers((prev) =>
+      prev.map((u) => {
+        if (u.id !== userId) return u;
+        const currentAbout = u.privileges?.aboutContent || {};
+        const hasFull = currentAbout.view && currentAbout.add && currentAbout.edit && currentAbout.delete;
+        const newAbout = hasFull
+          ? { view: false, add: false, edit: false, delete: false }
+          : { view: true, add: true, edit: true, delete: true };
+        return {
+          ...u,
+          privileges: {
+            ...(u.privileges || getPrivilegesForRole(u.role)),
+            aboutContent: newAbout,
+          },
+        };
+      })
+    );
+    showToast("About Page privileges updated for user!");
   };
 
   const saveUser = () => {
@@ -591,6 +983,7 @@ export default function AdminDashboard() {
                 email: userForm.email,
                 role: userForm.role,
                 active: userForm.active,
+                privileges: userForm.privileges || getPrivilegesForRole(userForm.role),
                 ...(userForm.password ? { password: userForm.password } : {}),
               }
             : u,
@@ -613,6 +1006,7 @@ export default function AdminDashboard() {
         password: userForm.password,
         role: userForm.role,
         active: userForm.active,
+        privileges: userForm.privileges || getPrivilegesForRole(userForm.role),
         createdAt: new Date().toISOString(),
       };
       setUsers((prev) => [...prev, newUser]);
@@ -872,6 +1266,12 @@ export default function AdminDashboard() {
         <div className="overview-stats">
           {[
             {
+              label: "About Items",
+              count: (data.aboutContent?.overviewCards?.length || 0) + (data.aboutContent?.insideOfferings?.length || 0),
+              icon: "📖",
+              section: "aboutContent",
+            },
+            {
               label: "News Items",
               count: data.news.length,
               icon: "📰",
@@ -934,6 +1334,7 @@ export default function AdminDashboard() {
             <h3>Quick Actions</h3>
             <div className="qa-grid">
               {[
+                { label: "Edit About Page", section: "aboutContent", icon: "📖" },
                 { label: "Add News", section: "news", icon: "➕" },
                 { label: "Add Event", section: "events", icon: "➕" },
                 { label: "Add Speaker", section: "speakers", icon: "➕" },
@@ -959,6 +1360,694 @@ export default function AdminDashboard() {
                   <span>{a.icon}</span> {a.label}
                 </button>
               ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // ── About Page Management ─────────────────────────────────────────────────
+  const renderAbout = () => {
+    const about = data.aboutContent || DEFAULT_ABOUT_CONTENT;
+    const canAdd = hasPrivilege("aboutContent", "add");
+    const canEdit = hasPrivilege("aboutContent", "edit");
+    const canDelete = hasPrivilege("aboutContent", "delete");
+
+    return (
+      <div className="section-panel">
+        <div className="panel-header">
+          <div>
+            <h2>📖 About Page Management</h2>
+            <p>
+              Complete control to change, add, edit, and delete all About Page content, highlights, mission, vision, offerings, and statistics.
+            </p>
+          </div>
+          <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
+            <span className={`priv-badge ${canAdd && canEdit && canDelete ? "priv-full" : "priv-about"}`}>
+              {canAdd && canEdit && canDelete
+                ? "👑 Full Privilege (Add/Edit/Del)"
+                : `Privileges: ${canAdd ? "Add " : ""}${canEdit ? "Edit " : ""}${canDelete ? "Delete" : ""}`}
+            </span>
+            <a
+              href="/about"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-priv-quick"
+              style={{ textDecoration: "none" }}
+            >
+              👁️ View Live About Page
+            </a>
+          </div>
+        </div>
+
+        {/* Sub Tabs */}
+        <div className="sub-tabs">
+          <button
+            className={`sub-tab ${aboutTab === "overview" ? "active" : ""}`}
+            onClick={() => setAboutTab("overview")}
+          >
+            🏛️ Overview &amp; Header
+          </button>
+          <button
+            className={`sub-tab ${aboutTab === "cards" ? "active" : ""}`}
+            onClick={() => setAboutTab("cards")}
+          >
+            🛡️ Overview Cards ({about.overviewCards?.length || 0})
+          </button>
+          <button
+            className={`sub-tab ${aboutTab === "missionVision" ? "active" : ""}`}
+            onClick={() => setAboutTab("missionVision")}
+          >
+            🎯 Mission, Vision &amp; Specifics ({about.vision?.specifics?.length || 0})
+          </button>
+          <button
+            className={`sub-tab ${aboutTab === "inside" ? "active" : ""}`}
+            onClick={() => setAboutTab("inside")}
+          >
+            💡 Inside the Center ({about.insideOfferings?.length || 0})
+          </button>
+          <button
+            className={`sub-tab ${aboutTab === "university" ? "active" : ""}`}
+            onClick={() => setAboutTab("university")}
+          >
+            🌍 University Info &amp; Stats ({about.university?.stats?.length || 0})
+          </button>
+        </div>
+
+        {/* Tab 1: Overview & Header */}
+        {aboutTab === "overview" && (
+          <div className="obj-form" style={{ maxWidth: "860px" }}>
+            <h3 style={{ margin: "0 0 10px", color: "#c9d1d9", fontSize: "1.1rem" }}>
+              Hero Banner &amp; Main Overview Texts
+            </h3>
+            <p style={{ margin: "0 0 16px", color: "#6e7681", fontSize: "0.85rem" }}>
+              Edit the title banner and main descriptive paragraphs at the top of the About page.
+            </p>
+
+            <div className="form-group">
+              <label>Hero Banner Label / Badge</label>
+              <input
+                value={localAboutOverview.badge || ""}
+                onChange={(e) =>
+                  setLocalAboutOverview({ ...localAboutOverview, badge: e.target.value })
+                }
+                placeholder="ABOUT US"
+                disabled={!canEdit}
+              />
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px" }}>
+              <div className="form-group">
+                <label>Title Prefix</label>
+                <input
+                  value={localAboutOverview.titlePrefix || ""}
+                  onChange={(e) =>
+                    setLocalAboutOverview({ ...localAboutOverview, titlePrefix: e.target.value })
+                  }
+                  placeholder="Amrita Center for"
+                  disabled={!canEdit}
+                />
+              </div>
+              <div className="form-group">
+                <label>Title Teal Word</label>
+                <input
+                  value={localAboutOverview.titleTeal || ""}
+                  onChange={(e) =>
+                    setLocalAboutOverview({ ...localAboutOverview, titleTeal: e.target.value })
+                  }
+                  placeholder="Cybersecurity"
+                  disabled={!canEdit}
+                />
+              </div>
+              <div className="form-group">
+                <label>Title Suffix</label>
+                <input
+                  value={localAboutOverview.titleSuffix || ""}
+                  onChange={(e) =>
+                    setLocalAboutOverview({ ...localAboutOverview, titleSuffix: e.target.value })
+                  }
+                  placeholder="Systems and Networks"
+                  disabled={!canEdit}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "12px" }}>
+              <div className="form-group">
+                <label>Overview Section Eyebrow</label>
+                <input
+                  value={localAboutOverview.eyebrow || ""}
+                  onChange={(e) =>
+                    setLocalAboutOverview({ ...localAboutOverview, eyebrow: e.target.value })
+                  }
+                  placeholder="Overview"
+                  disabled={!canEdit}
+                />
+              </div>
+              <div className="form-group">
+                <label>Overview Section Title</label>
+                <input
+                  value={localAboutOverview.title || ""}
+                  onChange={(e) =>
+                    setLocalAboutOverview({ ...localAboutOverview, title: e.target.value })
+                  }
+                  placeholder="Who We Are"
+                  disabled={!canEdit}
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label>Paragraph 1 (Main Introduction)</label>
+              <textarea
+                rows={3}
+                value={localAboutOverview.p1 || ""}
+                onChange={(e) =>
+                  setLocalAboutOverview({ ...localAboutOverview, p1: e.target.value })
+                }
+                placeholder="The Amrita Center for Cybersecurity..."
+                disabled={!canEdit}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Paragraph 2 (CORE Designation &amp; Mission REACH)</label>
+              <textarea
+                rows={3}
+                value={localAboutOverview.p2 || ""}
+                onChange={(e) =>
+                  setLocalAboutOverview({ ...localAboutOverview, p2: e.target.value })
+                }
+                placeholder="Supported by the Government of India..."
+                disabled={!canEdit}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Paragraph 3 (Online MCA Program)</label>
+              <textarea
+                rows={2}
+                value={localAboutOverview.p3 || ""}
+                onChange={(e) =>
+                  setLocalAboutOverview({ ...localAboutOverview, p3: e.target.value })
+                }
+                placeholder="The Center also offers the globally recognised Online MCA..."
+                disabled={!canEdit}
+              />
+            </div>
+
+            {canEdit ? (
+              <button className="btn-save" onClick={saveAboutOverview}>
+                💾 Save Overview Content
+              </button>
+            ) : (
+              <span className="text-muted">You do not have edit permission for this section.</span>
+            )}
+          </div>
+        )}
+
+        {/* Tab 2: Overview Cards */}
+        {aboutTab === "cards" && (
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <div>
+                <h3 style={{ margin: 0, color: "#c9d1d9", fontSize: "1.1rem" }}>Overview Highlight Cards</h3>
+                <p style={{ margin: "4px 0 0", color: "#6e7681", fontSize: "0.85rem" }}>
+                  Add, edit, or delete the recognition and highlight cards shown on the About page.
+                </p>
+              </div>
+              {canAdd && (
+                <button
+                  className="btn-add"
+                  onClick={() =>
+                    setAboutItemModal({
+                      show: true,
+                      type: "card",
+                      mode: "add",
+                      item: { icon: "🛡️", title: "", desc: "" },
+                    })
+                  }
+                >
+                  + Add New Card
+                </button>
+              )}
+            </div>
+
+            <div className="about-cards-grid">
+              {(about.overviewCards || []).map((c) => (
+                <div key={c.id} className="about-item-card">
+                  <div className="aic-header">
+                    <span className="aic-icon">{c.icon}</span>
+                    <span className="badge badge-blue">Highlight Card</span>
+                  </div>
+                  <h4 className="aic-title">{c.title}</h4>
+                  <p className="aic-desc">{c.desc}</p>
+                  <div className="aic-footer">
+                    {canEdit && (
+                      <button
+                        className="btn-edit"
+                        onClick={() =>
+                          setAboutItemModal({
+                            show: true,
+                            type: "card",
+                            mode: "edit",
+                            item: { ...c },
+                          })
+                        }
+                      >
+                        ✏️ Edit
+                      </button>
+                    )}
+                    {canDelete && (
+                      <button
+                        className="btn-delete"
+                        onClick={() =>
+                          setAboutDeleteModal({
+                            show: true,
+                            type: "card",
+                            id: c.id,
+                            title: c.title,
+                          })
+                        }
+                      >
+                        🗑️ Delete
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {(!about.overviewCards || about.overviewCards.length === 0) && (
+                <p className="text-muted" style={{ gridColumn: "1 / -1", padding: "20px", textAlign: "center" }}>
+                  No overview cards yet. Click &quot;+ Add New Card&quot; to create one.
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Tab 3: Mission & Vision */}
+        {aboutTab === "missionVision" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+            <div className="obj-form" style={{ maxWidth: "860px" }}>
+              <h3 style={{ margin: "0 0 10px", color: "#c9d1d9", fontSize: "1.1rem" }}>
+                Mission &amp; Vision Statements
+              </h3>
+              <div className="form-group">
+                <label>Mission Title</label>
+                <input
+                  value={localAboutMission.missionTitle || ""}
+                  onChange={(e) =>
+                    setLocalAboutMission({ ...localAboutMission, missionTitle: e.target.value })
+                  }
+                  placeholder="Our Mission"
+                  disabled={!canEdit}
+                />
+              </div>
+              <div className="form-group">
+                <label>Mission Statement</label>
+                <textarea
+                  rows={3}
+                  value={localAboutMission.missionText || ""}
+                  onChange={(e) =>
+                    setLocalAboutMission({ ...localAboutMission, missionText: e.target.value })
+                  }
+                  placeholder="Promoting partnership among industry, academia, and the government..."
+                  disabled={!canEdit}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Vision Title</label>
+                <input
+                  value={localAboutMission.visionTitle || ""}
+                  onChange={(e) =>
+                    setLocalAboutMission({ ...localAboutMission, visionTitle: e.target.value })
+                  }
+                  placeholder="Our Vision"
+                  disabled={!canEdit}
+                />
+              </div>
+              <div className="form-group">
+                <label>Vision Statement</label>
+                <textarea
+                  rows={3}
+                  value={localAboutMission.visionText || ""}
+                  onChange={(e) =>
+                    setLocalAboutMission({ ...localAboutMission, visionText: e.target.value })
+                  }
+                  placeholder="By way of research and academics, develop an ecosystem..."
+                  disabled={!canEdit}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Specifically Focus Label</label>
+                <input
+                  value={localAboutMission.specificsLabel || ""}
+                  onChange={(e) =>
+                    setLocalAboutMission({ ...localAboutMission, specificsLabel: e.target.value })
+                  }
+                  placeholder="Specifically:"
+                  disabled={!canEdit}
+                />
+              </div>
+
+              {canEdit ? (
+                <button className="btn-save" onClick={saveAboutMissionVision}>
+                  💾 Save Mission &amp; Vision Texts
+                </button>
+              ) : (
+                <span className="text-muted">You do not have edit permission for this section.</span>
+              )}
+            </div>
+
+            {/* Specifically Points List with Add/Edit/Delete */}
+            <div style={{ maxWidth: "860px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+                <div>
+                  <h3 style={{ margin: 0, color: "#c9d1d9", fontSize: "1.1rem" }}>
+                    Vision Focus Points (&quot;Specifically&quot;)
+                  </h3>
+                  <p style={{ margin: "4px 0 0", color: "#6e7681", fontSize: "0.85rem" }}>
+                    Add, edit, or delete the numbered focus points under the Vision card.
+                  </p>
+                </div>
+                {canAdd && (
+                  <button
+                    className="btn-add"
+                    onClick={() =>
+                      setAboutItemModal({
+                        show: true,
+                        type: "point",
+                        mode: "add",
+                        item: { text: "" },
+                      })
+                    }
+                  >
+                    + Add Focus Point
+                  </button>
+                )}
+              </div>
+
+              <div className="items-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style={{ width: "60px" }}>#</th>
+                      <th>Focus Point Description</th>
+                      <th style={{ width: "140px", textAlign: "right" }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(about.vision?.specifics || []).map((pt, idx) => (
+                      <tr key={pt.id}>
+                        <td>
+                          <span className="badge badge-navy">0{idx + 1}</span>
+                        </td>
+                        <td style={{ color: "#e6edf3", lineHeight: "1.5" }}>{pt.text}</td>
+                        <td>
+                          <div className="row-actions" style={{ justifyContent: "flex-end" }}>
+                            {canEdit && (
+                              <button
+                                className="btn-edit"
+                                onClick={() =>
+                                  setAboutItemModal({
+                                    show: true,
+                                    type: "point",
+                                    mode: "edit",
+                                    item: { ...pt },
+                                  })
+                                }
+                              >
+                                ✏️ Edit
+                              </button>
+                            )}
+                            {canDelete && (
+                              <button
+                                className="btn-delete"
+                                onClick={() =>
+                                  setAboutDeleteModal({
+                                    show: true,
+                                    type: "point",
+                                    id: pt.id,
+                                    title: `Point ${idx + 1}`,
+                                  })
+                                }
+                              >
+                                🗑️
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                    {(!about.vision?.specifics || about.vision.specifics.length === 0) && (
+                      <tr>
+                        <td colSpan={3} className="empty-row">
+                          No focus points defined yet.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 4: Inside the Center Offerings */}
+        {aboutTab === "inside" && (
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <div>
+                <h3 style={{ margin: 0, color: "#c9d1d9", fontSize: "1.1rem" }}>
+                  Inside the Center Offerings
+                </h3>
+                <p style={{ margin: "4px 0 0", color: "#6e7681", fontSize: "0.85rem" }}>
+                  Manage the 4 pillars (Academic Excellence, Research &amp; Innovation, Partners, Placements) or add new offerings.
+                </p>
+              </div>
+              {canAdd && (
+                <button
+                  className="btn-add"
+                  onClick={() =>
+                    setAboutItemModal({
+                      show: true,
+                      type: "offering",
+                      mode: "add",
+                      item: { num: "05", title: "", desc: "", itemsText: "" },
+                    })
+                  }
+                >
+                  + Add New Offering
+                </button>
+              )}
+            </div>
+
+            <div className="about-cards-grid">
+              {(about.insideOfferings || []).map((o) => (
+                <div key={o.id} className="about-item-card">
+                  <div className="aic-header">
+                    <span className="aic-num">{o.num}</span>
+                    <span className="badge badge-gold">Offering</span>
+                  </div>
+                  <h4 className="aic-title">{o.title}</h4>
+                  <p className="aic-desc">{o.desc}</p>
+                  {o.items && o.items.length > 0 && (
+                    <ul className="aic-items">
+                      {o.items.map((it, idx) => (
+                        <li key={idx}>{it}</li>
+                      ))}
+                    </ul>
+                  )}
+                  <div className="aic-footer">
+                    {canEdit && (
+                      <button
+                        className="btn-edit"
+                        onClick={() =>
+                          setAboutItemModal({
+                            show: true,
+                            type: "offering",
+                            mode: "edit",
+                            item: {
+                              ...o,
+                              itemsText: (o.items || []).join("\n"),
+                            },
+                          })
+                        }
+                      >
+                        ✏️ Edit
+                      </button>
+                    )}
+                    {canDelete && (
+                      <button
+                        className="btn-delete"
+                        onClick={() =>
+                          setAboutDeleteModal({
+                            show: true,
+                            type: "offering",
+                            id: o.id,
+                            title: o.title,
+                          })
+                        }
+                      >
+                        🗑️ Delete
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Tab 5: University Info & Stats */}
+        {aboutTab === "university" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+            <div className="obj-form" style={{ maxWidth: "860px" }}>
+              <h3 style={{ margin: "0 0 10px", color: "#c9d1d9", fontSize: "1.1rem" }}>
+                University Section Texts
+              </h3>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "12px" }}>
+                <div className="form-group">
+                  <label>Eyebrow</label>
+                  <input
+                    value={localAboutUniv.eyebrow || ""}
+                    onChange={(e) =>
+                      setLocalAboutUniv({ ...localAboutUniv, eyebrow: e.target.value })
+                    }
+                    placeholder="Amrita Vishwa Vidyapeetham"
+                    disabled={!canEdit}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Title</label>
+                  <input
+                    value={localAboutUniv.title || ""}
+                    onChange={(e) =>
+                      setLocalAboutUniv({ ...localAboutUniv, title: e.target.value })
+                    }
+                    placeholder="Part of a World-Class University"
+                    disabled={!canEdit}
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <label>University Description 1</label>
+                <textarea
+                  rows={3}
+                  value={localAboutUniv.p1 || ""}
+                  onChange={(e) =>
+                    setLocalAboutUniv({ ...localAboutUniv, p1: e.target.value })
+                  }
+                  placeholder="Amrita Vishwa Vidyapeetham is a multi-campus..."
+                  disabled={!canEdit}
+                />
+              </div>
+              <div className="form-group">
+                <label>University Description 2</label>
+                <textarea
+                  rows={2}
+                  value={localAboutUniv.p2 || ""}
+                  onChange={(e) =>
+                    setLocalAboutUniv({ ...localAboutUniv, p2: e.target.value })
+                  }
+                  placeholder="Accredited with A++ grade by NAAC..."
+                  disabled={!canEdit}
+                />
+              </div>
+              {canEdit ? (
+                <button className="btn-save" onClick={saveAboutUnivTexts}>
+                  💾 Save University Texts
+                </button>
+              ) : (
+                <span className="text-muted">You do not have edit permission for this section.</span>
+              )}
+            </div>
+
+            {/* University Stats with Add, Edit, Delete */}
+            <div style={{ maxWidth: "860px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+                <div>
+                  <h3 style={{ margin: 0, color: "#c9d1d9", fontSize: "1.1rem" }}>
+                    University Statistics &amp; Accreditations
+                  </h3>
+                  <p style={{ margin: "4px 0 0", color: "#6e7681", fontSize: "0.85rem" }}>
+                    Add, edit, or delete the statistics displayed in the dark university section.
+                  </p>
+                </div>
+                {canAdd && (
+                  <button
+                    className="btn-add"
+                    onClick={() =>
+                      setAboutItemModal({
+                        show: true,
+                        type: "stat",
+                        mode: "add",
+                        item: { n: "", l: "" },
+                      })
+                    }
+                  >
+                    + Add Statistic
+                  </button>
+                )}
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "14px" }}>
+                {(about.university?.stats || []).map((s) => (
+                  <div
+                    key={s.id}
+                    style={{
+                      background: "#161b22",
+                      border: "1px solid #21262d",
+                      borderRadius: "10px",
+                      padding: "16px",
+                      textAlign: "center",
+                      position: "relative",
+                    }}
+                  >
+                    <div style={{ fontSize: "1.8rem", fontWeight: "800", color: "#93cfe0", marginBottom: "4px" }}>
+                      {s.n}
+                    </div>
+                    <div style={{ fontSize: "0.8rem", color: "#8b949e", marginBottom: "12px", minHeight: "36px" }}>
+                      {s.l}
+                    </div>
+                    <div className="row-actions" style={{ justifyContent: "center" }}>
+                      {canEdit && (
+                        <button
+                          className="btn-edit"
+                          onClick={() =>
+                            setAboutItemModal({
+                              show: true,
+                              type: "stat",
+                              mode: "edit",
+                              item: { ...s },
+                            })
+                          }
+                        >
+                          ✏️ Edit
+                        </button>
+                      )}
+                      {canDelete && (
+                        <button
+                          className="btn-delete"
+                          onClick={() =>
+                            setAboutDeleteModal({
+                              show: true,
+                              type: "stat",
+                              id: s.id,
+                              title: `${s.n} - ${s.l}`,
+                            })
+                          }
+                        >
+                          🗑️
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -1195,22 +2284,199 @@ export default function AdminDashboard() {
                 />
               </div>
               <div className="form-group">
-                <label>Role</label>
+                <label>Role Preset</label>
                 <select
                   value={userForm.role}
-                  onChange={(e) =>
-                    setUserForm({ ...userForm, role: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const newRole = e.target.value;
+                    setUserForm({
+                      ...userForm,
+                      role: newRole,
+                      privileges: getPrivilegesForRole(newRole),
+                    });
+                  }}
                 >
                   <option value="content_editor">
-                    ✏️ Content Editor — Hero, Highlights, Speakers, Faculty,
-                    Research, Contact
+                    ✏️ Content Editor — About, Hero, Highlights, Speakers, Faculty, Research, Contact
+                  </option>
+                  <option value="about_editor">
+                    📖 About Editor — Complete privilege on About Page (Add, Edit, Delete)
                   </option>
                   <option value="event_editor">
-                    🗓️ Event Editor — News & Events only
+                    🗓️ Event Editor — News &amp; Events only
+                  </option>
+                  <option value="admin">
+                    👑 Administrator — Full access to all sections &amp; users
+                  </option>
+                  <option value="custom">
+                    ⚙️ Custom Privileges — Granular section &amp; action permissions
                   </option>
                 </select>
               </div>
+
+              {/* Privilege Configuration Panel */}
+              <div className="form-group">
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                  <label style={{ margin: 0 }}>Section Privileges &amp; Action Permissions</label>
+                  <button
+                    type="button"
+                    className="btn-priv-quick"
+                    onClick={() => {
+                      setUserForm((f) => ({
+                        ...f,
+                        privileges: {
+                          ...(f.privileges || getPrivilegesForRole(f.role)),
+                          aboutContent: { view: true, add: true, edit: true, delete: true },
+                        },
+                      }));
+                      showToast("Full About privilege enabled (Add, Edit, Delete)!");
+                    }}
+                  >
+                    ⭐ Grant Full About Privilege
+                  </button>
+                </div>
+
+                <div className="privilege-box">
+                  {/* About Page privilege row */}
+                  <div className="privilege-row" style={{ borderLeft: "3px solid #52a9bc" }}>
+                    <div className="priv-title-group">
+                      <span>📖</span>
+                      <span>About Page</span>
+                      <span className="priv-badge priv-about">Key Privilege</span>
+                    </div>
+                    <div className="priv-actions-group">
+                      {["view", "add", "edit", "delete"].map((act) => (
+                        <label key={act} className="priv-checkbox-label">
+                          <input
+                            type="checkbox"
+                            checked={userForm.privileges?.aboutContent?.[act] ?? true}
+                            onChange={(e) => {
+                              const val = e.target.checked;
+                              setUserForm((f) => ({
+                                ...f,
+                                privileges: {
+                                  ...(f.privileges || getPrivilegesForRole(f.role)),
+                                  aboutContent: {
+                                    ...(f.privileges?.aboutContent || {}),
+                                    [act]: val,
+                                  },
+                                },
+                              }));
+                            }}
+                          />
+                          {act.charAt(0).toUpperCase() + act.slice(1)}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Other sections in privilege box */}
+                  {[
+                    { key: "heroContent", label: "Hero / Home", icon: "🏠", hasAddDelete: false },
+                    { key: "highlights", label: "Highlights", icon: "⭐", hasAddDelete: true },
+                    { key: "news", label: "News", icon: "📰", hasAddDelete: true },
+                    { key: "events", label: "Events", icon: "🗓️", hasAddDelete: true },
+                    { key: "speakers", label: "Speakers", icon: "🎤", hasAddDelete: true },
+                    { key: "faculty", label: "Faculty", icon: "👨‍🏫", hasAddDelete: true },
+                    { key: "researchAreas", label: "Research Areas", icon: "🔬", hasAddDelete: true },
+                    { key: "contactInfo", label: "Contact Info", icon: "📞", hasAddDelete: false },
+                  ].map((sec) => (
+                    <div key={sec.key} className="privilege-row">
+                      <div className="priv-title-group">
+                        <span>{sec.icon}</span>
+                        <span>{sec.label}</span>
+                      </div>
+                      <div className="priv-actions-group">
+                        <label className="priv-checkbox-label">
+                          <input
+                            type="checkbox"
+                            checked={userForm.privileges?.[sec.key]?.view ?? false}
+                            onChange={(e) => {
+                              const val = e.target.checked;
+                              setUserForm((f) => ({
+                                ...f,
+                                privileges: {
+                                  ...(f.privileges || getPrivilegesForRole(f.role)),
+                                  [sec.key]: {
+                                    ...(f.privileges?.[sec.key] || {}),
+                                    view: val,
+                                  },
+                                },
+                              }));
+                            }}
+                          />
+                          View
+                        </label>
+                        {sec.hasAddDelete && (
+                          <label className="priv-checkbox-label">
+                            <input
+                              type="checkbox"
+                              checked={userForm.privileges?.[sec.key]?.add ?? false}
+                              onChange={(e) => {
+                                const val = e.target.checked;
+                                setUserForm((f) => ({
+                                  ...f,
+                                  privileges: {
+                                    ...(f.privileges || getPrivilegesForRole(f.role)),
+                                    [sec.key]: {
+                                      ...(f.privileges?.[sec.key] || {}),
+                                      add: val,
+                                    },
+                                  },
+                                }));
+                              }}
+                            />
+                            Add
+                          </label>
+                        )}
+                        <label className="priv-checkbox-label">
+                          <input
+                            type="checkbox"
+                            checked={userForm.privileges?.[sec.key]?.edit ?? false}
+                            onChange={(e) => {
+                              const val = e.target.checked;
+                              setUserForm((f) => ({
+                                ...f,
+                                privileges: {
+                                  ...(f.privileges || getPrivilegesForRole(f.role)),
+                                  [sec.key]: {
+                                    ...(f.privileges?.[sec.key] || {}),
+                                    edit: val,
+                                  },
+                                },
+                              }));
+                            }}
+                          />
+                          Edit
+                        </label>
+                        {sec.hasAddDelete && (
+                          <label className="priv-checkbox-label">
+                            <input
+                              type="checkbox"
+                              checked={userForm.privileges?.[sec.key]?.delete ?? false}
+                              onChange={(e) => {
+                                const val = e.target.checked;
+                                setUserForm((f) => ({
+                                  ...f,
+                                  privileges: {
+                                    ...(f.privileges || getPrivilegesForRole(f.role)),
+                                    [sec.key]: {
+                                      ...(f.privileges?.[sec.key] || {}),
+                                      delete: val,
+                                    },
+                                  },
+                                }));
+                              }}
+                            />
+                            Delete
+                          </label>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               <div className="form-group">
                 <label className="toggle-label">
                   <span>Account Active</span>
@@ -1277,6 +2543,7 @@ export default function AdminDashboard() {
               <th>Email</th>
               <th>Role</th>
               <th>Status</th>
+              <th>Privileges</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -1309,6 +2576,9 @@ export default function AdminDashboard() {
                 <span className="status-pill status-active">● Active</span>
               </td>
               <td>
+                <span className="priv-badge priv-full">👑 Full Privilege (All)</span>
+              </td>
+              <td>
                 <span className="text-muted">Protected</span>
               </td>
             </tr>
@@ -1316,7 +2586,7 @@ export default function AdminDashboard() {
             {/* Dynamic users */}
             {users.length === 0 && (
               <tr>
-                <td colSpan={5} className="empty-row">
+                <td colSpan={6} className="empty-row">
                   No sub-users yet. Click "Add User" to create one.
                 </td>
               </tr>
@@ -1329,8 +2599,11 @@ export default function AdminDashboard() {
                 .toUpperCase()
                 .slice(0, 2);
               const avatarColors = {
+                admin: "linear-gradient(135deg,#f59e0b,#d97706)",
                 content_editor: "linear-gradient(135deg,#2a7fff,#1a56cc)",
+                about_editor: "linear-gradient(135deg,#0d9488,#0f766e)",
                 event_editor: "linear-gradient(135deg,#059669,#047857)",
+                custom: "linear-gradient(135deg,#9333ea,#7e22ce)",
               };
               return (
                 <tr key={u.id}>
@@ -1370,6 +2643,44 @@ export default function AdminDashboard() {
                     >
                       {u.active ? "● Active" : "○ Inactive"}
                     </button>
+                  </td>
+                  <td>
+                    {u.role === "admin" ? (
+                      <span className="priv-badge priv-full">👑 Full Privilege (All)</span>
+                    ) : (
+                      <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+                        {u.privileges?.aboutContent?.view &&
+                        u.privileges?.aboutContent?.add &&
+                        u.privileges?.aboutContent?.edit &&
+                        u.privileges?.aboutContent?.delete ? (
+                          <span className="priv-badge priv-full">📖 About: Add / Edit / Del</span>
+                        ) : u.privileges?.aboutContent?.edit ? (
+                          <span className="priv-badge priv-about">📖 About: Edit Only</span>
+                        ) : u.privileges?.aboutContent?.view ? (
+                          <span className="priv-badge">📖 About: View Only</span>
+                        ) : (
+                          <span className="text-muted" style={{ fontSize: "0.75rem" }}>No About Access</span>
+                        )}
+                        <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                          <button
+                            type="button"
+                            className="btn-priv-quick"
+                            onClick={() => openUserPrivilegeModal(u)}
+                            title="Configure detailed privileges"
+                          >
+                            ⚙️ Permissions
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-priv-quick"
+                            onClick={() => toggleAboutFullPrivilege(u.id)}
+                            title="Toggle Full About Privileges"
+                          >
+                            ⚡ Toggle About
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </td>
                   <td>
                     <div className="row-actions">
@@ -1539,6 +2850,8 @@ export default function AdminDashboard() {
     switch (activeSection) {
       case "overview":
         return renderOverview();
+      case "aboutContent":
+        return renderAbout();
       case "heroContent":
         return renderHero();
       case "contactInfo":
@@ -1605,14 +2918,437 @@ export default function AdminDashboard() {
         </div>
       )}
 
+      {/* ── About Item Add / Edit Modal ── */}
+      {aboutItemModal.show && (
+        <div
+          className="form-modal-overlay"
+          onClick={() => setAboutItemModal({ show: false, type: "", mode: "add", item: {} })}
+        >
+          <div className="form-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="form-modal-header">
+              <h3>
+                {aboutItemModal.mode === "add" ? "+ Add" : "✏️ Edit"}{" "}
+                {aboutItemModal.type === "card"
+                  ? "Overview Card"
+                  : aboutItemModal.type === "point"
+                  ? "Vision Focus Point"
+                  : aboutItemModal.type === "offering"
+                  ? "Inside Offering"
+                  : "University Statistic"}
+              </h3>
+              <button
+                className="form-close"
+                onClick={() => setAboutItemModal({ show: false, type: "", mode: "add", item: {} })}
+              >
+                ✕
+              </button>
+            </div>
+            <div className="form-modal-body">
+              {aboutItemModal.type === "card" && (
+                <>
+                  <div className="form-group">
+                    <label>Icon (Emoji or symbol)</label>
+                    <input
+                      value={aboutItemModal.item.icon || ""}
+                      onChange={(e) =>
+                        setAboutItemModal((prev) => ({
+                          ...prev,
+                          item: { ...prev.item, icon: e.target.value },
+                        }))
+                      }
+                      placeholder="🛡️"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Card Title</label>
+                    <input
+                      value={aboutItemModal.item.title || ""}
+                      onChange={(e) =>
+                        setAboutItemModal((prev) => ({
+                          ...prev,
+                          item: { ...prev.item, title: e.target.value },
+                        }))
+                      }
+                      placeholder="e.g. CORE Center"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Description</label>
+                    <textarea
+                      rows={3}
+                      value={aboutItemModal.item.desc || ""}
+                      onChange={(e) =>
+                        setAboutItemModal((prev) => ({
+                          ...prev,
+                          item: { ...prev.item, desc: e.target.value },
+                        }))
+                      }
+                      placeholder="Detailed card description..."
+                    />
+                  </div>
+                </>
+              )}
+
+              {aboutItemModal.type === "point" && (
+                <div className="form-group">
+                  <label>Focus Point Description</label>
+                  <textarea
+                    rows={4}
+                    value={aboutItemModal.item.text || ""}
+                    onChange={(e) =>
+                      setAboutItemModal((prev) => ({
+                        ...prev,
+                        item: { ...prev.item, text: e.target.value },
+                      }))
+                    }
+                    placeholder="e.g. Explore basic and applied research in Cybersecurity Systems & Networks."
+                  />
+                </div>
+              )}
+
+              {aboutItemModal.type === "offering" && (
+                <>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 3fr", gap: "10px" }}>
+                    <div className="form-group">
+                      <label>Number</label>
+                      <input
+                        value={aboutItemModal.item.num || ""}
+                        onChange={(e) =>
+                          setAboutItemModal((prev) => ({
+                            ...prev,
+                            item: { ...prev.item, num: e.target.value },
+                          }))
+                        }
+                        placeholder="01"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Offering Title</label>
+                      <input
+                        value={aboutItemModal.item.title || ""}
+                        onChange={(e) =>
+                          setAboutItemModal((prev) => ({
+                            ...prev,
+                            item: { ...prev.item, title: e.target.value },
+                          }))
+                        }
+                        placeholder="e.g. Academic Excellence"
+                      />
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label>Short Description</label>
+                    <textarea
+                      rows={2}
+                      value={aboutItemModal.item.desc || ""}
+                      onChange={(e) =>
+                        setAboutItemModal((prev) => ({
+                          ...prev,
+                          item: { ...prev.item, desc: e.target.value },
+                        }))
+                      }
+                      placeholder="Brief overview of this pillar..."
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Bullet Items (one item per line)</label>
+                    <textarea
+                      rows={4}
+                      value={aboutItemModal.item.itemsText || ""}
+                      onChange={(e) =>
+                        setAboutItemModal((prev) => ({
+                          ...prev,
+                          item: { ...prev.item, itemsText: e.target.value },
+                        }))
+                      }
+                      placeholder="B.Tech. in CSE (Cyber Security)&#10;M.Tech. in Cyber Security Systems & Networks&#10;Ph.D. in Cyber Security"
+                    />
+                  </div>
+                </>
+              )}
+
+              {aboutItemModal.type === "stat" && (
+                <>
+                  <div className="form-group">
+                    <label>Stat Number / Value</label>
+                    <input
+                      value={aboutItemModal.item.n || ""}
+                      onChange={(e) =>
+                        setAboutItemModal((prev) => ({
+                          ...prev,
+                          item: { ...prev.item, n: e.target.value },
+                        }))
+                      }
+                      placeholder="e.g. A++ or Top 100 or 100+"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Stat Label / Description</label>
+                    <input
+                      value={aboutItemModal.item.l || ""}
+                      onChange={(e) =>
+                        setAboutItemModal((prev) => ({
+                          ...prev,
+                          item: { ...prev.item, l: e.target.value },
+                        }))
+                      }
+                      placeholder="e.g. NAAC Accreditation"
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+            <div className="form-modal-footer">
+              <button
+                className="btn-cancel"
+                onClick={() => setAboutItemModal({ show: false, type: "", mode: "add", item: {} })}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn-save"
+                onClick={() =>
+                  saveAboutItem(
+                    aboutItemModal.type,
+                    aboutItemModal.item,
+                    aboutItemModal.mode
+                  )
+                }
+              >
+                {aboutItemModal.mode === "add" ? "+ Add to About" : "Save Changes"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── About Item Delete Confirm Modal ── */}
+      {aboutDeleteModal.show && (
+        <div className="form-modal-overlay">
+          <div className="confirm-modal">
+            <div className="confirm-icon">🗑️</div>
+            <h3>Delete About Item?</h3>
+            <p>
+              Are you sure you want to delete <strong>{aboutDeleteModal.title}</strong>? This action cannot be undone.
+            </p>
+            <div className="confirm-actions">
+              <button
+                className="btn-cancel"
+                onClick={() => setAboutDeleteModal({ show: false, type: "", id: null, title: "" })}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn-delete-confirm"
+                onClick={() => deleteAboutItem(aboutDeleteModal.type, aboutDeleteModal.id)}
+              >
+                Delete Item
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── User Privilege Quick Modal ── */}
+      {userPrivilegeModal.show && (
+        <div
+          className="form-modal-overlay"
+          onClick={() => setUserPrivilegeModal({ show: false, userId: null, userName: "", role: "content_editor", privileges: {} })}
+        >
+          <div className="form-modal" style={{ maxWidth: "680px" }} onClick={(e) => e.stopPropagation()}>
+            <div className="form-modal-header">
+              <div>
+                <h3 style={{ margin: 0 }}>⚙️ Configure Privileges: {userPrivilegeModal.userName}</h3>
+                <span className="text-muted">Grant or restrict permissions for each section.</span>
+              </div>
+              <button
+                className="form-close"
+                onClick={() => setUserPrivilegeModal({ show: false, userId: null, userName: "", role: "content_editor", privileges: {} })}
+              >
+                ✕
+              </button>
+            </div>
+            <div className="form-modal-body">
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontSize: "0.85rem", color: "#c9d1d9", fontWeight: "600" }}>About Page Privilege</span>
+                <button
+                  type="button"
+                  className="btn-priv-quick"
+                  onClick={() =>
+                    setUserPrivilegeModal((prev) => ({
+                      ...prev,
+                      privileges: {
+                        ...prev.privileges,
+                        aboutContent: { view: true, add: true, edit: true, delete: true },
+                      },
+                    }))
+                  }
+                >
+                  ⭐ Grant Full About Privilege (Add, Edit, Delete)
+                </button>
+              </div>
+
+              <div className="privilege-box">
+                <div className="privilege-row" style={{ borderLeft: "3px solid #52a9bc" }}>
+                  <div className="priv-title-group">
+                    <span>📖</span>
+                    <span>About Page</span>
+                    <span className="priv-badge priv-about">Key Privilege</span>
+                  </div>
+                  <div className="priv-actions-group">
+                    {["view", "add", "edit", "delete"].map((act) => (
+                      <label key={act} className="priv-checkbox-label">
+                        <input
+                          type="checkbox"
+                          checked={userPrivilegeModal.privileges?.aboutContent?.[act] ?? true}
+                          onChange={(e) => {
+                            const val = e.target.checked;
+                            setUserPrivilegeModal((prev) => ({
+                              ...prev,
+                              privileges: {
+                                ...prev.privileges,
+                                aboutContent: {
+                                  ...(prev.privileges?.aboutContent || {}),
+                                  [act]: val,
+                                },
+                              },
+                            }));
+                          }}
+                        />
+                        {act.charAt(0).toUpperCase() + act.slice(1)}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {[
+                  { key: "heroContent", label: "Hero / Home", icon: "🏠", hasAddDelete: false },
+                  { key: "highlights", label: "Highlights", icon: "⭐", hasAddDelete: true },
+                  { key: "news", label: "News", icon: "📰", hasAddDelete: true },
+                  { key: "events", label: "Events", icon: "🗓️", hasAddDelete: true },
+                  { key: "speakers", label: "Speakers", icon: "🎤", hasAddDelete: true },
+                  { key: "faculty", label: "Faculty", icon: "👨‍🏫", hasAddDelete: true },
+                  { key: "researchAreas", label: "Research Areas", icon: "🔬", hasAddDelete: true },
+                  { key: "contactInfo", label: "Contact Info", icon: "📞", hasAddDelete: false },
+                ].map((sec) => (
+                  <div key={sec.key} className="privilege-row">
+                    <div className="priv-title-group">
+                      <span>{sec.icon}</span>
+                      <span>{sec.label}</span>
+                    </div>
+                    <div className="priv-actions-group">
+                      <label className="priv-checkbox-label">
+                        <input
+                          type="checkbox"
+                          checked={userPrivilegeModal.privileges?.[sec.key]?.view ?? false}
+                          onChange={(e) => {
+                            const val = e.target.checked;
+                            setUserPrivilegeModal((prev) => ({
+                              ...prev,
+                              privileges: {
+                                ...prev.privileges,
+                                [sec.key]: {
+                                  ...(prev.privileges?.[sec.key] || {}),
+                                  view: val,
+                                },
+                              },
+                            }));
+                          }}
+                        />
+                        View
+                      </label>
+                      {sec.hasAddDelete && (
+                        <label className="priv-checkbox-label">
+                          <input
+                            type="checkbox"
+                            checked={userPrivilegeModal.privileges?.[sec.key]?.add ?? false}
+                            onChange={(e) => {
+                              const val = e.target.checked;
+                              setUserPrivilegeModal((prev) => ({
+                                ...prev,
+                                privileges: {
+                                  ...prev.privileges,
+                                  [sec.key]: {
+                                    ...(prev.privileges?.[sec.key] || {}),
+                                    add: val,
+                                  },
+                                },
+                              }));
+                            }}
+                          />
+                          Add
+                        </label>
+                      )}
+                      <label className="priv-checkbox-label">
+                        <input
+                          type="checkbox"
+                          checked={userPrivilegeModal.privileges?.[sec.key]?.edit ?? false}
+                          onChange={(e) => {
+                            const val = e.target.checked;
+                            setUserPrivilegeModal((prev) => ({
+                              ...prev,
+                              privileges: {
+                                ...prev.privileges,
+                                [sec.key]: {
+                                  ...(prev.privileges?.[sec.key] || {}),
+                                  edit: val,
+                                },
+                              },
+                            }));
+                          }}
+                        />
+                        Edit
+                      </label>
+                      {sec.hasAddDelete && (
+                        <label className="priv-checkbox-label">
+                          <input
+                            type="checkbox"
+                            checked={userPrivilegeModal.privileges?.[sec.key]?.delete ?? false}
+                            onChange={(e) => {
+                              const val = e.target.checked;
+                              setUserPrivilegeModal((prev) => ({
+                                ...prev,
+                                privileges: {
+                                  ...prev.privileges,
+                                  [sec.key]: {
+                                    ...(prev.privileges?.[sec.key] || {}),
+                                    delete: val,
+                                  },
+                                },
+                              }));
+                            }}
+                          />
+                          Delete
+                        </label>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="form-modal-footer">
+              <button
+                className="btn-cancel"
+                onClick={() => setUserPrivilegeModal({ show: false, userId: null, userName: "", role: "content_editor", privileges: {} })}
+              >
+                Cancel
+              </button>
+              <button className="btn-save" onClick={saveUserPrivileges}>
+                Save Privileges
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Sidebar */}
       <aside className={`dash-sidebar ${sidebarOpen ? "open" : "collapsed"}`}>
         <div className="sidebar-header">
           {sidebarOpen && (
             <div className="sidebar-brand">
-              <span className="brand-icon">🛡️</span>
+             
               <div>
-                <div className="brand-title">CyberPanel</div>
+                <div className="brand-title">CyberAdmin</div>
                 <div className="brand-sub">Admin Dashboard</div>
               </div>
             </div>

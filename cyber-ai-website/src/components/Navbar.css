@@ -48,7 +48,7 @@
 }
 
 .navbar-cyber-logo {
-  width: 140px;
+  width: 160px;
   height: auto;
   object-fit: contain;
   display: block;
@@ -335,7 +335,7 @@
     padding-right: 18px;
   }
   .navbar-cyber-logo {
-    width: 116px;
+    width: 130px;
   }
   .navbar-end {
     gap: 10px;
@@ -353,7 +353,7 @@
 
 @media (max-width: 370px) {
   .navbar-cyber-logo {
-    width: 96px;
+    width: 108px;
   }
   .navbar-university-logo {
     width: 88px;
