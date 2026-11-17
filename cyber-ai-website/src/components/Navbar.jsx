@@ -37,35 +37,18 @@ export default function Navbar() {
 
   return (
     <header className={`site-header ${isScrolled ? 'header-scrolled' : ''}`}>
-      {/* ── Top Utility Bar (Exact Match with Reference) ── */}
-      <div className="top-utility-bar">
-        <div className="container top-utility-inner">
-          <div className="top-utility-left">
-            <span>AMRITA VISHWA VIDYAPEETHAM</span>
-            <span className="dot-sep">•</span>
-            <span>AMRITAPURI</span>
-          </div>
-          <div className="top-utility-right">
-            <Link to="/news-events" className="top-utility-link">LATEST NEWS</Link>
-            <Link to="/contact" className="top-utility-link">CONTACT</Link>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Main Navbar ── */}
       <div className="main-navbar">
         <div className="container navbar-inner">
-          {/* Logo */}
-          <Link to="/" className="navbar-brand">
-            <img 
-              src="/amrita-cyber-logo.jpg" 
-              alt="Amrita Center for Cybersecurity Systems and Networks" 
-              className="navbar-logo-img"
+          <Link to="/" className="navbar-brand" aria-label="Amrita Center for Cybersecurity Systems and Networks home">
+            <img
+              src="/amrita-cyber-logo.jpg"
+              alt="Amrita Center for Cybersecurity Systems and Networks"
+              className="navbar-cyber-logo"
             />
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="desktop-nav">
+          <nav className="desktop-nav" aria-label="Main navigation">
             <Link to="/about" className={`desk-link ${location.pathname === '/about' ? 'active' : ''}`}>About</Link>
             <Link to="/academics" className={`desk-link ${location.pathname === '/academics' ? 'active' : ''}`}>Academics</Link>
             <Link to="/research" className={`desk-link ${location.pathname === '/research' ? 'active' : ''}`}>Research</Link>
@@ -74,16 +57,24 @@ export default function Navbar() {
             <Link to="/placements" className={`desk-link ${location.pathname === '/placements' ? 'active' : ''}`}>Placements</Link>
           </nav>
 
-          {/* Right Hamburger Icon (Exact Match with Reference) */}
-          <button 
-            className={`menu-toggle-btn ${drawerOpen ? 'open' : ''}`}
-            onClick={() => setDrawerOpen(!drawerOpen)}
-            aria-label="Toggle navigation menu"
-          >
-            <span className="bar bar-1"></span>
-            <span className="bar bar-2"></span>
-            <span className="bar bar-3"></span>
-          </button>
+          <div className="navbar-end">
+            <span className="navbar-divider" aria-hidden="true"></span>
+            <img
+              src="/amrita-university-logo.jpeg"
+              alt="Amrita Vishwa Vidyapeetham"
+              className="navbar-university-logo"
+            />
+            <button 
+              className={`menu-toggle-btn ${drawerOpen ? 'open' : ''}`}
+              onClick={() => setDrawerOpen(!drawerOpen)}
+              aria-label="Toggle navigation menu"
+              aria-expanded={drawerOpen}
+            >
+              <span className="bar bar-1"></span>
+              <span className="bar bar-2"></span>
+              <span className="bar bar-3"></span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -91,7 +82,7 @@ export default function Navbar() {
       <div className={`nav-drawer-overlay ${drawerOpen ? 'open' : ''}`} onClick={() => setDrawerOpen(false)}>
         <div className="nav-drawer-panel" onClick={(e) => e.stopPropagation()}>
           <div className="drawer-header">
-            <img src="/amrita-cyber-logo.jpg" alt="Logo" className="drawer-logo" />
+            <img src="/amrita-university-logo.jpeg" alt="Logo" className="drawer-logo" />
             <button className="drawer-close-btn" onClick={() => setDrawerOpen(false)} aria-label="Close menu">
               ✕
             </button>

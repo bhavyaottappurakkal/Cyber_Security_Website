@@ -1,8 +1,5 @@
 /* ===================================================
-   HEADER & NAVBAR (EXACT REFERENCE DESIGN)
-   - Top Utility Bar: "AMRITA VISHWA VIDYAPEETHAM • AMRITAPURI"
-   - Main Header: Official Logo + Desktop Nav + Clean Box Menu Icon
-   - Full Directory Drawer
+   HEADER & NAVBAR (REFERENCE-STYLE UNIVERSITY LANDING PAGE)
    =================================================== */
 
 .site-header {
@@ -13,70 +10,20 @@
   z-index: 1000;
   background: var(--white);
   transition: all 0.3s ease;
+  border-bottom: 1px solid #e8edef;
 }
 
 .site-header.header-scrolled {
   box-shadow: 0 4px 20px rgba(16, 45, 51, 0.08);
 }
 
-/* ── Top Utility Bar ── */
 .top-utility-bar {
-  background: #edf5f6;
-  border-bottom: 1px solid #dcebec;
-  height: 36px;
-  display: flex;
-  align-items: center;
+  display: none;
 }
 
-.top-utility-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.top-utility-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: #4b646c;
-  text-transform: uppercase;
-  font-family: var(--font-sans);
-}
-
-.dot-sep {
-  color: var(--logo-teal);
-  font-size: 0.9rem;
-}
-
-.top-utility-right {
-  display: flex;
-  align-items: center;
-  gap: 22px;
-}
-
-.top-utility-link {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: #4b646c;
-  text-transform: uppercase;
-  font-family: var(--font-sans);
-  transition: var(--transition-fast);
-}
-
-.top-utility-link:hover {
-  color: var(--teal-700);
-}
-
-/* ── Main Navbar ── */
 .main-navbar {
-  height: 82px;
+  height: 60px;
   background: var(--white);
-  border-bottom: 1px solid #e1edef;
   display: flex;
   align-items: center;
 }
@@ -87,57 +34,79 @@
   justify-content: space-between;
   width: 100%;
   height: 100%;
+  max-width: 1440px;
+  padding-left: clamp(24px, 6vw, 80px);
+  padding-right: clamp(24px, 6vw, 80px);
 }
 
-/* Brand Logo */
 .navbar-brand {
   display: flex;
   align-items: center;
   text-decoration: none;
   flex-shrink: 0;
+  min-width: 0;
 }
 
-.navbar-logo-img {
-  height: 52px;
-  width: auto;
+.navbar-cyber-logo {
+  width: 140px;
+  height: auto;
   object-fit: contain;
   display: block;
 }
 
-/* Desktop Navigation */
 .desktop-nav {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
+  margin-left: auto;
+  margin-right: 20px;
 }
 
 .desk-link {
-  font-size: 0.9rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  color: #1e333b;
-  padding: 8px 16px;
-  border-radius: var(--radius-md);
+  color: #112937;
+  padding: 8px 10px;
+  border-radius: 0;
   transition: var(--transition-fast);
   font-family: var(--font-sans);
 }
 
 .desk-link:hover {
   color: var(--teal-700);
-  background: var(--teal-50);
 }
 
 .desk-link.active {
-  color: var(--teal-800);
-  background: var(--teal-100);
+  color: #112937;
   font-weight: 700;
+}
+
+.navbar-end {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-shrink: 0;
+}
+
+.navbar-divider {
+  width: 1px;
+  height: 26px;
+  background: #c9cdd0;
+}
+
+.navbar-university-logo {
+  display: block;
+  width: 130px;
+  height: auto;
+  object-fit: contain;
 }
 
 /* ── Menu Toggle Button (Square Box with 3 Lines) ── */
 .menu-toggle-btn {
-  width: 46px;
-  height: 46px;
+  width: 34px;
+  height: 34px;
   border: 1.5px solid #d3e5e8;
-  border-radius: 8px;
+  border-radius: 6px;
   background: var(--white);
   display: flex;
   flex-direction: column;
@@ -158,8 +127,8 @@
 
 .menu-toggle-btn .bar {
   display: block;
-  width: 22px;
-  height: 2px;
+  width: 16px;
+  height: 1.5px;
   background: #102d33;
   border-radius: 2px;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -354,20 +323,39 @@
 }
 
 /* ── Responsive Header ── */
-@media (max-width: 1024px) {
+@media (max-width: 880px) {
   .desktop-nav {
     display: none;
   }
 }
 
 @media (max-width: 680px) {
-  .top-utility-right {
-    display: none;
+  .navbar-inner {
+    padding-left: 18px;
+    padding-right: 18px;
   }
-  .navbar-logo-img {
-    height: 42px;
+  .navbar-cyber-logo {
+    width: 116px;
+  }
+  .navbar-end {
+    gap: 10px;
+  }
+  .navbar-university-logo {
+    width: 104px;
+  }
+  .navbar-divider {
+    height: 22px;
   }
   .main-navbar {
-    height: 72px;
+    height: 60px;
+  }
+}
+
+@media (max-width: 370px) {
+  .navbar-cyber-logo {
+    width: 96px;
+  }
+  .navbar-university-logo {
+    width: 88px;
   }
 }

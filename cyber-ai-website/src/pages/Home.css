@@ -19,7 +19,7 @@
 .ref-hero-section {
   position: relative;
   background: linear-gradient(135deg, #eef7f8 0%, #e1eff1 50%, #eaf4f5 100%);
-  padding: 80px 0 90px;
+  padding: 42px 0 90px;
   overflow: hidden;
   border-bottom: 1px solid #d8eaed;
 }
@@ -47,7 +47,7 @@
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .ref-tag-line {

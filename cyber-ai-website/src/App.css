@@ -7,11 +7,11 @@
 
 .main-content {
   flex: 1;
-  margin-top: 118px; /* matches top utility bar (36px) + main navbar (82px) */
+  margin-top: 60px;
 }
 
 @media (max-width: 680px) {
   .main-content {
-    margin-top: 108px; /* 36px + 72px */
+    margin-top: 60px;
   }
 }
