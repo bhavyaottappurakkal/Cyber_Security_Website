@@ -54,14 +54,14 @@ const events = [
   {
     title: "InCTF — India Capture The Flag",
     desc: "India's premier national Capture the Flag (CTF) cybersecurity competition and training program organized by the Center. Open to students across India to test and develop their hacking skills.",
-    icon: "🏁",
+
     type: "Annual Competition",
     tags: ["CTF", "Competition", "Students"],
   },
   {
     title: "ShaktiCon",
     desc: "International cybersecurity conference, trainings, and competition dedicated to empowering women in cybersecurity. Features talks, workshops, and networking opportunities.",
-    icon: "⚡",
+
     type: "Annual Conference",
     tags: ["Women in Cybersecurity", "Conference", "Training"],
   },

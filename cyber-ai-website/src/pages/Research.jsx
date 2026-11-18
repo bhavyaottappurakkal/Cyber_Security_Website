@@ -4,7 +4,6 @@ import "./Research.css";
 const researchAreas = [
   {
     id: 1,
-    icon: "🤖",
     title: "Agentic AI & Autonomous Cyber Defense",
     shortDesc:
       "Intelligent agents for autonomous threat detection, vulnerability assessment and adaptive defense.",
@@ -22,7 +21,6 @@ const researchAreas = [
   },
   {
     id: 2,
-    icon: "🦾",
     title: "Physical AI and Embodied Intelligence",
     shortDesc:
       "AI for autonomous systems, robotics, drones, and intelligent machines in complex environments.",
@@ -58,7 +56,7 @@ const researchAreas = [
   },
   {
     id: 4,
-    icon: "☁️",
+
     title: "Cloud-Based Soft Sensors & Hypervisor Re-Architecture",
     shortDesc:
       "Security-enabled data object (SEDO) layer for insider threat protection and tenant control.",
@@ -76,7 +74,7 @@ const researchAreas = [
   },
   {
     id: 5,
-    icon: "🏗️",
+
     title: "Scalable, Secure, and Resilient Cloud Platforms",
     shortDesc:
       "User-centric cloud with continuous monitoring and visibility for cloud users.",
@@ -94,7 +92,7 @@ const researchAreas = [
   },
   {
     id: 6,
-    icon: "🤝",
+
     title: "Formal Models for Trust in Cloud Computing",
     shortDesc:
       "Logical and quantitative trust models for cloud provider evaluation and assurance.",
@@ -112,7 +110,7 @@ const researchAreas = [
   },
   {
     id: 7,
-    icon: "📡",
+
     title: "Internet of Things (IoT) and Security",
     shortDesc:
       "Secure device identification, registration, and concurrent event processing for IoT.",
@@ -130,7 +128,7 @@ const researchAreas = [
   },
   {
     id: 8,
-    icon: "🔑",
+
     title: "Cryptography & Boolean Functions",
     shortDesc:
       "Boolean function classification, higher-order nonlinearities, and Reed-Muller codes.",
@@ -148,7 +146,7 @@ const researchAreas = [
   },
   {
     id: 9,
-    icon: "🏥",
+
     title: "Healthcare Security",
     shortDesc:
       "Securing connected medical devices, wearables, and implantable devices for patient safety.",
@@ -164,7 +162,7 @@ const researchAreas = [
   },
   {
     id: 10,
-    icon: "📊",
+
     title: "Big Data Analytics Platform",
     shortDesc:
       "Distributed parallel database with auto-scalable ML analytics for streaming IoT data.",
@@ -182,7 +180,7 @@ const researchAreas = [
   },
   {
     id: 11,
-    icon: "🚗",
+
     title: "Automotive Security",
     shortDesc:
       "Secure automotive infotainment platforms for safe inter-vehicular data exchange.",
@@ -200,7 +198,7 @@ const researchAreas = [
   },
   {
     id: 12,
-    icon: "📈",
+
     title: "Security Data Visualization & Cyber-Physical Systems",
     shortDesc:
       "Visualizing security data and securing embedded cyber-physical systems.",
@@ -215,7 +213,7 @@ const researchAreas = [
   },
   {
     id: 13,
-    icon: "🎓",
+
     title: "Security Education",
     shortDesc:
       "Innovative approaches to cybersecurity education, training, and awareness.",

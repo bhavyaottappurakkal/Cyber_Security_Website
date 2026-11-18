@@ -156,28 +156,107 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right Column: Chamfered Image Frame with Cyber Radar Overlay */}
+            {/* Right Column: Animated cybersecurity globe */}
             <div className="ref-hero-right">
-              <div className="ref-image-wrapper">
-                {/* Chamfered lab image container */}
-                <div className="ref-image-frame">
-                  <img
-                    src="/hero-students.jpg"
-                    alt="Cybersecurity research students working at Amrita Center"
-                    className="ref-lab-img"
+              <div
+                className="cyber-globe-visual"
+                role="img"
+                aria-label="Animated cybersecurity network globe with a central lock"
+              >
+                <span className="globe-label globe-label-left">HASH :: OK</span>
+                <span className="globe-label globe-label-right">0x4F0CB4</span>
+                <span className="globe-label globe-label-bottom">
+                  SECURE NETWORK
+                </span>
+                <svg
+                  className="globe-svg"
+                  viewBox="0 0 640 640"
+                  aria-hidden="true"
+                >
+                  <defs>
+                    <clipPath id="globe-clip">
+                      <circle cx="320" cy="320" r="290" />
+                    </clipPath>
+                  </defs>
+                  <circle className="globe-outline" cx="320" cy="320" r="290" />
+                  <g className="globe-grid" clipPath="url(#globe-clip)">
+                    <ellipse cx="320" cy="320" rx="72" ry="290" />
+                    <ellipse cx="320" cy="320" rx="150" ry="290" />
+                    <ellipse cx="320" cy="320" rx="222" ry="290" />
+                    <ellipse cx="320" cy="320" rx="290" ry="88" />
+                    <ellipse cx="320" cy="320" rx="290" ry="172" />
+                    <path d="M56 178 Q320 286 584 178" />
+                    <path d="M38 430 Q320 332 602 430" />
+                    <path d="M118 91 Q260 286 484 548" />
+                    <path d="M516 91 Q380 286 132 548" />
+                    <path d="M86 305 L208 225 L320 320 L454 236 L562 316" />
+                    <path d="M98 398 L222 455 L320 320 L430 444 L550 382" />
+                    <path d="M208 225 L222 455 M454 236 L430 444 M86 305 L98 398 M562 316 L550 382" />
+                  </g>
+                  <g className="globe-orbits">
+                    <ellipse
+                      className="globe-orbit globe-orbit-one"
+                      cx="320"
+                      cy="320"
+                      rx="370"
+                      ry="104"
+                    />
+                    <ellipse
+                      className="globe-orbit globe-orbit-two"
+                      cx="320"
+                      cy="320"
+                      rx="370"
+                      ry="104"
+                    />
+                  </g>
+                  <g className="globe-nodes" clipPath="url(#globe-clip)">
+                    <circle cx="118" cy="177" r="4" />
+                    <circle cx="208" cy="225" r="4" />
+                    <circle cx="320" cy="116" r="4" />
+                    <circle cx="454" cy="236" r="4" />
+                    <circle cx="562" cy="316" r="4" />
+                    <circle cx="98" cy="398" r="4" />
+                    <circle cx="222" cy="455" r="4" />
+                    <circle cx="430" cy="444" r="4" />
+                    <circle cx="520" cy="486" r="4" />
+                    <circle cx="154" cy="322" r="4" />
+                    <circle cx="390" cy="170" r="4" />
+                    <circle cx="320" cy="520" r="4" />
+                    <circle cx="262" cy="290" r="3" />
+                    <circle cx="400" cy="350" r="3" />
+                    <circle cx="178" cy="414" r="3" />
+                    <circle cx="480" cy="290" r="3" />
+                    <circle cx="260" cy="486" r="3" />
+                    <circle cx="366" cy="248" r="3" />
+                    <circle cx="130" cy="260" r="3" />
+                    <circle cx="506" cy="390" r="3" />
+                  </g>
+                  <circle
+                    className="lock-halo lock-halo-outer"
+                    cx="320"
+                    cy="320"
+                    r="64"
                   />
-                  {/* Cyber Radar Rings Overlay */}
-                  <div className="cyber-radar-rings">
-                    <div className="radar-circle radar-c1"></div>
-                    <div className="radar-circle radar-c2"></div>
-                    <div className="radar-circle radar-c3"></div>
-                    <span className="radar-dot dot-1"></span>
-                    <span className="radar-dot dot-2"></span>
-                  </div>
-
-                  {/* Corner Accent Notch */}
-                  <div className="ref-corner-notch"></div>
-                </div>
+                  <circle
+                    className="lock-halo lock-halo-inner"
+                    cx="320"
+                    cy="320"
+                    r="42"
+                  />
+                  <g className="globe-lock" transform="translate(320 320)">
+                    <path d="M-17 -5v-10a17 17 0 0 1 34 0v10" />
+                    <rect x="-24" y="-7" width="48" height="39" rx="7" />
+                    <circle cx="0" cy="10" r="4" />
+                    <path d="M0 14v8" />
+                  </g>
+                </svg>
+                <a
+                  className="globe-scroll-link"
+                  href="#highlights"
+                  aria-label="Scroll to key highlights"
+                >
+                  <span aria-hidden="true">↓</span>
+                </a>
               </div>
             </div>
           </div>
@@ -185,7 +264,7 @@ export default function Home() {
       </section>
 
       {/* ── 2. KEY HIGHLIGHTS SECTION ── */}
-      <section className="section ref-highlights-section">
+      <section id="highlights" className="section ref-highlights-section">
         <div className="container">
           <div className="ref-section-header">
             <span className="ref-sub-heading">Institutional Prestige</span>
@@ -372,7 +451,7 @@ export default function Home() {
 
           <div className="ref-center-action">
             <Link to="/research" className="btn-ref-secondary">
-              Explore All Detailed Research Descriptions →
+              {/* Explore All Detailed Research Descriptions → */}
             </Link>
           </div>
         </div>
