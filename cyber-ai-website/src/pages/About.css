@@ -150,13 +150,8 @@
 }
 
 .about-overview-inner {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 72px;
-  align-items: start;
+  max-width: 900px;
 }
-
-.aov-left {}
 
 .aov-body {
   font-size: 0.98rem;
@@ -168,44 +163,6 @@
 .aov-body strong {
   color: #103840;
   font-weight: 700;
-}
-
-/* Overview right: stacked cards */
-.aov-right {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.aov-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 18px;
-  background: #fff;
-  border: 1px solid #e0eef2;
-  border-radius: 14px;
-  padding: 22px 20px;
-  transition: box-shadow 0.22s ease, transform 0.22s ease, border-color 0.22s ease;
-}
-
-.aov-card:hover {
-  box-shadow: 0 8px 28px rgba(16, 56, 64, 0.1);
-  transform: translateY(-2px);
-  border-color: #93cfe0;
-}
-
-.aov-card-title {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #0b2a35;
-  margin: 0 0 5px;
-}
-
-.aov-card-desc {
-  font-size: 0.82rem;
-  color: #627184;
-  line-height: 1.55;
-  margin: 0;
 }
 
 /* ── Mission & Vision ── */
@@ -444,88 +401,12 @@
   font-weight: 700;
 }
 
-/* ── University Section ── */
-.about-univ-section {
-  background: linear-gradient(135deg, #0b1f28 0%, #0b2a35 60%, #103840 100%);
-  padding: 90px 0;
-}
-
-.about-univ-inner {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 72px;
-  align-items: center;
-}
-
-.au-title {
-  font-size: clamp(1.5rem, 2.5vw, 2.1rem);
-  font-weight: 800;
-  color: #fff;
-  margin: 8px 0 20px;
-  line-height: 1.25;
-}
-
-.au-body {
-  font-size: 0.97rem;
-  color: rgba(255, 255, 255, 0.65);
-  line-height: 1.78;
-  margin-bottom: 16px;
-}
-
-.au-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-.au-stat {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(82, 169, 188, 0.22);
-  border-radius: 14px;
-  padding: 28px 20px;
-  text-align: center;
-  transition: background 0.22s ease, border-color 0.22s ease, transform 0.22s ease;
-}
-
-.au-stat:hover {
-  background: rgba(82, 169, 188, 0.08);
-  border-color: #52a9bc;
-  transform: translateY(-3px);
-}
-
-.au-stat-num {
-  font-size: 2.1rem;
-  font-weight: 800;
-  color: #93cfe0;
-  line-height: 1;
-  margin-bottom: 7px;
-  font-family: var(--font-heading, serif);
-}
-
-.au-stat-label {
-  font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.65);
-  font-weight: 600;
-  line-height: 1.4;
-}
-
 /* ── Responsive ── */
 @media (max-width: 1024px) {
-  .about-overview-inner {
-    grid-template-columns: 1fr;
-    gap: 44px;
-  }
-
   .mv-cards-row {
     grid-template-columns: 1fr;
     gap: 20px;
   }
-
-  .about-univ-inner {
-    grid-template-columns: 1fr;
-    gap: 44px;
-  }
-
 }
 
 @media (max-width: 680px) {
@@ -542,10 +423,6 @@
 
   .mv-panel {
     padding: 32px 24px;
-  }
-
-  .au-stats {
-    grid-template-columns: 1fr 1fr;
   }
 
   .inside-grid {

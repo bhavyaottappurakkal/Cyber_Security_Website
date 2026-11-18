@@ -192,7 +192,7 @@ export default function About() {
     return () => window.removeEventListener('storage', handleStorageChange)
   }, [])
 
-  const { hero, overview, overviewCards, mission, vision, insideOfferings, university } = content
+  const { hero, overview, mission, vision, insideOfferings } = content
 
   return (
     <div className="about-page">
@@ -239,16 +239,6 @@ export default function About() {
               {overview?.p3 && <p className="aov-body">{overview.p3}</p>}
             </div>
 
-            <div className="aov-right">
-              {(overviewCards || []).map((c) => (
-                <div className="aov-card" key={c.id}>
-                  <div className="aov-card-body">
-                    <h4 className="aov-card-title">{c.title}</h4>
-                    <p className="aov-card-desc">{c.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </section>
@@ -319,25 +309,6 @@ export default function About() {
         </div>
       </section>
 
-      {/* ── University Info ── */}
-      <section className="about-univ-section">
-        <div className="container about-univ-inner">
-          <div className="au-text">
-            <span className="aov-eyebrow aov-eyebrow-light">{university?.eyebrow || 'Amrita Vishwa Vidyapeetham'}</span>
-            <h2 className="au-title">{university?.title || 'Part of a World-Class University'}</h2>
-            {university?.p1 && <p className="au-body">{university.p1}</p>}
-            {university?.p2 && <p className="au-body">{university.p2}</p>}
-          </div>
-          <div className="au-stats">
-            {(university?.stats || []).map((s) => (
-              <div className="au-stat" key={s.id}>
-                <div className="au-stat-num">{s.n}</div>
-                <div className="au-stat-label">{s.l}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
     </div>
   )
 }
