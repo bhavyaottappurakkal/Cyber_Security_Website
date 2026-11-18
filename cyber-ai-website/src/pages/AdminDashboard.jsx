@@ -1,20 +1,21 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { DEFAULT_ABOUT_CONTENT } from "./About";
+import { DEFAULT_ACADEMICS_CONTENT } from "./Academics";
 import "./AdminDashboard.css";
 
 // ─── Role Definitions ─────────────────────────────────────────────────────────
-// admin        → full access to everything including user management
-// content_editor → can edit about, hero, highlights, speakers, faculty, research, contact — NOT events/news/users
-// about_editor   → can ONLY edit About page (full Add, Edit, Delete privileges)
-// event_editor   → can ONLY edit news and events
-// custom         → customizable privileges per section and action
+// admin           → full access to everything including user management
+// content_editor  → can edit about, hero, highlights, speakers, faculty, research, contact, academics
+// academic_editor → can ONLY edit Academics page (full Add, Edit, Delete privileges)
+// about_editor    → can ONLY edit About page (full Add, Edit, Delete privileges)
+// event_editor    → can ONLY edit news and events
+// custom          → customizable privileges per section and action
 const ROLE_META = {
   admin: { label: "Admin", color: "role-admin", icon: "👑", sections: "ALL" },
   content_editor: {
     label: "Content Editor",
     color: "role-content",
-
     sections: [
       "overview",
       "aboutContent",
@@ -24,25 +25,29 @@ const ROLE_META = {
       "faculty",
       "researchAreas",
       "contactInfo",
+      "academicsContent",
       "changePassword",
     ],
+  },
+  academic_editor: {
+    label: "Academic Editor",
+    color: "role-academic",
+    icon: "🎓",
+    sections: ["overview", "academicsContent", "changePassword"],
   },
   about_editor: {
     label: "About Editor",
     color: "role-about",
-
     sections: ["overview", "aboutContent", "changePassword"],
   },
   event_editor: {
     label: "Event Editor",
     color: "role-event",
-
     sections: ["overview", "news", "events", "changePassword"],
   },
   custom: {
     label: "Custom Privileges",
     color: "role-custom",
-
     sections: [],
   },
 };
@@ -50,54 +55,72 @@ const ROLE_META = {
 function getPrivilegesForRole(role) {
   if (role === "admin") {
     return {
-      aboutContent: { view: true, add: true, edit: true, delete: true },
-      heroContent: { view: true, add: true, edit: true, delete: true },
-      highlights: { view: true, add: true, edit: true, delete: true },
-      news: { view: true, add: true, edit: true, delete: true },
-      events: { view: true, add: true, edit: true, delete: true },
-      speakers: { view: true, add: true, edit: true, delete: true },
-      faculty: { view: true, add: true, edit: true, delete: true },
-      researchAreas: { view: true, add: true, edit: true, delete: true },
-      contactInfo: { view: true, add: true, edit: true, delete: true },
+      aboutContent:      { view: true, add: true, edit: true, delete: true },
+      heroContent:       { view: true, add: true, edit: true, delete: true },
+      highlights:        { view: true, add: true, edit: true, delete: true },
+      news:              { view: true, add: true, edit: true, delete: true },
+      events:            { view: true, add: true, edit: true, delete: true },
+      speakers:          { view: true, add: true, edit: true, delete: true },
+      faculty:           { view: true, add: true, edit: true, delete: true },
+      researchAreas:     { view: true, add: true, edit: true, delete: true },
+      contactInfo:       { view: true, add: true, edit: true, delete: true },
+      academicsContent:  { view: true, add: true, edit: true, delete: true },
+    };
+  }
+  if (role === "academic_editor") {
+    return {
+      aboutContent:      { view: false, add: false, edit: false, delete: false },
+      heroContent:       { view: false, add: false, edit: false, delete: false },
+      highlights:        { view: false, add: false, edit: false, delete: false },
+      news:              { view: false, add: false, edit: false, delete: false },
+      events:            { view: false, add: false, edit: false, delete: false },
+      speakers:          { view: false, add: false, edit: false, delete: false },
+      faculty:           { view: false, add: false, edit: false, delete: false },
+      researchAreas:     { view: false, add: false, edit: false, delete: false },
+      contactInfo:       { view: false, add: false, edit: false, delete: false },
+      academicsContent:  { view: true,  add: true,  edit: true,  delete: true  },
     };
   }
   if (role === "about_editor") {
     return {
-      aboutContent: { view: true, add: true, edit: true, delete: true },
-      heroContent: { view: false, add: false, edit: false, delete: false },
-      highlights: { view: false, add: false, edit: false, delete: false },
-      news: { view: false, add: false, edit: false, delete: false },
-      events: { view: false, add: false, edit: false, delete: false },
-      speakers: { view: false, add: false, edit: false, delete: false },
-      faculty: { view: false, add: false, edit: false, delete: false },
-      researchAreas: { view: false, add: false, edit: false, delete: false },
-      contactInfo: { view: false, add: false, edit: false, delete: false },
+      aboutContent:      { view: true,  add: true,  edit: true,  delete: true  },
+      heroContent:       { view: false, add: false, edit: false, delete: false },
+      highlights:        { view: false, add: false, edit: false, delete: false },
+      news:              { view: false, add: false, edit: false, delete: false },
+      events:            { view: false, add: false, edit: false, delete: false },
+      speakers:          { view: false, add: false, edit: false, delete: false },
+      faculty:           { view: false, add: false, edit: false, delete: false },
+      researchAreas:     { view: false, add: false, edit: false, delete: false },
+      contactInfo:       { view: false, add: false, edit: false, delete: false },
+      academicsContent:  { view: false, add: false, edit: false, delete: false },
     };
   }
   if (role === "event_editor") {
     return {
-      aboutContent: { view: false, add: false, edit: false, delete: false },
-      heroContent: { view: false, add: false, edit: false, delete: false },
-      highlights: { view: false, add: false, edit: false, delete: false },
-      news: { view: true, add: true, edit: true, delete: true },
-      events: { view: true, add: true, edit: true, delete: true },
-      speakers: { view: false, add: false, edit: false, delete: false },
-      faculty: { view: false, add: false, edit: false, delete: false },
-      researchAreas: { view: false, add: false, edit: false, delete: false },
-      contactInfo: { view: false, add: false, edit: false, delete: false },
+      aboutContent:      { view: false, add: false, edit: false, delete: false },
+      heroContent:       { view: false, add: false, edit: false, delete: false },
+      highlights:        { view: false, add: false, edit: false, delete: false },
+      news:              { view: true,  add: true,  edit: true,  delete: true  },
+      events:            { view: true,  add: true,  edit: true,  delete: true  },
+      speakers:          { view: false, add: false, edit: false, delete: false },
+      faculty:           { view: false, add: false, edit: false, delete: false },
+      researchAreas:     { view: false, add: false, edit: false, delete: false },
+      contactInfo:       { view: false, add: false, edit: false, delete: false },
+      academicsContent:  { view: false, add: false, edit: false, delete: false },
     };
   }
   // content_editor
   return {
-    aboutContent: { view: true, add: true, edit: true, delete: true },
-    heroContent: { view: true, add: false, edit: true, delete: false },
-    highlights: { view: true, add: true, edit: true, delete: true },
-    news: { view: false, add: false, edit: false, delete: false },
-    events: { view: false, add: false, edit: false, delete: false },
-    speakers: { view: true, add: true, edit: true, delete: true },
-    faculty: { view: true, add: true, edit: true, delete: true },
-    researchAreas: { view: true, add: true, edit: true, delete: true },
-    contactInfo: { view: true, add: false, edit: true, delete: false },
+    aboutContent:      { view: true,  add: true,  edit: true,  delete: true  },
+    heroContent:       { view: true,  add: false, edit: true,  delete: false },
+    highlights:        { view: true,  add: true,  edit: true,  delete: true  },
+    news:              { view: false, add: false, edit: false, delete: false },
+    events:            { view: false, add: false, edit: false, delete: false },
+    speakers:          { view: true,  add: true,  edit: true,  delete: true  },
+    faculty:           { view: true,  add: true,  edit: true,  delete: true  },
+    researchAreas:     { view: true,  add: true,  edit: true,  delete: true  },
+    contactInfo:       { view: true,  add: false, edit: true,  delete: false },
+    academicsContent:  { view: true,  add: true,  edit: true,  delete: true  },
   };
 }
 
@@ -370,6 +393,7 @@ const INITIAL_DATA = {
     mapEmbed: "https://maps.google.com/?q=Amritapuri+Campus+Kerala",
   },
   aboutContent: DEFAULT_ABOUT_CONTENT,
+  academicsContent: DEFAULT_ACADEMICS_CONTENT,
 };
 
 // ─── All Sections (admin sees all) ───────────────────────────────────────────
@@ -384,6 +408,7 @@ const ALL_SECTIONS = [
   { key: "faculty", label: "Faculty", icon: "👨‍🏫" },
   { key: "researchAreas", label: "Research Areas", icon: "🔬" },
   { key: "contactInfo", label: "Contact Info", icon: "📞" },
+  { key: "academicsContent", label: "Academics Page", icon: "🎓" },
   { key: "users", label: "User Management", icon: "👥", adminOnly: true },
   { key: "changePassword", label: "Change Password", icon: "🔑" },
 ];
@@ -442,6 +467,7 @@ export default function AdminDashboard() {
       return !!p[action];
     }
     if (userRole === "about_editor" && section === "aboutContent") return true;
+    if (userRole === "academic_editor" && section === "academicsContent") return true;
     if (
       userRole === "content_editor" &&
       section !== "news" &&
@@ -467,6 +493,67 @@ export default function AdminDashboard() {
         ...INITIAL_DATA,
         ...parsed,
         aboutContent: parsed.aboutContent || INITIAL_DATA.aboutContent,
+        academicsContent: parsed.academicsContent ? {
+          ...DEFAULT_ACADEMICS_CONTENT,
+          ...parsed.academicsContent,
+          hero: { ...DEFAULT_ACADEMICS_CONTENT.hero, ...(parsed.academicsContent.hero || {}) },
+          studentLife: {
+            ...DEFAULT_ACADEMICS_CONTENT.studentLife,
+            ...(parsed.academicsContent.studentLife || {}),
+            items: parsed.academicsContent.studentLife?.items || (Array.isArray(parsed.academicsContent.studentLife) ? parsed.academicsContent.studentLife : DEFAULT_ACADEMICS_CONTENT.studentLife.items),
+          },
+          pride: {
+            ...DEFAULT_ACADEMICS_CONTENT.pride,
+            ...(parsed.academicsContent.pride || {}),
+            items: parsed.academicsContent.pride?.items || (Array.isArray(parsed.academicsContent.pride) ? parsed.academicsContent.pride : DEFAULT_ACADEMICS_CONTENT.pride.items),
+          },
+          communities: {
+            ...DEFAULT_ACADEMICS_CONTENT.communities,
+            ...(parsed.academicsContent.communities || {}),
+            items: parsed.academicsContent.communities?.items || (Array.isArray(parsed.academicsContent.communities) ? parsed.academicsContent.communities : DEFAULT_ACADEMICS_CONTENT.communities.items),
+          },
+          scholarships: {
+            ...DEFAULT_ACADEMICS_CONTENT.scholarships,
+            ...(parsed.academicsContent.scholarships || {}),
+            items: parsed.academicsContent.scholarships?.items || (Array.isArray(parsed.academicsContent.scholarships) ? parsed.academicsContent.scholarships : DEFAULT_ACADEMICS_CONTENT.scholarships.items),
+          },
+          overseas: {
+            ...DEFAULT_ACADEMICS_CONTENT.overseas,
+            ...(parsed.academicsContent.overseas || {}),
+            dualDegreePartners: parsed.academicsContent.overseas?.dualDegreePartners || parsed.academicsContent.dualDegreePartners || DEFAULT_ACADEMICS_CONTENT.overseas.dualDegreePartners,
+            exchangeCountries: parsed.academicsContent.overseas?.exchangeCountries || parsed.academicsContent.exchangeCountries || DEFAULT_ACADEMICS_CONTENT.overseas.exchangeCountries,
+          },
+          curriculum: {
+            ...DEFAULT_ACADEMICS_CONTENT.curriculum,
+            ...(parsed.academicsContent.curriculum || {}),
+            years: parsed.academicsContent.curriculum?.years || (Array.isArray(parsed.academicsContent.curriculum) ? parsed.academicsContent.curriculum : DEFAULT_ACADEMICS_CONTENT.curriculum.years),
+          },
+          internships: {
+            ...DEFAULT_ACADEMICS_CONTENT.internships,
+            ...(parsed.academicsContent.internships || parsed.academicsContent.internship || {}),
+            items: parsed.academicsContent.internships?.items || parsed.academicsContent.internship?.items || DEFAULT_ACADEMICS_CONTENT.internships.items,
+          },
+          placements: {
+            ...DEFAULT_ACADEMICS_CONTENT.placements,
+            ...(parsed.academicsContent.placements || parsed.academicsContent.placement || {}),
+            items: parsed.academicsContent.placements?.items || parsed.academicsContent.placement?.items || DEFAULT_ACADEMICS_CONTENT.placements.items,
+          },
+          events: {
+            ...DEFAULT_ACADEMICS_CONTENT.events,
+            ...(parsed.academicsContent.events && !Array.isArray(parsed.academicsContent.events) ? parsed.academicsContent.events : {}),
+            items: Array.isArray(parsed.academicsContent.events) ? parsed.academicsContent.events : (parsed.academicsContent.events?.items || DEFAULT_ACADEMICS_CONTENT.events.items),
+          },
+          socialMedia: {
+            ...DEFAULT_ACADEMICS_CONTENT.socialMedia,
+            ...(parsed.academicsContent.socialMedia || {}),
+            links: parsed.academicsContent.socialMedia?.links || (Array.isArray(parsed.academicsContent.socialMedia) ? parsed.academicsContent.socialMedia : DEFAULT_ACADEMICS_CONTENT.socialMedia.links),
+          },
+          alumni: {
+            ...DEFAULT_ACADEMICS_CONTENT.alumni,
+            ...(parsed.academicsContent.alumni && !Array.isArray(parsed.academicsContent.alumni) ? parsed.academicsContent.alumni : {}),
+            items: Array.isArray(parsed.academicsContent.alumni) ? parsed.academicsContent.alumni : (parsed.academicsContent.alumni?.items || DEFAULT_ACADEMICS_CONTENT.alumni.items),
+          },
+        } : DEFAULT_ACADEMICS_CONTENT,
       };
     } catch {
       return INITIAL_DATA;
@@ -478,6 +565,17 @@ export default function AdminDashboard() {
   const [formData, setFormData] = useState({});
   const [toast, setToast] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+
+  // Academics Page state
+  const [acTab, setAcTab] = useState("hero");
+  const [acCurriculumYear, setAcCurriculumYear] = useState("Year 1");
+  const [acModal, setAcModal] = useState({
+    show: false,
+    section: "",
+    mode: "add",
+    item: {},
+    meta: {},
+  });
 
   // Single-object section local copies
   const [localHero, setLocalHero] = useState({ ...INITIAL_DATA.heroContent });
@@ -665,12 +763,217 @@ export default function AdminDashboard() {
     cancelForm();
   };
 
-  const confirmDelete = (section, id) => setDeleteConfirm({ section, id });
+  const confirmDelete = (section, id, meta = {}) =>
+    setDeleteConfirm({ section, id, meta });
+
   const doDelete = () => {
     if (!deleteConfirm) return;
+    if (deleteConfirm.section?.startsWith("ac:")) {
+      const path = deleteConfirm.section.slice(3);
+      setData((prev) => {
+        const ac = prev.academicsContent || DEFAULT_ACADEMICS_CONTENT;
+        if (path === "heroStats") {
+          return {
+            ...prev,
+            academicsContent: {
+              ...ac,
+              heroStats: (ac.heroStats || []).filter((i) => i.id !== deleteConfirm.id),
+            },
+          };
+        }
+        if (path === "studentLife") {
+          return {
+            ...prev,
+            academicsContent: {
+              ...ac,
+              studentLife: {
+                ...ac.studentLife,
+                items: (ac.studentLife?.items || []).filter((i) => i.id !== deleteConfirm.id),
+              },
+            },
+          };
+        }
+        if (path === "pride") {
+          return {
+            ...prev,
+            academicsContent: {
+              ...ac,
+              pride: {
+                ...ac.pride,
+                items: (ac.pride?.items || []).filter((i) => i.id !== deleteConfirm.id),
+              },
+            },
+          };
+        }
+        if (path === "communities") {
+          return {
+            ...prev,
+            academicsContent: {
+              ...ac,
+              communities: {
+                ...ac.communities,
+                items: (ac.communities?.items || []).filter((i) => i.id !== deleteConfirm.id),
+              },
+            },
+          };
+        }
+        if (path === "scholarships") {
+          return {
+            ...prev,
+            academicsContent: {
+              ...ac,
+              scholarships: {
+                ...ac.scholarships,
+                items: (ac.scholarships?.items || []).filter((i) => i.id !== deleteConfirm.id),
+              },
+            },
+          };
+        }
+        if (path === "dualDegreePartners") {
+          return {
+            ...prev,
+            academicsContent: {
+              ...ac,
+              overseas: {
+                ...ac.overseas,
+                dualDegreePartners: (ac.overseas?.dualDegreePartners || []).filter((i) => i.id !== deleteConfirm.id),
+              },
+            },
+          };
+        }
+        if (path === "exchangeCountries") {
+          return {
+            ...prev,
+            academicsContent: {
+              ...ac,
+              overseas: {
+                ...ac.overseas,
+                exchangeCountries: (ac.overseas?.exchangeCountries || []).filter((i) => i.id !== deleteConfirm.id),
+              },
+            },
+          };
+        }
+        if (path === "internships") {
+          return {
+            ...prev,
+            academicsContent: {
+              ...ac,
+              internships: {
+                ...ac.internships,
+                items: (ac.internships?.items || []).filter((i) => i.id !== deleteConfirm.id),
+              },
+            },
+          };
+        }
+        if (path === "placements") {
+          return {
+            ...prev,
+            academicsContent: {
+              ...ac,
+              placements: {
+                ...ac.placements,
+                items: (ac.placements?.items || []).filter((i) => i.id !== deleteConfirm.id),
+              },
+            },
+          };
+        }
+        if (path === "events") {
+          return {
+            ...prev,
+            academicsContent: {
+              ...ac,
+              events: {
+                ...ac.events,
+                items: (ac.events?.items || []).filter((i) => i.id !== deleteConfirm.id),
+              },
+            },
+          };
+        }
+        if (path === "socialMedia") {
+          return {
+            ...prev,
+            academicsContent: {
+              ...ac,
+              socialMedia: {
+                ...ac.socialMedia,
+                links: (ac.socialMedia?.links || []).filter((i) => i.id !== deleteConfirm.id),
+              },
+            },
+          };
+        }
+        if (path === "alumni") {
+          return {
+            ...prev,
+            academicsContent: {
+              ...ac,
+              alumni: {
+                ...ac.alumni,
+                items: (ac.alumni?.items || []).filter((i) => i.id !== deleteConfirm.id),
+              },
+            },
+          };
+        }
+        if (path === "curriculum.year") {
+          return {
+            ...prev,
+            academicsContent: {
+              ...ac,
+              curriculum: {
+                ...ac.curriculum,
+                years: (ac.curriculum?.years || []).filter((y) => y.id !== deleteConfirm.id),
+              },
+            },
+          };
+        }
+        if (path === "curriculum.semester") {
+          return {
+            ...prev,
+            academicsContent: {
+              ...ac,
+              curriculum: {
+                ...ac.curriculum,
+                years: (ac.curriculum?.years || []).map((y) => ({
+                  ...y,
+                  semesters: (y.semesters || []).filter((s) => s.id !== deleteConfirm.id),
+                })),
+              },
+            },
+          };
+        }
+        if (path === "curriculum.course") {
+          const { yearId, semId, courseIndex } = deleteConfirm.meta || {};
+          return {
+            ...prev,
+            academicsContent: {
+              ...ac,
+              curriculum: {
+                ...ac.curriculum,
+                years: (ac.curriculum?.years || []).map((y) => {
+                  if (y.id !== yearId) return y;
+                  return {
+                    ...y,
+                    semesters: (y.semesters || []).map((s) => {
+                      if (s.id !== semId) return s;
+                      return {
+                        ...s,
+                        courses: (s.courses || []).filter((_, idx) => idx !== courseIndex),
+                      };
+                    }),
+                  };
+                }),
+              },
+            },
+          };
+        }
+        return prev;
+      });
+      showToast("Deleted.", "info");
+      setDeleteConfirm(null);
+      return;
+    }
     setData((prev) => ({
       ...prev,
-      [deleteConfirm.section]: prev[deleteConfirm.section].filter(
+      [deleteConfirm.section]: (prev[deleteConfirm.section] || []).filter(
         (i) => i.id !== deleteConfirm.id,
       ),
     }));
@@ -982,6 +1285,31 @@ export default function AdminDashboard() {
       }),
     );
     showToast("About Page privileges updated for user!");
+  };
+
+  const toggleAcademicFullPrivilege = (userId) => {
+    setUsers((prev) =>
+      prev.map((u) => {
+        if (u.id !== userId) return u;
+        const currentAc = u.privileges?.academicsContent || {};
+        const hasFull =
+          currentAc.view &&
+          currentAc.add &&
+          currentAc.edit &&
+          currentAc.delete;
+        const newAc = hasFull
+          ? { view: false, add: false, edit: false, delete: false }
+          : { view: true, add: true, edit: true, delete: true };
+        return {
+          ...u,
+          privileges: {
+            ...(u.privileges || getPrivilegesForRole(u.role)),
+            academicsContent: newAc,
+          },
+        };
+      }),
+    );
+    showToast("Academics Page privileges updated for user!");
   };
 
   const saveUser = () => {
@@ -1334,6 +1662,16 @@ export default function AdminDashboard() {
 
               section: "researchAreas",
             },
+            {
+              label: "Academics Sections",
+              count:
+                (data.academicsContent?.studentLife?.length || 0) +
+                (data.academicsContent?.pride?.length || 0) +
+                (data.academicsContent?.events?.length || 0) +
+                (data.academicsContent?.alumni?.length || 0),
+
+              section: "academicsContent",
+            },
             ...(isAdmin
               ? [
                   {
@@ -1382,6 +1720,7 @@ export default function AdminDashboard() {
                   action: "addUser",
                 },
                 { label: "Edit Hero", section: "heroContent" },
+                { label: "Edit Academics", section: "academicsContent" },
               ].map((a) => (
                 <button
                   key={a.label}
@@ -1396,6 +1735,2127 @@ export default function AdminDashboard() {
                   <span>{a.icon}</span> {a.label}
                 </button>
               ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // ── Academics Page Management ─────────────────────────────────────────────
+  const renderAcademics = () => {
+    const ac = data.academicsContent || DEFAULT_ACADEMICS_CONTENT;
+    const canAdd = hasPrivilege("academicsContent", "add");
+    const canEdit = hasPrivilege("academicsContent", "edit");
+    const canDelete = hasPrivilege("academicsContent", "delete");
+
+    const updateAcSection = (key, updatedVal) => {
+      setData((prev) => ({
+        ...prev,
+        academicsContent: {
+          ...(prev.academicsContent || DEFAULT_ACADEMICS_CONTENT),
+          [key]: updatedVal,
+        },
+      }));
+      showToast("Section updated!");
+    };
+
+    const updateAcList = (key, newList, isNested = false, parentKey = null) => {
+      setData((prev) => {
+        const currentAc = prev.academicsContent || DEFAULT_ACADEMICS_CONTENT;
+        if (isNested && parentKey) {
+          return {
+            ...prev,
+            academicsContent: {
+              ...currentAc,
+              [parentKey]: {
+                ...(currentAc[parentKey] || {}),
+                [key]: newList,
+              },
+            },
+          };
+        }
+        return {
+          ...prev,
+          academicsContent: {
+            ...currentAc,
+            [key]: Array.isArray(currentAc[key])
+              ? newList
+              : { ...(currentAc[key] || {}), items: newList },
+          },
+        };
+      });
+    };
+
+    const acTabs = [
+      { key: "hero", label: "🏷️ Hero & Stats", count: ac.heroStats?.length },
+      { key: "studentLife", label: "🎉 Student Life", count: ac.studentLife?.items?.length },
+      { key: "pride", label: "🏆 Our Pride", count: ac.pride?.items?.length },
+      { key: "communities", label: "🤝 Communities", count: ac.communities?.items?.length },
+      { key: "scholarships", label: "🎓 Scholarships", count: ac.scholarships?.items?.length },
+      { key: "overseas", label: "✈️ Overseas", count: (ac.overseas?.dualDegreePartners?.length || 0) + (ac.overseas?.exchangeCountries?.length || 0) },
+      { key: "curriculum", label: "📚 Curriculum", count: ac.curriculum?.years?.length },
+      { key: "internships", label: "🏢 Internships", count: ac.internships?.items?.length },
+      { key: "placements", label: "💼 Placements", count: ac.placements?.items?.length },
+      { key: "events", label: "📅 Events", count: ac.events?.items?.length },
+      { key: "socialMedia", label: "🌐 Social Media", count: ac.socialMedia?.links?.length },
+      { key: "alumni", label: "👨‍🎓 Alumni", count: ac.alumni?.items?.length },
+    ];
+
+    const openAcAdd = (section, defaultObj = {}, meta = {}) => {
+      setAcModal({ show: true, mode: "add", section, item: defaultObj, meta });
+    };
+
+    const openAcEdit = (section, item, meta = {}) => {
+      setAcModal({ show: true, mode: "edit", section, item: { ...item }, meta });
+    };
+
+    const closeAcModal = () => {
+      setAcModal({ show: false, section: "", mode: "add", item: {}, meta: {} });
+    };
+
+    const handleSaveAcModal = () => {
+      const { section, mode, item, meta } = acModal;
+
+      if (section === "heroStats") {
+        const list = ac.heroStats || [];
+        const updated = mode === "edit"
+          ? list.map((i) => (i.id === item.id ? item : i))
+          : [...list, { ...item, id: newId(list) }];
+        updateAcSection("heroStats", updated);
+      } else if (section === "studentLife") {
+        const list = ac.studentLife?.items || [];
+        const updated = mode === "edit"
+          ? list.map((i) => (i.id === item.id ? item : i))
+          : [...list, { ...item, id: newId(list) }];
+        updateAcSection("studentLife", { ...ac.studentLife, items: updated });
+      } else if (section === "pride") {
+        const list = ac.pride?.items || [];
+        const updated = mode === "edit"
+          ? list.map((i) => (i.id === item.id ? item : i))
+          : [...list, { ...item, id: newId(list) }];
+        updateAcSection("pride", { ...ac.pride, items: updated });
+      } else if (section === "communities") {
+        const list = ac.communities?.items || [];
+        const updated = mode === "edit"
+          ? list.map((i) => (i.id === item.id ? item : i))
+          : [...list, { ...item, id: newId(list) }];
+        updateAcSection("communities", { ...ac.communities, items: updated });
+      } else if (section === "scholarships") {
+        const list = ac.scholarships?.items || [];
+        const updated = mode === "edit"
+          ? list.map((i) => (i.id === item.id ? item : i))
+          : [...list, { ...item, id: newId(list) }];
+        updateAcSection("scholarships", { ...ac.scholarships, items: updated });
+      } else if (section === "dualDegreePartners") {
+        const list = ac.overseas?.dualDegreePartners || [];
+        const updated = mode === "edit"
+          ? list.map((i) => (i.id === item.id ? item : i))
+          : [...list, { ...item, id: newId(list) }];
+        updateAcSection("overseas", { ...ac.overseas, dualDegreePartners: updated });
+      } else if (section === "exchangeCountries") {
+        const list = ac.overseas?.exchangeCountries || [];
+        const updated = mode === "edit"
+          ? list.map((i) => (i.id === item.id ? item : i))
+          : [...list, { ...item, id: newId(list) }];
+        updateAcSection("overseas", { ...ac.overseas, exchangeCountries: updated });
+      } else if (section === "internshipsItem") {
+        const list = ac.internships?.items || [];
+        const updated = mode === "edit"
+          ? list.map((i) => (i.id === item.id ? item : i))
+          : [...list, { ...item, id: newId(list) }];
+        updateAcSection("internships", { ...ac.internships, items: updated });
+      } else if (section === "placementsItem") {
+        const list = ac.placements?.items || [];
+        const updated = mode === "edit"
+          ? list.map((i) => (i.id === item.id ? item : i))
+          : [...list, { ...item, id: newId(list) }];
+        updateAcSection("placements", { ...ac.placements, items: updated });
+      } else if (section === "events") {
+        const list = ac.events?.items || [];
+        const updated = mode === "edit"
+          ? list.map((i) => (i.id === item.id ? item : i))
+          : [...list, { ...item, id: newId(list) }];
+        updateAcSection("events", { ...ac.events, items: updated });
+      } else if (section === "socialMedia") {
+        const list = ac.socialMedia?.links || [];
+        const updated = mode === "edit"
+          ? list.map((i) => (i.id === item.id ? item : i))
+          : [...list, { ...item, id: newId(list) }];
+        updateAcSection("socialMedia", { ...ac.socialMedia, links: updated });
+      } else if (section === "alumni") {
+        const list = ac.alumni?.items || [];
+        const updated = mode === "edit"
+          ? list.map((i) => (i.id === item.id ? item : i))
+          : [...list, { ...item, id: newId(list) }];
+        updateAcSection("alumni", { ...ac.alumni, items: updated });
+      } else if (section === "curriculumYear") {
+        const years = ac.curriculum?.years || [];
+        let updated;
+        if (mode === "edit") {
+          updated = years.map((y) => (y.id === item.id ? { ...y, year: item.year } : y));
+        } else {
+          const newYId = newId(years);
+          updated = [
+            ...years,
+            {
+              id: newYId,
+              year: item.year || `Year ${years.length + 1}`,
+              semesters: [
+                { id: newYId * 100 + 1, name: `Semester ${years.length * 2 + 1}`, courses: [] },
+                { id: newYId * 100 + 2, name: `Semester ${years.length * 2 + 2}`, courses: [] },
+              ],
+            },
+          ];
+        }
+        updateAcSection("curriculum", { ...ac.curriculum, years: updated });
+        if (item.year) setAcCurriculumYear(item.year);
+      } else if (section === "curriculumSemester") {
+        const years = ac.curriculum?.years || [];
+        const updated = years.map((y) => {
+          if (y.id !== meta.yearId) return y;
+          const sems = y.semesters || [];
+          let updatedSems;
+          if (mode === "edit") {
+            updatedSems = sems.map((s) => (s.id === item.id ? { ...s, name: item.name } : s));
+          } else {
+            updatedSems = [...sems, { id: newId(sems), name: item.name || `Semester ${sems.length + 1}`, courses: [] }];
+          }
+          return { ...y, semesters: updatedSems };
+        });
+        updateAcSection("curriculum", { ...ac.curriculum, years: updated });
+      } else if (section === "curriculumCourse") {
+        const years = ac.curriculum?.years || [];
+        const updated = years.map((y) => {
+          if (y.id !== meta.yearId) return y;
+          const sems = (y.semesters || []).map((s) => {
+            if (s.id !== meta.semId) return s;
+            const courses = s.courses || [];
+            let updatedCourses;
+            if (mode === "edit") {
+              updatedCourses = courses.map((c, idx) => (idx === meta.courseIndex ? item.courseName : c));
+            } else {
+              updatedCourses = [...courses, item.courseName];
+            }
+            return { ...s, courses: updatedCourses };
+          });
+          return { ...y, semesters: sems };
+        });
+        updateAcSection("curriculum", { ...ac.curriculum, years: updated });
+      }
+
+      showToast(mode === "edit" ? "Saved successfully!" : "Added successfully!");
+      closeAcModal();
+    };
+
+    return (
+      <div className="section-panel">
+        <div className="panel-header">
+          <div>
+            <h2>🎓 Academics Page Management</h2>
+            <p>
+              Complete control to modify, edit, add, and delete all content and sections of the
+              Undergraduate Academics page.
+            </p>
+          </div>
+          <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
+            <span
+              className={`priv-badge ${
+                canAdd && canEdit && canDelete ? "priv-full" : "priv-about"
+              }`}
+            >
+              {canAdd && canEdit && canDelete
+                ? "👑 Full Privilege (Add/Edit/Delete)"
+                : `Privileges: ${canAdd ? "Add " : ""}${canEdit ? "Edit " : ""}${
+                    canDelete ? "Delete" : ""
+                  }`}
+            </span>
+            <a
+              href="/academics"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-priv-quick"
+              style={{ textDecoration: "none" }}
+            >
+              👁️ View Live Academics Page
+            </a>
+          </div>
+        </div>
+
+        {/* Sub-tabs */}
+        <div className="sub-tabs" style={{ flexWrap: "wrap", gap: "6px" }}>
+          {acTabs.map((t) => (
+            <button
+              key={t.key}
+              className={`sub-tab ${acTab === t.key ? "active" : ""}`}
+              onClick={() => setAcTab(t.key)}
+            >
+              {t.label} {t.count != null ? `(${t.count})` : ""}
+            </button>
+          ))}
+        </div>
+
+        {/* ── 01: Hero & Stats ── */}
+        {acTab === "hero" && (
+          <div className="ac-subsection">
+            <div className="obj-form" style={{ marginBottom: "28px" }}>
+              <h3 style={{ color: "#c9d1d9", margin: "0 0 16px", fontSize: "1.1rem" }}>
+                Hero Banner Content
+              </h3>
+              <div className="form-group">
+                <label>Eyebrow Label</label>
+                <input
+                  value={ac.hero?.eyebrow || ""}
+                  disabled={!canEdit}
+                  placeholder="Academics · Academic Programmes"
+                  onChange={(e) =>
+                    updateAcSection("hero", { ...ac.hero, eyebrow: e.target.value })
+                  }
+                />
+              </div>
+              <div className="form-group">
+                <label>Hero Main Heading</label>
+                <input
+                  value={ac.hero?.title || ""}
+                  disabled={!canEdit}
+                  placeholder="Under Graduate Programme"
+                  onChange={(e) =>
+                    updateAcSection("hero", { ...ac.hero, title: e.target.value })
+                  }
+                />
+              </div>
+              <div className="form-group">
+                <label>Hero Subtitle / Description</label>
+                <textarea
+                  rows={3}
+                  value={ac.hero?.subtitle || ""}
+                  disabled={!canEdit}
+                  placeholder="A four-year B.Tech that blends strong computing fundamentals..."
+                  onChange={(e) =>
+                    updateAcSection("hero", { ...ac.hero, subtitle: e.target.value })
+                  }
+                />
+              </div>
+              {canEdit && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => showToast("Hero banner updated!")}
+                >
+                  💾 Save Hero Banner
+                </button>
+              )}
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <h3 style={{ color: "#c9d1d9", margin: 0, fontSize: "1.1rem" }}>
+                Hero Highlights / Stats Bar
+              </h3>
+              {canAdd && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => openAcAdd("heroStats", { value: "4 yrs", label: "Duration" })}
+                >
+                  ➕ Add Stat
+                </button>
+              )}
+            </div>
+
+            <div className="dash-table-wrap">
+              <table className="dash-table">
+                <thead>
+                  <tr>
+                    <th>Value</th>
+                    <th>Label</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(ac.heroStats || []).map((s) => (
+                    <tr key={s.id}>
+                      <td style={{ fontWeight: "700", color: "#38bdf8" }}>{s.value}</td>
+                      <td>{s.label}</td>
+                      <td>
+                        <div className="row-actions">
+                          {canEdit && (
+                            <button
+                              className="btn-icon edit"
+                              title="Edit"
+                              onClick={() => openAcEdit("heroStats", s)}
+                            >
+                              ✏️
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              className="btn-icon delete"
+                              title="Delete"
+                              onClick={() => confirmDelete("ac:heroStats", s.id)}
+                            >
+                              🗑️
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* ── 02: Student Life ── */}
+        {acTab === "studentLife" && (
+          <div className="ac-subsection">
+            <div className="obj-form" style={{ marginBottom: "28px" }}>
+              <div className="form-group">
+                <label>Section Title</label>
+                <input
+                  value={ac.studentLife?.title || ""}
+                  disabled={!canEdit}
+                  onChange={(e) =>
+                    updateAcSection("studentLife", { ...ac.studentLife, title: e.target.value })
+                  }
+                />
+              </div>
+              <div className="form-group">
+                <label>Section Intro (Optional)</label>
+                <input
+                  value={ac.studentLife?.intro || ""}
+                  disabled={!canEdit}
+                  onChange={(e) =>
+                    updateAcSection("studentLife", { ...ac.studentLife, intro: e.target.value })
+                  }
+                />
+              </div>
+              {canEdit && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => showToast("Section title saved!")}
+                >
+                  💾 Save Section Details
+                </button>
+              )}
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <h3 style={{ color: "#c9d1d9", margin: 0, fontSize: "1.1rem" }}>
+                Student Life Cards / Activities
+              </h3>
+              {canAdd && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => openAcAdd("studentLife", { title: "", text: "" })}
+                >
+                  ➕ Add Activity
+                </button>
+              )}
+            </div>
+
+            <div className="dash-table-wrap">
+              <table className="dash-table">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(ac.studentLife?.items || []).map((item) => (
+                    <tr key={item.id}>
+                      <td style={{ fontWeight: "600", minWidth: "160px" }}>{item.title}</td>
+                      <td>{item.text}</td>
+                      <td>
+                        <div className="row-actions">
+                          {canEdit && (
+                            <button
+                              className="btn-icon edit"
+                              title="Edit"
+                              onClick={() => openAcEdit("studentLife", item)}
+                            >
+                              ✏️
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              className="btn-icon delete"
+                              title="Delete"
+                              onClick={() => confirmDelete("ac:studentLife", item.id)}
+                            >
+                              🗑️
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* ── 03: Our Pride ── */}
+        {acTab === "pride" && (
+          <div className="ac-subsection">
+            <div className="obj-form" style={{ marginBottom: "28px" }}>
+              <div className="form-group">
+                <label>Section Title</label>
+                <input
+                  value={ac.pride?.title || ""}
+                  disabled={!canEdit}
+                  onChange={(e) =>
+                    updateAcSection("pride", { ...ac.pride, title: e.target.value })
+                  }
+                />
+              </div>
+              <div className="form-group">
+                <label>Section Intro</label>
+                <input
+                  value={ac.pride?.intro || ""}
+                  disabled={!canEdit}
+                  onChange={(e) =>
+                    updateAcSection("pride", { ...ac.pride, intro: e.target.value })
+                  }
+                />
+              </div>
+              {canEdit && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => showToast("Section title saved!")}
+                >
+                  💾 Save Section Details
+                </button>
+              )}
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <h3 style={{ color: "#c9d1d9", margin: 0, fontSize: "1.1rem" }}>
+                Pride / Achievement Badges
+              </h3>
+              {canAdd && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => openAcAdd("pride", { stat: "#1", text: "" })}
+                >
+                  ➕ Add Pride Item
+                </button>
+              )}
+            </div>
+
+            <div className="dash-table-wrap">
+              <table className="dash-table">
+                <thead>
+                  <tr>
+                    <th>Stat / Badge</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(ac.pride?.items || []).map((item) => (
+                    <tr key={item.id}>
+                      <td style={{ fontWeight: "700", color: "#38bdf8", minWidth: "120px" }}>
+                        {item.stat}
+                      </td>
+                      <td>{item.text}</td>
+                      <td>
+                        <div className="row-actions">
+                          {canEdit && (
+                            <button
+                              className="btn-icon edit"
+                              title="Edit"
+                              onClick={() => openAcEdit("pride", item)}
+                            >
+                              ✏️
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              className="btn-icon delete"
+                              title="Delete"
+                              onClick={() => confirmDelete("ac:pride", item.id)}
+                            >
+                              🗑️
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* ── 04: Communities ── */}
+        {acTab === "communities" && (
+          <div className="ac-subsection">
+            <div className="obj-form" style={{ marginBottom: "28px" }}>
+              <div className="form-group">
+                <label>Section Title</label>
+                <input
+                  value={ac.communities?.title || ""}
+                  disabled={!canEdit}
+                  onChange={(e) =>
+                    updateAcSection("communities", { ...ac.communities, title: e.target.value })
+                  }
+                />
+              </div>
+              {canEdit && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => showToast("Section title saved!")}
+                >
+                  💾 Save Section Title
+                </button>
+              )}
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <h3 style={{ color: "#c9d1d9", margin: 0, fontSize: "1.1rem" }}>
+                Student-run Communities
+              </h3>
+              {canAdd && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => openAcAdd("communities", { tag: "", name: "", text: "", href: "" })}
+                >
+                  ➕ Add Community
+                </button>
+              )}
+            </div>
+
+            <div className="dash-table-wrap">
+              <table className="dash-table">
+                <thead>
+                  <tr>
+                    <th>Tag</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Link URL</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(ac.communities?.items || []).map((item) => (
+                    <tr key={item.id}>
+                      <td>
+                        <span className="badge badge-green">{item.tag}</span>
+                      </td>
+                      <td style={{ fontWeight: "700" }}>{item.name}</td>
+                      <td>{item.text}</td>
+                      <td>
+                        <a href={item.href} target="_blank" rel="noreferrer" style={{ color: "#38bdf8" }}>
+                          {item.href}
+                        </a>
+                      </td>
+                      <td>
+                        <div className="row-actions">
+                          {canEdit && (
+                            <button
+                              className="btn-icon edit"
+                              title="Edit"
+                              onClick={() => openAcEdit("communities", item)}
+                            >
+                              ✏️
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              className="btn-icon delete"
+                              title="Delete"
+                              onClick={() => confirmDelete("ac:communities", item.id)}
+                            >
+                              🗑️
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* ── 05: Scholarships ── */}
+        {acTab === "scholarships" && (
+          <div className="ac-subsection">
+            <div className="obj-form" style={{ marginBottom: "28px" }}>
+              <div className="form-group">
+                <label>Section Title</label>
+                <input
+                  value={ac.scholarships?.title || ""}
+                  disabled={!canEdit}
+                  onChange={(e) =>
+                    updateAcSection("scholarships", { ...ac.scholarships, title: e.target.value })
+                  }
+                />
+              </div>
+              <div className="form-group">
+                <label>Section Intro</label>
+                <input
+                  value={ac.scholarships?.intro || ""}
+                  disabled={!canEdit}
+                  onChange={(e) =>
+                    updateAcSection("scholarships", { ...ac.scholarships, intro: e.target.value })
+                  }
+                />
+              </div>
+              {canEdit && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => showToast("Section details saved!")}
+                >
+                  💾 Save Section Details
+                </button>
+              )}
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <h3 style={{ color: "#c9d1d9", margin: 0, fontSize: "1.1rem" }}>
+                Scholarships List
+              </h3>
+              {canAdd && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => openAcAdd("scholarships", { title: "", text: "" })}
+                >
+                  ➕ Add Scholarship
+                </button>
+              )}
+            </div>
+
+            <div className="dash-table-wrap">
+              <table className="dash-table">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(ac.scholarships?.items || []).map((item) => (
+                    <tr key={item.id}>
+                      <td style={{ fontWeight: "600", minWidth: "160px" }}>{item.title}</td>
+                      <td>{item.text}</td>
+                      <td>
+                        <div className="row-actions">
+                          {canEdit && (
+                            <button
+                              className="btn-icon edit"
+                              title="Edit"
+                              onClick={() => openAcEdit("scholarships", item)}
+                            >
+                              ✏️
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              className="btn-icon delete"
+                              title="Delete"
+                              onClick={() => confirmDelete("ac:scholarships", item.id)}
+                            >
+                              🗑️
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* ── 06: Overseas Experience ── */}
+        {acTab === "overseas" && (
+          <div className="ac-subsection">
+            <div className="obj-form" style={{ marginBottom: "28px" }}>
+              <div className="form-group">
+                <label>Section Title</label>
+                <input
+                  value={ac.overseas?.title || ""}
+                  disabled={!canEdit}
+                  onChange={(e) =>
+                    updateAcSection("overseas", { ...ac.overseas, title: e.target.value })
+                  }
+                />
+              </div>
+              <div className="form-group">
+                <label>Section Intro</label>
+                <input
+                  value={ac.overseas?.intro || ""}
+                  disabled={!canEdit}
+                  onChange={(e) =>
+                    updateAcSection("overseas", { ...ac.overseas, intro: e.target.value })
+                  }
+                />
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                <div className="form-group">
+                  <label>Dual Degree Title</label>
+                  <input
+                    value={ac.overseas?.dualDegreeTitle || ""}
+                    disabled={!canEdit}
+                    onChange={(e) =>
+                      updateAcSection("overseas", { ...ac.overseas, dualDegreeTitle: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Exchange Title</label>
+                  <input
+                    value={ac.overseas?.exchangeTitle || ""}
+                    disabled={!canEdit}
+                    onChange={(e) =>
+                      updateAcSection("overseas", { ...ac.overseas, exchangeTitle: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <label>Dual Degree Description</label>
+                <textarea
+                  rows={2}
+                  value={ac.overseas?.dualDegreeText || ""}
+                  disabled={!canEdit}
+                  onChange={(e) =>
+                    updateAcSection("overseas", { ...ac.overseas, dualDegreeText: e.target.value })
+                  }
+                />
+              </div>
+              <div className="form-group">
+                <label>Exchange Description</label>
+                <textarea
+                  rows={2}
+                  value={ac.overseas?.exchangeText || ""}
+                  disabled={!canEdit}
+                  onChange={(e) =>
+                    updateAcSection("overseas", { ...ac.overseas, exchangeText: e.target.value })
+                  }
+                />
+              </div>
+              {canEdit && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => showToast("Overseas configuration saved!")}
+                >
+                  💾 Save Overseas Settings
+                </button>
+              )}
+            </div>
+
+            {/* Dual Degree Partners */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <h3 style={{ color: "#c9d1d9", margin: 0, fontSize: "1.1rem" }}>
+                Dual Degree Partner Universities
+              </h3>
+              {canAdd && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => openAcAdd("dualDegreePartners", { name: "" })}
+                >
+                  ➕ Add Partner
+                </button>
+              )}
+            </div>
+
+            <div className="dash-table-wrap" style={{ marginBottom: "32px" }}>
+              <table className="dash-table">
+                <thead>
+                  <tr>
+                    <th>University Name</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(ac.overseas?.dualDegreePartners || []).map((p) => (
+                    <tr key={p.id}>
+                      <td style={{ fontWeight: "600" }}>{p.name}</td>
+                      <td>
+                        <div className="row-actions">
+                          {canEdit && (
+                            <button
+                              className="btn-icon edit"
+                              title="Edit"
+                              onClick={() => openAcEdit("dualDegreePartners", p)}
+                            >
+                              ✏️
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              className="btn-icon delete"
+                              title="Delete"
+                              onClick={() => confirmDelete("ac:dualDegreePartners", p.id)}
+                            >
+                              🗑️
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Exchange Countries */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <h3 style={{ color: "#c9d1d9", margin: 0, fontSize: "1.1rem" }}>
+                Student Exchange Countries
+              </h3>
+              {canAdd && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => openAcAdd("exchangeCountries", { name: "" })}
+                >
+                  ➕ Add Country
+                </button>
+              )}
+            </div>
+
+            <div className="dash-table-wrap">
+              <table className="dash-table">
+                <thead>
+                  <tr>
+                    <th>Country Name</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(ac.overseas?.exchangeCountries || []).map((c) => (
+                    <tr key={c.id}>
+                      <td style={{ fontWeight: "600" }}>{c.name}</td>
+                      <td>
+                        <div className="row-actions">
+                          {canEdit && (
+                            <button
+                              className="btn-icon edit"
+                              title="Edit"
+                              onClick={() => openAcEdit("exchangeCountries", c)}
+                            >
+                              ✏️
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              className="btn-icon delete"
+                              title="Delete"
+                              onClick={() => confirmDelete("ac:exchangeCountries", c.id)}
+                            >
+                              🗑️
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* ── 07: Curriculum ── */}
+        {acTab === "curriculum" && (
+          <div className="ac-subsection">
+            <div className="obj-form" style={{ marginBottom: "28px" }}>
+              <div className="form-group">
+                <label>Curriculum Section Title</label>
+                <input
+                  value={ac.curriculum?.title || ""}
+                  disabled={!canEdit}
+                  onChange={(e) =>
+                    updateAcSection("curriculum", { ...ac.curriculum, title: e.target.value })
+                  }
+                />
+              </div>
+              <div className="form-group">
+                <label>Curriculum Intro</label>
+                <input
+                  value={ac.curriculum?.intro || ""}
+                  disabled={!canEdit}
+                  onChange={(e) =>
+                    updateAcSection("curriculum", { ...ac.curriculum, intro: e.target.value })
+                  }
+                />
+              </div>
+              {canEdit && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => showToast("Curriculum header saved!")}
+                >
+                  💾 Save Curriculum Info
+                </button>
+              )}
+            </div>
+
+            {/* Year management header */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", flexWrap: "wrap", gap: "10px" }}>
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                {(ac.curriculum?.years || []).map((yr) => (
+                  <button
+                    key={yr.id || yr.year}
+                    className={`btn ${acCurriculumYear === yr.year ? "btn-primary" : "btn-secondary"}`}
+                    style={{ padding: "6px 14px", fontSize: "0.85rem" }}
+                    onClick={() => setAcCurriculumYear(yr.year)}
+                  >
+                    {yr.year}
+                  </button>
+                ))}
+              </div>
+              {canAdd && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => openAcAdd("curriculumYear", { year: `Year ${(ac.curriculum?.years?.length || 0) + 1}` })}
+                >
+                  ➕ Add Academic Year
+                </button>
+              )}
+            </div>
+
+            {/* Selected Year Semesters & Courses */}
+            {(() => {
+              const currentYearObj = (ac.curriculum?.years || []).find((y) => y.year === acCurriculumYear) || ac.curriculum?.years?.[0];
+              if (!currentYearObj) {
+                return <p className="empty-msg">No curriculum years found.</p>;
+              }
+              return (
+                <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)", borderRadius: "10px", padding: "20px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                      <h3 style={{ margin: 0, color: "#fff", fontSize: "1.2rem" }}>
+                        {currentYearObj.year}
+                      </h3>
+                      {canEdit && (
+                        <button
+                          className="btn-icon edit"
+                          title="Rename Year"
+                          onClick={() => openAcEdit("curriculumYear", currentYearObj)}
+                        >
+                          ✏️
+                        </button>
+                      )}
+                      {canDelete && (
+                        <button
+                          className="btn-icon delete"
+                          title="Delete Entire Year"
+                          onClick={() => confirmDelete("ac:curriculum.year", currentYearObj.id)}
+                        >
+                          🗑️
+                        </button>
+                      )}
+                    </div>
+                    {canAdd && (
+                      <button
+                        className="btn btn-secondary"
+                        onClick={() => openAcAdd("curriculumSemester", { name: "" }, { yearId: currentYearObj.id })}
+                      >
+                        ➕ Add Semester
+                      </button>
+                    )}
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "20px" }}>
+                    {(currentYearObj.semesters || []).map((sem) => (
+                      <div
+                        key={sem.id || sem.name}
+                        style={{
+                          background: "#0d1117",
+                          border: "1px solid #30363d",
+                          borderRadius: "8px",
+                          padding: "16px",
+                        }}
+                      >
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", borderBottom: "1px solid #21262d", paddingBottom: "8px" }}>
+                          <span style={{ fontWeight: "700", color: "#38bdf8" }}>{sem.name}</span>
+                          <div style={{ display: "flex", gap: "6px" }}>
+                            {canAdd && (
+                              <button
+                                className="btn-icon"
+                                title="Add Course"
+                                style={{ background: "rgba(56,189,248,0.15)", color: "#38bdf8" }}
+                                onClick={() => openAcAdd("curriculumCourse", { courseName: "" }, { yearId: currentYearObj.id, semId: sem.id })}
+                              >
+                                ➕
+                              </button>
+                            )}
+                            {canEdit && (
+                              <button
+                                className="btn-icon edit"
+                                title="Rename Semester"
+                                onClick={() => openAcEdit("curriculumSemester", sem, { yearId: currentYearObj.id })}
+                              >
+                                ✏️
+                              </button>
+                            )}
+                            {canDelete && (
+                              <button
+                                className="btn-icon delete"
+                                title="Delete Semester"
+                                onClick={() => confirmDelete("ac:curriculum.semester", sem.id)}
+                              >
+                                🗑️
+                              </button>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Course items */}
+                        {sem.courses?.length === 0 ? (
+                          <p style={{ color: "#8b949e", fontSize: "0.85rem", fontStyle: "italic" }}>No courses yet.</p>
+                        ) : (
+                          <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "6px" }}>
+                            {sem.courses?.map((course, idx) => (
+                              <li
+                                key={`${course}-${idx}`}
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                  padding: "6px 10px",
+                                  background: "rgba(255,255,255,0.03)",
+                                  borderRadius: "6px",
+                                  fontSize: "0.875rem",
+                                }}
+                              >
+                                <span>
+                                  <span style={{ color: "#8b949e", marginRight: "8px", fontWeight: "600" }}>
+                                    {String(idx + 1).padStart(2, "0")}
+                                  </span>
+                                  {course}
+                                </span>
+                                <div style={{ display: "flex", gap: "4px" }}>
+                                  {canEdit && (
+                                    <button
+                                      className="btn-icon edit"
+                                      style={{ padding: "2px 6px", fontSize: "0.75rem" }}
+                                      title="Edit Course"
+                                      onClick={() => openAcEdit("curriculumCourse", { courseName: course }, { yearId: currentYearObj.id, semId: sem.id, courseIndex: idx })}
+                                    >
+                                      ✏️
+                                    </button>
+                                  )}
+                                  {canDelete && (
+                                    <button
+                                      className="btn-icon delete"
+                                      style={{ padding: "2px 6px", fontSize: "0.75rem" }}
+                                      title="Delete Course"
+                                      onClick={() => confirmDelete("ac:curriculum.course", null, { yearId: currentYearObj.id, semId: sem.id, courseIndex: idx })}
+                                    >
+                                      🗑️
+                                    </button>
+                                  )}
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+        )}
+
+        {/* ── 08: Internships ── */}
+        {acTab === "internships" && (
+          <div className="ac-subsection">
+            <div className="obj-form" style={{ marginBottom: "28px" }}>
+              <div className="form-group">
+                <label>Section Title</label>
+                <input
+                  value={ac.internships?.title || ""}
+                  disabled={!canEdit}
+                  onChange={(e) =>
+                    updateAcSection("internships", { ...ac.internships, title: e.target.value })
+                  }
+                />
+              </div>
+              <div className="form-group">
+                <label>Intro Text</label>
+                <textarea
+                  rows={2}
+                  value={ac.internships?.intro || ""}
+                  disabled={!canEdit}
+                  onChange={(e) =>
+                    updateAcSection("internships", { ...ac.internships, intro: e.target.value })
+                  }
+                />
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px" }}>
+                <div className="form-group">
+                  <label>Earliest Semester</label>
+                  <input
+                    type="number"
+                    value={ac.internships?.earliestSemester ?? 4}
+                    disabled={!canEdit}
+                    onChange={(e) =>
+                      updateAcSection("internships", {
+                        ...ac.internships,
+                        earliestSemester: Number(e.target.value),
+                      })
+                    }
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Min Duration (Weeks)</label>
+                  <input
+                    type="number"
+                    value={ac.internships?.minWeeks ?? 4}
+                    disabled={!canEdit}
+                    onChange={(e) =>
+                      updateAcSection("internships", {
+                        ...ac.internships,
+                        minWeeks: Number(e.target.value),
+                      })
+                    }
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Max Duration (Weeks)</label>
+                  <input
+                    type="number"
+                    value={ac.internships?.maxWeeks ?? 24}
+                    disabled={!canEdit}
+                    onChange={(e) =>
+                      updateAcSection("internships", {
+                        ...ac.internships,
+                        maxWeeks: Number(e.target.value),
+                      })
+                    }
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <label>Official Internship URL</label>
+                <input
+                  value={ac.internships?.sourceUrl || ""}
+                  disabled={!canEdit}
+                  onChange={(e) =>
+                    updateAcSection("internships", { ...ac.internships, sourceUrl: e.target.value })
+                  }
+                />
+              </div>
+              {canEdit && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => showToast("Internship details saved!")}
+                >
+                  💾 Save Internship Details
+                </button>
+              )}
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <h3 style={{ color: "#c9d1d9", margin: 0, fontSize: "1.1rem" }}>
+                Internship Highlights / Policies
+              </h3>
+              {canAdd && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => openAcAdd("internshipsItem", { title: "", text: "" })}
+                >
+                  ➕ Add Policy / Highlight
+                </button>
+              )}
+            </div>
+
+            <div className="dash-table-wrap">
+              <table className="dash-table">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(ac.internships?.items || []).map((item) => (
+                    <tr key={item.id}>
+                      <td style={{ fontWeight: "600", minWidth: "160px" }}>{item.title}</td>
+                      <td>{item.text}</td>
+                      <td>
+                        <div className="row-actions">
+                          {canEdit && (
+                            <button
+                              className="btn-icon edit"
+                              title="Edit"
+                              onClick={() => openAcEdit("internshipsItem", item)}
+                            >
+                              ✏️
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              className="btn-icon delete"
+                              title="Delete"
+                              onClick={() => confirmDelete("ac:internships", item.id)}
+                            >
+                              🗑️
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* ── 09: Placements ── */}
+        {acTab === "placements" && (
+          <div className="ac-subsection">
+            <div className="obj-form" style={{ marginBottom: "28px" }}>
+              <div className="form-group">
+                <label>Section Title</label>
+                <input
+                  value={ac.placements?.title || ""}
+                  disabled={!canEdit}
+                  onChange={(e) =>
+                    updateAcSection("placements", { ...ac.placements, title: e.target.value })
+                  }
+                />
+              </div>
+              <div className="form-group">
+                <label>Intro Text</label>
+                <textarea
+                  rows={2}
+                  value={ac.placements?.intro || ""}
+                  disabled={!canEdit}
+                  onChange={(e) =>
+                    updateAcSection("placements", { ...ac.placements, intro: e.target.value })
+                  }
+                />
+              </div>
+              <div className="form-group">
+                <label>Placement Note / Disclaimer</label>
+                <textarea
+                  rows={3}
+                  value={ac.placements?.note || ""}
+                  disabled={!canEdit}
+                  onChange={(e) =>
+                    updateAcSection("placements", { ...ac.placements, note: e.target.value })
+                  }
+                />
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                <div className="form-group">
+                  <label>Official Placement URL</label>
+                  <input
+                    value={ac.placements?.sourceUrl || ""}
+                    disabled={!canEdit}
+                    onChange={(e) =>
+                      updateAcSection("placements", { ...ac.placements, sourceUrl: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Career Preparation URL</label>
+                  <input
+                    value={ac.placements?.trainingUrl || ""}
+                    disabled={!canEdit}
+                    onChange={(e) =>
+                      updateAcSection("placements", { ...ac.placements, trainingUrl: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+              {canEdit && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => showToast("Placement details saved!")}
+                >
+                  💾 Save Placement Info
+                </button>
+              )}
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <h3 style={{ color: "#c9d1d9", margin: 0, fontSize: "1.1rem" }}>
+                Placement Highlights
+              </h3>
+              {canAdd && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => openAcAdd("placementsItem", { title: "", text: "" })}
+                >
+                  ➕ Add Highlight
+                </button>
+              )}
+            </div>
+
+            <div className="dash-table-wrap">
+              <table className="dash-table">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(ac.placements?.items || []).map((item) => (
+                    <tr key={item.id}>
+                      <td style={{ fontWeight: "600", minWidth: "160px" }}>{item.title}</td>
+                      <td>{item.text}</td>
+                      <td>
+                        <div className="row-actions">
+                          {canEdit && (
+                            <button
+                              className="btn-icon edit"
+                              title="Edit"
+                              onClick={() => openAcEdit("placementsItem", item)}
+                            >
+                              ✏️
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              className="btn-icon delete"
+                              title="Delete"
+                              onClick={() => confirmDelete("ac:placements", item.id)}
+                            >
+                              🗑️
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* ── 10: Events ── */}
+        {acTab === "events" && (
+          <div className="ac-subsection">
+            <div className="obj-form" style={{ marginBottom: "28px" }}>
+              <div className="form-group">
+                <label>Section Title</label>
+                <input
+                  value={ac.events?.title || ""}
+                  disabled={!canEdit}
+                  onChange={(e) =>
+                    updateAcSection("events", { ...ac.events, title: e.target.value })
+                  }
+                />
+              </div>
+              <div className="form-group">
+                <label>Section Intro</label>
+                <input
+                  value={ac.events?.intro || ""}
+                  disabled={!canEdit}
+                  onChange={(e) =>
+                    updateAcSection("events", { ...ac.events, intro: e.target.value })
+                  }
+                />
+              </div>
+              {canEdit && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => showToast("Events header saved!")}
+                >
+                  💾 Save Section Info
+                </button>
+              )}
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <h3 style={{ color: "#c9d1d9", margin: 0, fontSize: "1.1rem" }}>
+                Undergraduate Events (Talks / Workshops / Webinars)
+              </h3>
+              {canAdd && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => openAcAdd("events", { type: "Talk", date: "", title: "", by: "" })}
+                >
+                  ➕ Add Event
+                </button>
+              )}
+            </div>
+
+            <div className="dash-table-wrap">
+              <table className="dash-table">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th>Title</th>
+                    <th>By / Speaker</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(ac.events?.items || []).map((ev) => (
+                    <tr key={ev.id}>
+                      <td>
+                        <span className="badge badge-blue">{ev.type}</span>
+                      </td>
+                      <td style={{ whiteSpace: "nowrap" }}>{ev.date}</td>
+                      <td style={{ fontWeight: "600" }}>{ev.title}</td>
+                      <td>{ev.by}</td>
+                      <td>
+                        <div className="row-actions">
+                          {canEdit && (
+                            <button
+                              className="btn-icon edit"
+                              title="Edit"
+                              onClick={() => openAcEdit("events", ev)}
+                            >
+                              ✏️
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              className="btn-icon delete"
+                              title="Delete"
+                              onClick={() => confirmDelete("ac:events", ev.id)}
+                            >
+                              🗑️
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* ── 11: Social Media ── */}
+        {acTab === "socialMedia" && (
+          <div className="ac-subsection">
+            <div className="obj-form" style={{ marginBottom: "28px" }}>
+              <div className="form-group">
+                <label>Section Title</label>
+                <input
+                  value={ac.socialMedia?.title || ""}
+                  disabled={!canEdit}
+                  onChange={(e) =>
+                    updateAcSection("socialMedia", { ...ac.socialMedia, title: e.target.value })
+                  }
+                />
+              </div>
+              <div className="form-group">
+                <label>Section Intro</label>
+                <input
+                  value={ac.socialMedia?.intro || ""}
+                  disabled={!canEdit}
+                  onChange={(e) =>
+                    updateAcSection("socialMedia", { ...ac.socialMedia, intro: e.target.value })
+                  }
+                />
+              </div>
+              {canEdit && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => showToast("Social media header saved!")}
+                >
+                  💾 Save Section Info
+                </button>
+              )}
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <h3 style={{ color: "#c9d1d9", margin: 0, fontSize: "1.1rem" }}>
+                Social Media Links
+              </h3>
+              {canAdd && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => openAcAdd("socialMedia", { name: "", handle: "", href: "" })}
+                >
+                  ➕ Add Social Link
+                </button>
+              )}
+            </div>
+
+            <div className="dash-table-wrap">
+              <table className="dash-table">
+                <thead>
+                  <tr>
+                    <th>Platform</th>
+                    <th>Handle / Account</th>
+                    <th>Profile URL</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(ac.socialMedia?.links || []).map((s) => (
+                    <tr key={s.id}>
+                      <td style={{ fontWeight: "700" }}>{s.name}</td>
+                      <td style={{ color: "#38bdf8" }}>{s.handle}</td>
+                      <td>
+                        <a href={s.href} target="_blank" rel="noreferrer" style={{ color: "#8b949e" }}>
+                          {s.href}
+                        </a>
+                      </td>
+                      <td>
+                        <div className="row-actions">
+                          {canEdit && (
+                            <button
+                              className="btn-icon edit"
+                              title="Edit"
+                              onClick={() => openAcEdit("socialMedia", s)}
+                            >
+                              ✏️
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              className="btn-icon delete"
+                              title="Delete"
+                              onClick={() => confirmDelete("ac:socialMedia", s.id)}
+                            >
+                              🗑️
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* ── 12: Alumni ── */}
+        {acTab === "alumni" && (
+          <div className="ac-subsection">
+            <div className="obj-form" style={{ marginBottom: "28px" }}>
+              <div className="form-group">
+                <label>Section Title</label>
+                <input
+                  value={ac.alumni?.title || ""}
+                  disabled={!canEdit}
+                  onChange={(e) =>
+                    updateAcSection("alumni", { ...ac.alumni, title: e.target.value })
+                  }
+                />
+              </div>
+              <div className="form-group">
+                <label>Section Intro</label>
+                <input
+                  value={ac.alumni?.intro || ""}
+                  disabled={!canEdit}
+                  onChange={(e) =>
+                    updateAcSection("alumni", { ...ac.alumni, intro: e.target.value })
+                  }
+                />
+              </div>
+              {canEdit && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => showToast("Alumni section saved!")}
+                >
+                  💾 Save Section Info
+                </button>
+              )}
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <h3 style={{ color: "#c9d1d9", margin: 0, fontSize: "1.1rem" }}>
+                Alumni Testimonials
+              </h3>
+              {canAdd && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => openAcAdd("alumni", { name: "", batch: "", role: "", quote: "" })}
+                >
+                  ➕ Add Testimonial
+                </button>
+              )}
+            </div>
+
+            <div className="dash-table-wrap">
+              <table className="dash-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Batch</th>
+                    <th>Current Role</th>
+                    <th>Quote</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(ac.alumni?.items || []).map((a) => (
+                    <tr key={a.id}>
+                      <td style={{ fontWeight: "700" }}>{a.name}</td>
+                      <td>{a.batch}</td>
+                      <td style={{ color: "#38bdf8" }}>{a.role}</td>
+                      <td style={{ fontStyle: "italic", maxWidth: "340px" }}>"{a.quote}"</td>
+                      <td>
+                        <div className="row-actions">
+                          {canEdit && (
+                            <button
+                              className="btn-icon edit"
+                              title="Edit"
+                              onClick={() => openAcEdit("alumni", a)}
+                            >
+                              ✏️
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              className="btn-icon delete"
+                              title="Delete"
+                              onClick={() => confirmDelete("ac:alumni", a.id)}
+                            >
+                              🗑️
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* ── Modal Dialog for Adding / Editing Academics Items ── */}
+        {acModal.show && (
+          <div className="modal-backdrop" onClick={closeAcModal}>
+            <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h3>{acModal.mode === "edit" ? "Edit" : "Add"} Item</h3>
+                <button className="modal-close" onClick={closeAcModal}>
+                  ✕
+                </button>
+              </div>
+              <div className="modal-body">
+                {/* Hero Stat Form */}
+                {acModal.section === "heroStats" && (
+                  <>
+                    <div className="form-group">
+                      <label>Value (e.g. 4 yrs, 160+)</label>
+                      <input
+                        value={acModal.item.value || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, value: e.target.value },
+                          }))
+                        }
+                        placeholder="e.g. 4 yrs"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Label (e.g. B.Tech duration)</label>
+                      <input
+                        value={acModal.item.label || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, label: e.target.value },
+                          }))
+                        }
+                        placeholder="e.g. B.Tech duration"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* Simple Title + Text Form (Student Life, Scholarships, InternshipsItem, PlacementsItem) */}
+                {["studentLife", "scholarships", "internshipsItem", "placementsItem"].includes(
+                  acModal.section
+                ) && (
+                  <>
+                    <div className="form-group">
+                      <label>Title</label>
+                      <input
+                        value={acModal.item.title || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, title: e.target.value },
+                          }))
+                        }
+                        placeholder="Title..."
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Description</label>
+                      <textarea
+                        rows={4}
+                        value={acModal.item.text || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, text: e.target.value },
+                          }))
+                        }
+                        placeholder="Description..."
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* Pride Form */}
+                {acModal.section === "pride" && (
+                  <>
+                    <div className="form-group">
+                      <label>Stat / Badge (e.g. #1, GSoC, ICPC, Papers)</label>
+                      <input
+                        value={acModal.item.stat || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, stat: e.target.value },
+                          }))
+                        }
+                        placeholder="#1"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Description</label>
+                      <textarea
+                        rows={3}
+                        value={acModal.item.text || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, text: e.target.value },
+                          }))
+                        }
+                        placeholder="Achievement description..."
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* Community Form */}
+                {acModal.section === "communities" && (
+                  <>
+                    <div className="form-group">
+                      <label>Tag (e.g. Cyber security, Open source)</label>
+                      <input
+                        value={acModal.item.tag || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, tag: e.target.value },
+                          }))
+                        }
+                        placeholder="Cyber security"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Community Name</label>
+                      <input
+                        value={acModal.item.name || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, name: e.target.value },
+                          }))
+                        }
+                        placeholder="team bi0s"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Description</label>
+                      <textarea
+                        rows={3}
+                        value={acModal.item.text || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, text: e.target.value },
+                          }))
+                        }
+                        placeholder="Description..."
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Website URL</label>
+                      <input
+                        value={acModal.item.href || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, href: e.target.value },
+                          }))
+                        }
+                        placeholder="https://bi0s.in"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* Partner / Country Name Form */}
+                {["dualDegreePartners", "exchangeCountries"].includes(acModal.section) && (
+                  <div className="form-group">
+                    <label>
+                      {acModal.section === "dualDegreePartners"
+                        ? "Partner University Name"
+                        : "Country Name"}
+                    </label>
+                    <input
+                      value={acModal.item.name || ""}
+                      onChange={(e) =>
+                        setAcModal((m) => ({
+                          ...m,
+                          item: { ...m.item, name: e.target.value },
+                        }))
+                      }
+                      placeholder={
+                        acModal.section === "dualDegreePartners"
+                          ? "e.g. University at Buffalo, USA"
+                          : "e.g. Germany"
+                      }
+                    />
+                  </div>
+                )}
+
+                {/* Curriculum Year */}
+                {acModal.section === "curriculumYear" && (
+                  <div className="form-group">
+                    <label>Academic Year Name</label>
+                    <input
+                      value={acModal.item.year || ""}
+                      onChange={(e) =>
+                        setAcModal((m) => ({
+                          ...m,
+                          item: { ...m.item, year: e.target.value },
+                        }))
+                      }
+                      placeholder="e.g. Year 1 or Foundation Year"
+                    />
+                  </div>
+                )}
+
+                {/* Curriculum Semester */}
+                {acModal.section === "curriculumSemester" && (
+                  <div className="form-group">
+                    <label>Semester Name</label>
+                    <input
+                      value={acModal.item.name || ""}
+                      onChange={(e) =>
+                        setAcModal((m) => ({
+                          ...m,
+                          item: { ...m.item, name: e.target.value },
+                        }))
+                      }
+                      placeholder="e.g. Semester 1"
+                    />
+                  </div>
+                )}
+
+                {/* Curriculum Course */}
+                {acModal.section === "curriculumCourse" && (
+                  <div className="form-group">
+                    <label>Course Title</label>
+                    <input
+                      value={acModal.item.courseName || ""}
+                      onChange={(e) =>
+                        setAcModal((m) => ({
+                          ...m,
+                          item: { ...m.item, courseName: e.target.value },
+                        }))
+                      }
+                      placeholder="e.g. Data Structures & Algorithms I"
+                    />
+                  </div>
+                )}
+
+                {/* Event Form */}
+                {acModal.section === "events" && (
+                  <>
+                    <div className="form-group">
+                      <label>Event Type</label>
+                      <select
+                        value={acModal.item.type || "Talk"}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, type: e.target.value },
+                          }))
+                        }
+                      >
+                        {["Talk", "Workshop", "Webinar", "Seminar", "Conference", "Bootcamp"].map(
+                          (t) => (
+                            <option key={t} value={t}>
+                              {t}
+                            </option>
+                          )
+                        )}
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <label>Date (e.g. Dec 04, 2026)</label>
+                      <input
+                        value={acModal.item.date || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, date: e.target.value },
+                          }))
+                        }
+                        placeholder="Dec 04, 2026"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Event Title</label>
+                      <input
+                        value={acModal.item.title || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, title: e.target.value },
+                          }))
+                        }
+                        placeholder="e.g. The Future of Systems Programming"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>By / Speaker / Host</label>
+                      <input
+                        value={acModal.item.by || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, by: e.target.value },
+                          }))
+                        }
+                        placeholder="e.g. team bi0s or Guest speaker"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* Social Media Link Form */}
+                {acModal.section === "socialMedia" && (
+                  <>
+                    <div className="form-group">
+                      <label>Platform Name</label>
+                      <input
+                        value={acModal.item.name || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, name: e.target.value },
+                          }))
+                        }
+                        placeholder="e.g. Instagram, LinkedIn, YouTube"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Account / Handle</label>
+                      <input
+                        value={acModal.item.handle || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, handle: e.target.value },
+                          }))
+                        }
+                        placeholder="e.g. @amritauniversity"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>URL</label>
+                      <input
+                        value={acModal.item.href || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, href: e.target.value },
+                          }))
+                        }
+                        placeholder="https://..."
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* Alumni Form */}
+                {acModal.section === "alumni" && (
+                  <>
+                    <div className="form-group">
+                      <label>Alumni Full Name</label>
+                      <input
+                        value={acModal.item.name || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, name: e.target.value },
+                          }))
+                        }
+                        placeholder="e.g. Ananya R."
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Batch / Graduation</label>
+                      <input
+                        value={acModal.item.batch || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, batch: e.target.value },
+                          }))
+                        }
+                        placeholder="e.g. B.Tech CSE, 2019"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Current Role & Organization</label>
+                      <input
+                        value={acModal.item.role || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, role: e.target.value },
+                          }))
+                        }
+                        placeholder="e.g. Software Engineer, Google"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Quote / Testimonial</label>
+                      <textarea
+                        rows={3}
+                        value={acModal.item.quote || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, quote: e.target.value },
+                          }))
+                        }
+                        placeholder="Testimonial quote..."
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={closeAcModal}>
+                  Cancel
+                </button>
+                <button className="btn btn-primary" onClick={handleSaveAcModal}>
+                  {acModal.mode === "edit" ? "Save Changes" : "Add Item"}
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -2554,6 +5014,10 @@ export default function AdminDashboard() {
                     📖 About Editor — Complete privilege on About Page (Add,
                     Edit, Delete)
                   </option>
+                  <option value="academic_editor">
+                    🎓 Academic Editor — Complete privilege on Academics Page
+                    (Add, Edit, Delete)
+                  </option>
                   <option value="event_editor">
                     🗓️ Event Editor — News &amp; Events only
                   </option>
@@ -2580,29 +5044,79 @@ export default function AdminDashboard() {
                   <label style={{ margin: 0 }}>
                     Section Privileges &amp; Action Permissions
                   </label>
-                  <button
-                    type="button"
-                    className="btn-priv-quick"
-                    onClick={() => {
-                      setUserForm((f) => ({
-                        ...f,
-                        privileges: {
-                          ...(f.privileges || getPrivilegesForRole(f.role)),
-                          aboutContent: {
-                            view: true,
-                            add: true,
-                            edit: true,
-                            delete: true,
+                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                    <button
+                      type="button"
+                      className="btn-priv-quick"
+                      onClick={() => {
+                        setUserForm((f) => ({
+                          ...f,
+                          privileges: {
+                            ...(f.privileges || getPrivilegesForRole(f.role)),
+                            aboutContent: {
+                              view: true,
+                              add: true,
+                              edit: true,
+                              delete: true,
+                            },
                           },
-                        },
-                      }));
-                      showToast(
-                        "Full About privilege enabled (Add, Edit, Delete)!",
-                      );
-                    }}
-                  >
-                    ⭐ Grant Full About Privilege
-                  </button>
+                        }));
+                        showToast(
+                          "Full About privilege enabled (Add, Edit, Delete)!",
+                        );
+                      }}
+                    >
+                      ⭐ Grant Full About Privilege
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-priv-quick btn-priv-academic"
+                      onClick={() => {
+                        setUserForm((f) => ({
+                          ...f,
+                          privileges: {
+                            ...(f.privileges || getPrivilegesForRole(f.role)),
+                            academicsContent: {
+                              view: true,
+                              add: true,
+                              edit: true,
+                              delete: true,
+                            },
+                          },
+                        }));
+                        showToast(
+                          "Full Academics privilege enabled (Add, Edit, Delete)!",
+                        );
+                      }}
+                    >
+                      🎓 Grant Full Academic Privilege
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-priv-quick btn-priv-gold"
+                      onClick={() => {
+                        const full = { view: true, add: true, edit: true, delete: true };
+                        setUserForm((f) => ({
+                          ...f,
+                          privileges: {
+                            aboutContent: { ...full },
+                            heroContent: { ...full },
+                            highlights: { ...full },
+                            news: { ...full },
+                            events: { ...full },
+                            speakers: { ...full },
+                            faculty: { ...full },
+                            researchAreas: { ...full },
+                            contactInfo: { ...full },
+                            academicsContent: { ...full },
+                          },
+                        }));
+                        showToast("👑 Full privilege granted for ALL sections!");
+                      }}
+                    >
+                      👑 Grant All Privileges
+                    </button>
+                  </div>
                 </div>
 
                 <div className="privilege-box">
@@ -2635,6 +5149,47 @@ export default function AdminDashboard() {
                                     getPrivilegesForRole(f.role)),
                                   aboutContent: {
                                     ...(f.privileges?.aboutContent || {}),
+                                    [act]: val,
+                                  },
+                                },
+                              }));
+                            }}
+                          />
+                          {act.charAt(0).toUpperCase() + act.slice(1)}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Academics Page privilege row */}
+                  <div
+                    className="privilege-row"
+                    style={{ borderLeft: "3px solid #38bdf8" }}
+                  >
+                    <div className="priv-title-group">
+                      <span>🎓</span>
+                      <span>Academics Page</span>
+                      <span className="priv-badge" style={{ background: "rgba(56,189,248,0.15)", color: "#38bdf8" }}>
+                        Key Privilege
+                      </span>
+                    </div>
+                    <div className="priv-actions-group">
+                      {["view", "add", "edit", "delete"].map((act) => (
+                        <label key={act} className="priv-checkbox-label">
+                          <input
+                            type="checkbox"
+                            checked={
+                              userForm.privileges?.academicsContent?.[act] ?? true
+                            }
+                            onChange={(e) => {
+                              const val = e.target.checked;
+                              setUserForm((f) => ({
+                                ...f,
+                                privileges: {
+                                  ...(f.privileges ||
+                                    getPrivilegesForRole(f.role)),
+                                  academicsContent: {
+                                    ...(f.privileges?.academicsContent || {}),
                                     [act]: val,
                                   },
                                 },
@@ -2988,6 +5543,7 @@ export default function AdminDashboard() {
                           gap: "5px",
                         }}
                       >
+                        {/* About privilege badge */}
                         {u.privileges?.aboutContent?.view &&
                         u.privileges?.aboutContent?.add &&
                         u.privileges?.aboutContent?.edit &&
@@ -3003,14 +5559,36 @@ export default function AdminDashboard() {
                           <span className="priv-badge">
                             📖 About: View Only
                           </span>
-                        ) : (
+                        ) : null}
+
+                        {/* Academics privilege badge */}
+                        {u.privileges?.academicsContent?.view &&
+                        u.privileges?.academicsContent?.add &&
+                        u.privileges?.academicsContent?.edit &&
+                        u.privileges?.academicsContent?.delete ? (
+                          <span className="priv-badge priv-academic-full">
+                            🎓 Academics: Add / Edit / Del
+                          </span>
+                        ) : u.privileges?.academicsContent?.edit ? (
+                          <span className="priv-badge priv-academic">
+                            🎓 Academics: Edit Only
+                          </span>
+                        ) : u.privileges?.academicsContent?.view ? (
+                          <span className="priv-badge">
+                            🎓 Academics: View Only
+                          </span>
+                        ) : null}
+
+                        {!u.privileges?.aboutContent?.view &&
+                         !u.privileges?.academicsContent?.view && (
                           <span
                             className="text-muted"
                             style={{ fontSize: "0.75rem" }}
                           >
-                            No About Access
+                            No special access
                           </span>
                         )}
+
                         <div
                           style={{
                             display: "flex",
@@ -3033,6 +5611,14 @@ export default function AdminDashboard() {
                             title="Toggle Full About Privileges"
                           >
                             ⚡ Toggle About
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-priv-quick btn-priv-academic"
+                            onClick={() => toggleAcademicFullPrivilege(u.id)}
+                            title="Toggle Full Academics Privileges"
+                          >
+                            🎓 Toggle Academics
                           </button>
                         </div>
                       </div>
@@ -3208,6 +5794,8 @@ export default function AdminDashboard() {
         return renderOverview();
       case "aboutContent":
         return renderAbout();
+      case "academicsContent":
+        return renderAcademics();
       case "heroContent":
         return renderHero();
       case "contactInfo":
@@ -3589,6 +6177,8 @@ export default function AdminDashboard() {
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
+                  flexWrap: "wrap",
+                  gap: "8px",
                 }}
               >
                 <span
@@ -3598,28 +6188,74 @@ export default function AdminDashboard() {
                     fontWeight: "600",
                   }}
                 >
-                  About Page Privilege
+                  Section Privileges
                 </span>
-                <button
-                  type="button"
-                  className="btn-priv-quick"
-                  onClick={() =>
-                    setUserPrivilegeModal((prev) => ({
-                      ...prev,
-                      privileges: {
-                        ...prev.privileges,
-                        aboutContent: {
-                          view: true,
-                          add: true,
-                          edit: true,
-                          delete: true,
+                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                  <button
+                    type="button"
+                    className="btn-priv-quick"
+                    onClick={() =>
+                      setUserPrivilegeModal((prev) => ({
+                        ...prev,
+                        privileges: {
+                          ...prev.privileges,
+                          aboutContent: {
+                            view: true,
+                            add: true,
+                            edit: true,
+                            delete: true,
+                          },
                         },
-                      },
-                    }))
-                  }
-                >
-                  ⭐ Grant Full About Privilege (Add, Edit, Delete)
-                </button>
+                      }))
+                    }
+                  >
+                    ⭐ Grant Full About Privilege (Add, Edit, Delete)
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-priv-quick btn-priv-academic"
+                    onClick={() =>
+                      setUserPrivilegeModal((prev) => ({
+                        ...prev,
+                        privileges: {
+                          ...prev.privileges,
+                          academicsContent: {
+                            view: true,
+                            add: true,
+                            edit: true,
+                            delete: true,
+                          },
+                        },
+                      }))
+                    }
+                  >
+                    🎓 Grant Full Academic Privilege (Add, Edit, Delete)
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-priv-quick btn-priv-gold"
+                    onClick={() => {
+                      const full = { view: true, add: true, edit: true, delete: true };
+                      setUserPrivilegeModal((prev) => ({
+                        ...prev,
+                        privileges: {
+                          aboutContent: { ...full },
+                          heroContent: { ...full },
+                          highlights: { ...full },
+                          news: { ...full },
+                          events: { ...full },
+                          speakers: { ...full },
+                          faculty: { ...full },
+                          researchAreas: { ...full },
+                          contactInfo: { ...full },
+                          academicsContent: { ...full },
+                        },
+                      }));
+                    }}
+                  >
+                    👑 Grant All Privileges
+                  </button>
+                </div>
               </div>
 
               <div className="privilege-box">
@@ -3817,6 +6453,44 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                 ))}
+
+                {/* Academics Page privilege row */}
+                <div
+                  className="privilege-row"
+                  style={{ borderLeft: "3px solid #38bdf8" }}
+                >
+                  <div className="priv-title-group">
+                    <span>🎓</span>
+                    <span>Academics Page</span>
+                    <span className="priv-badge priv-academic">Key Privilege</span>
+                  </div>
+                  <div className="priv-actions-group">
+                    {["view", "add", "edit", "delete"].map((act) => (
+                      <label key={act} className="priv-checkbox-label">
+                        <input
+                          type="checkbox"
+                          checked={
+                            userPrivilegeModal.privileges?.academicsContent?.[act] ?? false
+                          }
+                          onChange={(e) => {
+                            const val = e.target.checked;
+                            setUserPrivilegeModal((prev) => ({
+                              ...prev,
+                              privileges: {
+                                ...prev.privileges,
+                                academicsContent: {
+                                  ...(prev.privileges?.academicsContent || {}),
+                                  [act]: val,
+                                },
+                              },
+                            }));
+                          }}
+                        />
+                        {act.charAt(0).toUpperCase() + act.slice(1)}
+                      </label>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
             <div className="form-modal-footer">
