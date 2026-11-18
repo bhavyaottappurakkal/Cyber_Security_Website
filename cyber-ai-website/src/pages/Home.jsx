@@ -130,30 +130,6 @@ export default function Home() {
                 </Link>
               </div>
 
-              {/* Institutional Key Highlights Bar */}
-              <div className="ref-hero-highlights-strip">
-                <div className="strip-item">
-                  <span className="strip-num">CORE</span>
-                  <span className="strip-label">
-                    Mission REACH, Govt. of India
-                  </span>
-                </div>
-                <div className="strip-divider"></div>
-                <div className="strip-item">
-                  <span className="strip-num">A++ Grade</span>
-                  <span className="strip-label">Accredited by NAAC</span>
-                </div>
-                <div className="strip-divider"></div>
-                <div className="strip-item">
-                  <span className="strip-num">World&apos;s Top 100</span>
-                  <span className="strip-label">THE Impact Rankings</span>
-                </div>
-                <div className="strip-divider"></div>
-                <div className="strip-item">
-                  <span className="strip-num">100+ Patents</span>
-                  <span className="strip-label">Granted across Amrita</span>
-                </div>
-              </div>
             </div>
 
             {/* Right Column: Animated cybersecurity globe */}
@@ -291,90 +267,46 @@ export default function Home() {
       <section className="section ref-welcome-section">
         <div className="container">
           <div className="ref-welcome-box">
-            <div className="ref-welcome-grid">
-              <div className="ref-welcome-content">
-                <span className="ref-sub-heading">
-                  Welcome &amp; Introduction
-                </span>
-                <h2 className="ref-welcome-title">
-                  Amrita Center for Cybersecurity Systems and Networks
-                </h2>
-                <div className="ref-accent-bar ref-accent-bar-left"></div>
+            <div className="ref-welcome-content">
+              <span className="ref-sub-heading">
+                Welcome &amp; Introduction
+              </span>
+              <h2 className="ref-welcome-title">
+                Amrita Center for Cybersecurity Systems and Networks
+              </h2>
+              <div className="ref-accent-bar ref-accent-bar-left"></div>
 
-                <p className="ref-welcome-lead">
-                  The Amrita Center for Cybersecurity Systems and Networks
-                  promotes partnerships between industry, academia, and the
-                  government to foster innovative research and education in
-                  cybersecurity, thus enhancing knowledge, deriving solutions,
-                  benefiting society, and mitigating risks.
-                </p>
+              <p className="ref-welcome-lead">
+                The Amrita Center for Cybersecurity Systems and Networks
+                promotes partnerships between industry, academia, and the
+                government to foster innovative research and education in
+                cybersecurity, thus enhancing knowledge, deriving solutions,
+                benefiting society, and mitigating risks.
+              </p>
 
-                <p className="ref-welcome-p">
-                  The Center is supported by the Government of India through
-                  many of its Departments and Mission REACH programs. As a
-                  designated{" "}
-                  <strong>Center of Relevance and Excellence (CORE)</strong> for
-                  cybersecurity in India, the Center fosters a core group of
-                  experts who disseminate knowledge across the ever-expanding
-                  frontiers of cybersecurity and AI.
-                </p>
+              <p className="ref-welcome-p">
+                The Center is supported by the Government of India through many
+                of its Departments and Mission REACH programs. As a designated{" "}
+                <strong>Center of Relevance and Excellence (CORE)</strong> for
+                cybersecurity in India, the Center fosters a core group of
+                experts who disseminate knowledge across the ever-expanding
+                frontiers of cybersecurity and AI.
+              </p>
 
-                {/* Online MCA Callout */}
-                <div className="ref-online-mca-banner">
-                  <div className="mca-badge-icon">🌐</div>
-                  <div className="mca-badge-info">
-                    <h4>Globally Recognized Online MCA Cybersecurity</h4>
-                    <p>
-                      The Center also offers the globally recognized Online MCA
-                      Cybersecurity program through Amrita Online, attracting
-                      students and working professionals from around the world.
-                    </p>
-                  </div>
-                  <Link to="/academics" className="mca-cta-btn">
-                    View Program →
-                  </Link>
+              {/* Online MCA Callout */}
+              <div className="ref-online-mca-banner">
+                <div className="mca-badge-icon">🌐</div>
+                <div className="mca-badge-info">
+                  <h4>Globally Recognized Online MCA Cybersecurity</h4>
+                  <p>
+                    The Center also offers the globally recognized Online MCA
+                    Cybersecurity program through Amrita Online, attracting
+                    students and working professionals from around the world.
+                  </p>
                 </div>
-              </div>
-
-              <div className="ref-welcome-aside">
-                <div className="ref-aside-card">
-                  <img
-                    src="/amrita-cyber-logo.jpg"
-                    alt="Amrita Logo"
-                    className="ref-aside-logo"
-                  />
-                  <div className="ref-aside-divider"></div>
-                  <div className="aside-points">
-                    <div className="ap-item">
-                      <span className="ap-num">01</span>
-                      <div>
-                        <strong>Mission REACH CORE</strong>
-                        <p>National Center of Relevance &amp; Excellence</p>
-                      </div>
-                    </div>
-                    <div className="ap-item">
-                      <span className="ap-num">02</span>
-                      <div>
-                        <strong>A++ Grade Accreditation</strong>
-                        <p>Awarded by NAAC with highest institutional rank</p>
-                      </div>
-                    </div>
-                    <div className="ap-item">
-                      <span className="ap-num">03</span>
-                      <div>
-                        <strong>World's Top 100</strong>
-                        <p>Times Higher Education (THE) Impact Rankings</p>
-                      </div>
-                    </div>
-                    <div className="ap-item">
-                      <span className="ap-num">04</span>
-                      <div>
-                        <strong>100+ Patents Granted</strong>
-                        <p>Pioneering discoveries across Amrita</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <Link to="/academics" className="mca-cta-btn">
+                  View Program →
+                </Link>
               </div>
             </div>
           </div>
