@@ -2,6 +2,14 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { DEFAULT_ABOUT_CONTENT } from "./About";
 import { DEFAULT_ACADEMICS_CONTENT } from "./Academics";
+import {
+  DEFAULT_POSTGRADUATE_CONTENT,
+  DEFAULT_PHD_CONTENT,
+  DEFAULT_ONLINE_MCA_CONTENT,
+  normalizePostgraduate,
+  normalizePhD,
+  normalizeOnlineMCA,
+} from "../data/academicsData";
 import "./AdminDashboard.css";
 
 // ─── Role Definitions ─────────────────────────────────────────────────────────
@@ -64,7 +72,7 @@ function getPrivilegesForRole(role) {
       faculty:           { view: true, add: true, edit: true, delete: true },
       researchAreas:     { view: true, add: true, edit: true, delete: true },
       contactInfo:       { view: true, add: true, edit: true, delete: true },
-      academicsContent:  { view: true, add: true, edit: true, delete: true },
+      academicsContent:  { view: true, add: true, edit: true, delete: true, image: true, move: true },
     };
   }
   if (role === "academic_editor") {
@@ -78,7 +86,7 @@ function getPrivilegesForRole(role) {
       faculty:           { view: false, add: false, edit: false, delete: false },
       researchAreas:     { view: false, add: false, edit: false, delete: false },
       contactInfo:       { view: false, add: false, edit: false, delete: false },
-      academicsContent:  { view: true,  add: true,  edit: true,  delete: true  },
+      academicsContent:  { view: true,  add: true,  edit: true,  delete: true, image: true, move: true },
     };
   }
   if (role === "about_editor") {
@@ -92,7 +100,7 @@ function getPrivilegesForRole(role) {
       faculty:           { view: false, add: false, edit: false, delete: false },
       researchAreas:     { view: false, add: false, edit: false, delete: false },
       contactInfo:       { view: false, add: false, edit: false, delete: false },
-      academicsContent:  { view: false, add: false, edit: false, delete: false },
+      academicsContent:  { view: false, add: false, edit: false, delete: false, image: false, move: false },
     };
   }
   if (role === "event_editor") {
@@ -106,7 +114,7 @@ function getPrivilegesForRole(role) {
       faculty:           { view: false, add: false, edit: false, delete: false },
       researchAreas:     { view: false, add: false, edit: false, delete: false },
       contactInfo:       { view: false, add: false, edit: false, delete: false },
-      academicsContent:  { view: false, add: false, edit: false, delete: false },
+      academicsContent:  { view: false, add: false, edit: false, delete: false, image: false, move: false },
     };
   }
   // content_editor
@@ -120,7 +128,7 @@ function getPrivilegesForRole(role) {
     faculty:           { view: true,  add: true,  edit: true,  delete: true  },
     researchAreas:     { view: true,  add: true,  edit: true,  delete: true  },
     contactInfo:       { view: true,  add: false, edit: true,  delete: false },
-    academicsContent:  { view: true,  add: true,  edit: true,  delete: true  },
+    academicsContent:  { view: true,  add: true,  edit: true,  delete: true, image: true, move: true },
   };
 }
 
@@ -394,6 +402,9 @@ const INITIAL_DATA = {
   },
   aboutContent: DEFAULT_ABOUT_CONTENT,
   academicsContent: DEFAULT_ACADEMICS_CONTENT,
+  postgraduateContent: DEFAULT_POSTGRADUATE_CONTENT,
+  phdContent: DEFAULT_PHD_CONTENT,
+  onlineMcaContent: DEFAULT_ONLINE_MCA_CONTENT,
 };
 
 // ─── All Sections (admin sees all) ───────────────────────────────────────────
@@ -416,6 +427,16 @@ const ALL_SECTIONS = [
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function newId(list) {
   return list.length ? Math.max(...list.map((i) => i.id)) + 1 : 1;
+}
+
+function moveItemInArray(list, index, direction) {
+  if (!list || index < 0) return list;
+  const newIndex = direction === "up" ? index - 1 : index + 1;
+  if (newIndex < 0 || newIndex >= list.length) return list;
+  const copy = [...list];
+  const [removed] = copy.splice(index, 1);
+  copy.splice(newIndex, 0, removed);
+  return copy;
 }
 
 function getStoredUsers() {
@@ -464,7 +485,10 @@ export default function AdminDashboard() {
     if (currentUser.privileges && currentUser.privileges[section]) {
       const p = currentUser.privileges[section];
       if (typeof p === "boolean") return p;
-      return !!p[action];
+      if (p[action] !== undefined) return !!p[action];
+      if (action === "image") return !!(p.add || p.edit);
+      if (action === "move") return !!p.edit;
+      return false;
     }
     if (userRole === "about_editor" && section === "aboutContent") return true;
     if (userRole === "academic_editor" && section === "academicsContent") return true;
@@ -553,7 +577,17 @@ export default function AdminDashboard() {
             ...(parsed.academicsContent.alumni && !Array.isArray(parsed.academicsContent.alumni) ? parsed.academicsContent.alumni : {}),
             items: Array.isArray(parsed.academicsContent.alumni) ? parsed.academicsContent.alumni : (parsed.academicsContent.alumni?.items || DEFAULT_ACADEMICS_CONTENT.alumni.items),
           },
+          customAreas: parsed.academicsContent.customAreas || [],
         } : DEFAULT_ACADEMICS_CONTENT,
+        postgraduateContent: parsed.postgraduateContent
+          ? normalizePostgraduate(parsed.postgraduateContent)
+          : DEFAULT_POSTGRADUATE_CONTENT,
+        phdContent: parsed.phdContent
+          ? normalizePhD(parsed.phdContent)
+          : DEFAULT_PHD_CONTENT,
+        onlineMcaContent: parsed.onlineMcaContent
+          ? normalizeOnlineMCA(parsed.onlineMcaContent)
+          : DEFAULT_ONLINE_MCA_CONTENT,
       };
     } catch {
       return INITIAL_DATA;
@@ -567,7 +601,11 @@ export default function AdminDashboard() {
   const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   // Academics Page state
+  const [acPageTab, setAcPageTab] = useState("undergraduate");
   const [acTab, setAcTab] = useState("hero");
+  const [pgTab, setPgTab] = useState("hero");
+  const [phdTab, setPhdTab] = useState("hero");
+  const [mcaTab, setMcaTab] = useState("hero");
   const [acCurriculumYear, setAcCurriculumYear] = useState("Year 1");
   const [acModal, setAcModal] = useState({
     show: false,
@@ -666,6 +704,7 @@ export default function AdminDashboard() {
   // ── Persist site data ────────────────────────────────────────────────────
   useEffect(() => {
     localStorage.setItem("adminSiteData", JSON.stringify(data));
+    window.dispatchEvent(new Event("adminSiteDataUpdated"));
   }, [data]);
 
   // ── Persist users ────────────────────────────────────────────────────────
@@ -965,7 +1004,64 @@ export default function AdminDashboard() {
             },
           };
         }
+        if (path === "customAreas") {
+          return {
+            ...prev,
+            academicsContent: {
+              ...ac,
+              customAreas: (ac.customAreas || []).filter((i) => i.id !== deleteConfirm.id),
+            },
+          };
+        }
         return prev;
+      });
+      showToast("Deleted.", "info");
+      setDeleteConfirm(null);
+      return;
+    }
+    if (deleteConfirm.section?.startsWith("pg:")) {
+      const path = deleteConfirm.section.slice(3);
+      setData((prev) => {
+        const pg = prev.postgraduateContent || DEFAULT_POSTGRADUATE_CONTENT;
+        return {
+          ...prev,
+          postgraduateContent: {
+            ...pg,
+            [path]: (pg[path] || []).filter((i) => i.id !== deleteConfirm.id),
+          },
+        };
+      });
+      showToast("Deleted.", "info");
+      setDeleteConfirm(null);
+      return;
+    }
+    if (deleteConfirm.section?.startsWith("phd:")) {
+      const path = deleteConfirm.section.slice(4);
+      setData((prev) => {
+        const phd = prev.phdContent || DEFAULT_PHD_CONTENT;
+        return {
+          ...prev,
+          phdContent: {
+            ...phd,
+            [path]: (phd[path] || []).filter((i) => i.id !== deleteConfirm.id),
+          },
+        };
+      });
+      showToast("Deleted.", "info");
+      setDeleteConfirm(null);
+      return;
+    }
+    if (deleteConfirm.section?.startsWith("mca:")) {
+      const path = deleteConfirm.section.slice(4);
+      setData((prev) => {
+        const mca = prev.onlineMcaContent || DEFAULT_ONLINE_MCA_CONTENT;
+        return {
+          ...prev,
+          onlineMcaContent: {
+            ...mca,
+            [path]: (mca[path] || []).filter((i) => i.id !== deleteConfirm.id),
+          },
+        };
       });
       showToast("Deleted.", "info");
       setDeleteConfirm(null);
@@ -1745,9 +1841,15 @@ export default function AdminDashboard() {
   // ── Academics Page Management ─────────────────────────────────────────────
   const renderAcademics = () => {
     const ac = data.academicsContent || DEFAULT_ACADEMICS_CONTENT;
+    const pg = data.postgraduateContent || DEFAULT_POSTGRADUATE_CONTENT;
+    const phd = data.phdContent || DEFAULT_PHD_CONTENT;
+    const mca = data.onlineMcaContent || DEFAULT_ONLINE_MCA_CONTENT;
+
     const canAdd = hasPrivilege("academicsContent", "add");
     const canEdit = hasPrivilege("academicsContent", "edit");
     const canDelete = hasPrivilege("academicsContent", "delete");
+    const canAddImage = hasPrivilege("academicsContent", "image");
+    const canMove = hasPrivilege("academicsContent", "move");
 
     const updateAcSection = (key, updatedVal) => {
       setData((prev) => ({
@@ -1758,6 +1860,88 @@ export default function AdminDashboard() {
         },
       }));
       showToast("Section updated!");
+    };
+
+    const updateProgSection = (program, key, updatedVal) => {
+      const pKey =
+        program === "postgraduate"
+          ? "postgraduateContent"
+          : program === "phd"
+          ? "phdContent"
+          : program === "online_mca"
+          ? "onlineMcaContent"
+          : "academicsContent";
+      setData((prev) => ({
+        ...prev,
+        [pKey]: {
+          ...(prev[pKey] || {}),
+          [key]: updatedVal,
+        },
+      }));
+      showToast("Section updated!");
+    };
+
+    const handleMoveAcItem = (program, section, index, direction) => {
+      if (!canMove) {
+        showToast("You don't have privilege to reorder items.");
+        return;
+      }
+      const programKey =
+        program === "postgraduate"
+          ? "postgraduateContent"
+          : program === "phd"
+          ? "phdContent"
+          : program === "online_mca"
+          ? "onlineMcaContent"
+          : "academicsContent";
+
+      setData((prev) => {
+        const progData = prev[programKey] || {};
+        let currentList = [];
+        let isNested = false;
+        let parentKey = null;
+
+        if (Array.isArray(progData[section])) {
+          currentList = progData[section];
+        } else if (progData[section]?.items) {
+          currentList = progData[section].items;
+          isNested = true;
+          parentKey = section;
+        } else if (section === "dualDegreePartners" && progData.overseas?.dualDegreePartners) {
+          currentList = progData.overseas.dualDegreePartners;
+          isNested = true;
+          parentKey = "overseas";
+        } else if (section === "exchangeCountries" && progData.overseas?.exchangeCountries) {
+          currentList = progData.overseas.exchangeCountries;
+          isNested = true;
+          parentKey = "overseas";
+        }
+
+        const reordered = moveItemInArray(currentList, index, direction);
+
+        if (isNested && parentKey) {
+          return {
+            ...prev,
+            [programKey]: {
+              ...progData,
+              [parentKey]: {
+                ...progData[parentKey],
+                [section === "dualDegreePartners" || section === "exchangeCountries" ? section : "items"]: reordered,
+              },
+            },
+          };
+        }
+
+        return {
+          ...prev,
+          [programKey]: {
+            ...progData,
+            [section]: reordered,
+          },
+        };
+      });
+
+      showToast("Item order updated!");
     };
 
     const updateAcList = (key, newList, isNested = false, parentKey = null) => {
@@ -1800,202 +1984,371 @@ export default function AdminDashboard() {
       { key: "events", label: "📅 Events", count: ac.events?.items?.length },
       { key: "socialMedia", label: "🌐 Social Media", count: ac.socialMedia?.links?.length },
       { key: "alumni", label: "👨‍🎓 Alumni", count: ac.alumni?.items?.length },
+      { key: "customAreas", label: "➕ Custom Areas", count: ac.customAreas?.length || 0 },
     ];
 
-    const openAcAdd = (section, defaultObj = {}, meta = {}) => {
-      setAcModal({ show: true, mode: "add", section, item: defaultObj, meta });
+    const pgTabs = [
+      { key: "hero", label: "🏷️ Hero & Stats", count: pg.heroStats?.length },
+      { key: "specializations", label: "🔐 Specializations", count: pg.specializations?.length },
+      { key: "curriculum", label: "📚 Curriculum", count: pg.curriculum?.length },
+      { key: "dualDegreePartners", label: "✈️ Dual Degree", count: pg.dualDegreePartners?.length },
+      { key: "placements", label: "💼 Placements", count: pg.placements?.length },
+      { key: "alumni", label: "👨‍🎓 Alumni", count: pg.alumni?.length },
+      { key: "customAreas", label: "➕ Custom Areas", count: pg.customAreas?.length || 0 },
+    ];
+
+    const phdTabs = [
+      { key: "hero", label: "🏷️ Hero & Stats", count: phd.heroStats?.length },
+      { key: "researchAreas", label: "🔬 Research Areas", count: phd.researchAreas?.length },
+      { key: "fundingPartners", label: "🏛️ Funding Partners", count: phd.fundingPartners?.length },
+      { key: "phdGuide", label: "🗺️ PhD Roadmap", count: phd.phdGuide?.length },
+      { key: "alumni", label: "👨‍🎓 Alumni Doctors", count: phd.alumni?.length },
+      { key: "customAreas", label: "➕ Custom Areas", count: phd.customAreas?.length || 0 },
+    ];
+
+    const mcaTabs = [
+      { key: "hero", label: "🏷️ Hero & Stats", count: mca.heroStats?.length },
+      { key: "highlights", label: "⭐ Highlights", count: mca.highlights?.length },
+      { key: "curriculum", label: "📚 Curriculum", count: mca.curriculum?.length },
+      { key: "faqs", label: "❓ FAQs", count: mca.faqs?.length },
+      { key: "placements", label: "💼 Placements", count: mca.placements?.length },
+      { key: "customAreas", label: "➕ Custom Areas", count: mca.customAreas?.length || 0 },
+    ];
+
+    const openAcAdd = (section, defaultObj = {}, meta = {}, program = null) => {
+      setAcModal({
+        show: true,
+        mode: "add",
+        program: program || acPageTab,
+        section,
+        item: defaultObj,
+        meta,
+      });
     };
 
-    const openAcEdit = (section, item, meta = {}) => {
-      setAcModal({ show: true, mode: "edit", section, item: { ...item }, meta });
+    const openAcEdit = (section, item, meta = {}, program = null) => {
+      setAcModal({
+        show: true,
+        mode: "edit",
+        program: program || acPageTab,
+        section,
+        item: { ...item },
+        meta,
+      });
     };
 
     const closeAcModal = () => {
-      setAcModal({ show: false, section: "", mode: "add", item: {}, meta: {} });
+      setAcModal({ show: false, program: "undergraduate", section: "", mode: "add", item: {}, meta: {} });
     };
 
     const handleSaveAcModal = () => {
-      const { section, mode, item, meta } = acModal;
+      const { section, mode, item, meta, program } = acModal;
+      const targetProg = program || acPageTab;
 
-      if (section === "heroStats") {
-        const list = ac.heroStats || [];
+      if (targetProg === "postgraduate") {
+        const list = pg[section] || [];
         const updated = mode === "edit"
           ? list.map((i) => (i.id === item.id ? item : i))
           : [...list, { ...item, id: newId(list) }];
-        updateAcSection("heroStats", updated);
-      } else if (section === "studentLife") {
-        const list = ac.studentLife?.items || [];
+        updateProgSection("postgraduate", section, updated);
+      } else if (targetProg === "phd") {
+        const list = phd[section] || [];
         const updated = mode === "edit"
           ? list.map((i) => (i.id === item.id ? item : i))
           : [...list, { ...item, id: newId(list) }];
-        updateAcSection("studentLife", { ...ac.studentLife, items: updated });
-      } else if (section === "pride") {
-        const list = ac.pride?.items || [];
+        updateProgSection("phd", section, updated);
+      } else if (targetProg === "online_mca") {
+        const list = mca[section] || [];
         const updated = mode === "edit"
           ? list.map((i) => (i.id === item.id ? item : i))
           : [...list, { ...item, id: newId(list) }];
-        updateAcSection("pride", { ...ac.pride, items: updated });
-      } else if (section === "communities") {
-        const list = ac.communities?.items || [];
-        const updated = mode === "edit"
-          ? list.map((i) => (i.id === item.id ? item : i))
-          : [...list, { ...item, id: newId(list) }];
-        updateAcSection("communities", { ...ac.communities, items: updated });
-      } else if (section === "scholarships") {
-        const list = ac.scholarships?.items || [];
-        const updated = mode === "edit"
-          ? list.map((i) => (i.id === item.id ? item : i))
-          : [...list, { ...item, id: newId(list) }];
-        updateAcSection("scholarships", { ...ac.scholarships, items: updated });
-      } else if (section === "dualDegreePartners") {
-        const list = ac.overseas?.dualDegreePartners || [];
-        const updated = mode === "edit"
-          ? list.map((i) => (i.id === item.id ? item : i))
-          : [...list, { ...item, id: newId(list) }];
-        updateAcSection("overseas", { ...ac.overseas, dualDegreePartners: updated });
-      } else if (section === "exchangeCountries") {
-        const list = ac.overseas?.exchangeCountries || [];
-        const updated = mode === "edit"
-          ? list.map((i) => (i.id === item.id ? item : i))
-          : [...list, { ...item, id: newId(list) }];
-        updateAcSection("overseas", { ...ac.overseas, exchangeCountries: updated });
-      } else if (section === "internshipsItem") {
-        const list = ac.internships?.items || [];
-        const updated = mode === "edit"
-          ? list.map((i) => (i.id === item.id ? item : i))
-          : [...list, { ...item, id: newId(list) }];
-        updateAcSection("internships", { ...ac.internships, items: updated });
-      } else if (section === "placementsItem") {
-        const list = ac.placements?.items || [];
-        const updated = mode === "edit"
-          ? list.map((i) => (i.id === item.id ? item : i))
-          : [...list, { ...item, id: newId(list) }];
-        updateAcSection("placements", { ...ac.placements, items: updated });
-      } else if (section === "events") {
-        const list = ac.events?.items || [];
-        const updated = mode === "edit"
-          ? list.map((i) => (i.id === item.id ? item : i))
-          : [...list, { ...item, id: newId(list) }];
-        updateAcSection("events", { ...ac.events, items: updated });
-      } else if (section === "socialMedia") {
-        const list = ac.socialMedia?.links || [];
-        const updated = mode === "edit"
-          ? list.map((i) => (i.id === item.id ? item : i))
-          : [...list, { ...item, id: newId(list) }];
-        updateAcSection("socialMedia", { ...ac.socialMedia, links: updated });
-      } else if (section === "alumni") {
-        const list = ac.alumni?.items || [];
-        const updated = mode === "edit"
-          ? list.map((i) => (i.id === item.id ? item : i))
-          : [...list, { ...item, id: newId(list) }];
-        updateAcSection("alumni", { ...ac.alumni, items: updated });
-      } else if (section === "curriculumYear") {
-        const years = ac.curriculum?.years || [];
-        let updated;
-        if (mode === "edit") {
-          updated = years.map((y) => (y.id === item.id ? { ...y, year: item.year } : y));
-        } else {
-          const newYId = newId(years);
-          updated = [
-            ...years,
-            {
-              id: newYId,
-              year: item.year || `Year ${years.length + 1}`,
-              semesters: [
-                { id: newYId * 100 + 1, name: `Semester ${years.length * 2 + 1}`, courses: [] },
-                { id: newYId * 100 + 2, name: `Semester ${years.length * 2 + 2}`, courses: [] },
-              ],
-            },
-          ];
-        }
-        updateAcSection("curriculum", { ...ac.curriculum, years: updated });
-        if (item.year) setAcCurriculumYear(item.year);
-      } else if (section === "curriculumSemester") {
-        const years = ac.curriculum?.years || [];
-        const updated = years.map((y) => {
-          if (y.id !== meta.yearId) return y;
-          const sems = y.semesters || [];
-          let updatedSems;
+        updateProgSection("online_mca", section, updated);
+      } else {
+        // Undergraduate
+        if (section === "customAreas") {
+          const list = ac.customAreas || [];
+          const updated = mode === "edit"
+            ? list.map((i) => (i.id === item.id ? item : i))
+            : [...list, { ...item, id: newId(list) }];
+          updateAcSection("customAreas", updated);
+        } else if (section === "heroStats") {
+          const list = ac.heroStats || [];
+          const updated = mode === "edit"
+            ? list.map((i) => (i.id === item.id ? item : i))
+            : [...list, { ...item, id: newId(list) }];
+          updateAcSection("heroStats", updated);
+        } else if (section === "studentLife") {
+          const list = ac.studentLife?.items || [];
+          const updated = mode === "edit"
+            ? list.map((i) => (i.id === item.id ? item : i))
+            : [...list, { ...item, id: newId(list) }];
+          updateAcSection("studentLife", { ...ac.studentLife, items: updated });
+        } else if (section === "pride") {
+          const list = ac.pride?.items || [];
+          const updated = mode === "edit"
+            ? list.map((i) => (i.id === item.id ? item : i))
+            : [...list, { ...item, id: newId(list) }];
+          updateAcSection("pride", { ...ac.pride, items: updated });
+        } else if (section === "communities") {
+          const list = ac.communities?.items || [];
+          const updated = mode === "edit"
+            ? list.map((i) => (i.id === item.id ? item : i))
+            : [...list, { ...item, id: newId(list) }];
+          updateAcSection("communities", { ...ac.communities, items: updated });
+        } else if (section === "scholarships") {
+          const list = ac.scholarships?.items || [];
+          const updated = mode === "edit"
+            ? list.map((i) => (i.id === item.id ? item : i))
+            : [...list, { ...item, id: newId(list) }];
+          updateAcSection("scholarships", { ...ac.scholarships, items: updated });
+        } else if (section === "dualDegreePartners") {
+          const list = ac.overseas?.dualDegreePartners || [];
+          const updated = mode === "edit"
+            ? list.map((i) => (i.id === item.id ? item : i))
+            : [...list, { ...item, id: newId(list) }];
+          updateAcSection("overseas", { ...ac.overseas, dualDegreePartners: updated });
+        } else if (section === "exchangeCountries") {
+          const list = ac.overseas?.exchangeCountries || [];
+          const updated = mode === "edit"
+            ? list.map((i) => (i.id === item.id ? item : i))
+            : [...list, { ...item, id: newId(list) }];
+          updateAcSection("overseas", { ...ac.overseas, exchangeCountries: updated });
+        } else if (section === "internshipsItem") {
+          const list = ac.internships?.items || [];
+          const updated = mode === "edit"
+            ? list.map((i) => (i.id === item.id ? item : i))
+            : [...list, { ...item, id: newId(list) }];
+          updateAcSection("internships", { ...ac.internships, items: updated });
+        } else if (section === "placementsItem") {
+          const list = ac.placements?.items || [];
+          const updated = mode === "edit"
+            ? list.map((i) => (i.id === item.id ? item : i))
+            : [...list, { ...item, id: newId(list) }];
+          updateAcSection("placements", { ...ac.placements, items: updated });
+        } else if (section === "events") {
+          const list = ac.events?.items || [];
+          const updated = mode === "edit"
+            ? list.map((i) => (i.id === item.id ? item : i))
+            : [...list, { ...item, id: newId(list) }];
+          updateAcSection("events", { ...ac.events, items: updated });
+        } else if (section === "socialMedia") {
+          const list = ac.socialMedia?.links || [];
+          const updated = mode === "edit"
+            ? list.map((i) => (i.id === item.id ? item : i))
+            : [...list, { ...item, id: newId(list) }];
+          updateAcSection("socialMedia", { ...ac.socialMedia, links: updated });
+        } else if (section === "alumni") {
+          const list = ac.alumni?.items || [];
+          const updated = mode === "edit"
+            ? list.map((i) => (i.id === item.id ? item : i))
+            : [...list, { ...item, id: newId(list) }];
+          updateAcSection("alumni", { ...ac.alumni, items: updated });
+        } else if (section === "curriculumYear") {
+          const years = ac.curriculum?.years || [];
+          let updated;
           if (mode === "edit") {
-            updatedSems = sems.map((s) => (s.id === item.id ? { ...s, name: item.name } : s));
+            updated = years.map((y) => (y.id === item.id ? { ...y, year: item.year } : y));
           } else {
-            updatedSems = [...sems, { id: newId(sems), name: item.name || `Semester ${sems.length + 1}`, courses: [] }];
+            const newYId = newId(years);
+            updated = [
+              ...years,
+              {
+                id: newYId,
+                year: item.year || `Year ${years.length + 1}`,
+                semesters: [
+                  { id: newYId * 100 + 1, name: `Semester ${years.length * 2 + 1}`, courses: [] },
+                  { id: newYId * 100 + 2, name: `Semester ${years.length * 2 + 2}`, courses: [] },
+                ],
+              },
+            ];
           }
-          return { ...y, semesters: updatedSems };
-        });
-        updateAcSection("curriculum", { ...ac.curriculum, years: updated });
-      } else if (section === "curriculumCourse") {
-        const years = ac.curriculum?.years || [];
-        const updated = years.map((y) => {
-          if (y.id !== meta.yearId) return y;
-          const sems = (y.semesters || []).map((s) => {
-            if (s.id !== meta.semId) return s;
-            const courses = s.courses || [];
-            let updatedCourses;
+          updateAcSection("curriculum", { ...ac.curriculum, years: updated });
+          if (item.year) setAcCurriculumYear(item.year);
+        } else if (section === "curriculumSemester") {
+          const years = ac.curriculum?.years || [];
+          const updated = years.map((y) => {
+            if (y.id !== meta.yearId) return y;
+            const sems = y.semesters || [];
+            let updatedSems;
             if (mode === "edit") {
-              updatedCourses = courses.map((c, idx) => (idx === meta.courseIndex ? item.courseName : c));
+              updatedSems = sems.map((s) => (s.id === item.id ? { ...s, name: item.name } : s));
             } else {
-              updatedCourses = [...courses, item.courseName];
+              updatedSems = [...sems, { id: newId(sems), name: item.name || `Semester ${sems.length + 1}`, courses: [] }];
             }
-            return { ...s, courses: updatedCourses };
+            return { ...y, semesters: updatedSems };
           });
-          return { ...y, semesters: sems };
-        });
-        updateAcSection("curriculum", { ...ac.curriculum, years: updated });
+          updateAcSection("curriculum", { ...ac.curriculum, years: updated });
+        } else if (section === "curriculumCourse") {
+          const years = ac.curriculum?.years || [];
+          const updated = years.map((y) => {
+            if (y.id !== meta.yearId) return y;
+            const sems = (y.semesters || []).map((s) => {
+              if (s.id !== meta.semId) return s;
+              const courses = s.courses || [];
+              let updatedCourses;
+              if (mode === "edit") {
+                updatedCourses = courses.map((c, idx) => (idx === meta.courseIndex ? item.courseName : c));
+              } else {
+                updatedCourses = [...courses, item.courseName];
+              }
+              return { ...s, courses: updatedCourses };
+            });
+            return { ...y, semesters: sems };
+          });
+          updateAcSection("curriculum", { ...ac.curriculum, years: updated });
+        }
       }
 
       showToast(mode === "edit" ? "Saved successfully!" : "Added successfully!");
       closeAcModal();
     };
 
+    const currentLiveUrl =
+      acPageTab === "postgraduate"
+        ? "/academics/postgraduate"
+        : acPageTab === "phd"
+        ? "/academics/phd"
+        : acPageTab === "online_mca"
+        ? "/academics/online-mca"
+        : "/academics";
+
+    const currentProgName =
+      acPageTab === "postgraduate"
+        ? "Postgraduate (M.Tech)"
+        : acPageTab === "phd"
+        ? "Doctoral (Ph.D.)"
+        : acPageTab === "online_mca"
+        ? "Online MCA"
+        : "Undergraduate (B.Tech)";
+
     return (
       <div className="section-panel">
         <div className="panel-header">
           <div>
-            <h2>🎓 Academics Page Management</h2>
+            <h2>🎓 Academics Management — {currentProgName}</h2>
             <p>
-              Complete control to modify, edit, add, and delete all content and sections of the
-              Undergraduate Academics page.
+              Switch between academic programmes to manage content, hero banners, images, specializations, areas, and curriculum.
+              Use ⬆️ / ⬇️ to swap and rearrange items freely.
             </p>
           </div>
           <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
             <span
               className={`priv-badge ${
-                canAdd && canEdit && canDelete ? "priv-full" : "priv-about"
+                canAdd && canEdit && canDelete && canAddImage && canMove ? "priv-full" : "priv-about"
               }`}
             >
-              {canAdd && canEdit && canDelete
-                ? "👑 Full Privilege (Add/Edit/Delete)"
+              {canAdd && canEdit && canDelete && canAddImage && canMove
+                ? "👑 Full Privilege (Add / Edit / Delete / Image / Swap)"
                 : `Privileges: ${canAdd ? "Add " : ""}${canEdit ? "Edit " : ""}${
-                    canDelete ? "Delete" : ""
-                  }`}
+                    canDelete ? "Delete " : ""
+                  }${canAddImage ? "Image " : ""}${canMove ? "Swap" : ""}`}
             </span>
             <a
-              href="/academics"
+              href={currentLiveUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-priv-quick"
+              className="btn-priv-quick btn-priv-academic"
               style={{ textDecoration: "none" }}
             >
-              👁️ View Live Academics Page
+              👁️ View Live {currentProgName} Page ↗
             </a>
           </div>
         </div>
 
-        {/* Sub-tabs */}
-        <div className="sub-tabs" style={{ flexWrap: "wrap", gap: "6px" }}>
-          {acTabs.map((t) => (
-            <button
-              key={t.key}
-              className={`sub-tab ${acTab === t.key ? "active" : ""}`}
-              onClick={() => setAcTab(t.key)}
-            >
-              {t.label} {t.count != null ? `(${t.count})` : ""}
-            </button>
-          ))}
+        {/* ── Academic Program Selector Bar ── */}
+        <div className="academic-program-selector">
+          <button
+            type="button"
+            className={`academic-program-btn tab-ug ${acPageTab === "undergraduate" ? "active" : ""}`}
+            onClick={() => setAcPageTab("undergraduate")}
+          >
+            🎓 Undergraduate (B.Tech)
+          </button>
+          <button
+            type="button"
+            className={`academic-program-btn tab-pg ${acPageTab === "postgraduate" ? "active" : ""}`}
+            onClick={() => setAcPageTab("postgraduate")}
+          >
+            🏛️ Postgraduate (M.Tech)
+          </button>
+          <button
+            type="button"
+            className={`academic-program-btn tab-phd ${acPageTab === "phd" ? "active" : ""}`}
+            onClick={() => setAcPageTab("phd")}
+          >
+            🔬 Doctoral (Ph.D.)
+          </button>
+          <button
+            type="button"
+            className={`academic-program-btn tab-mca ${acPageTab === "online_mca" ? "active" : ""}`}
+            onClick={() => setAcPageTab("online_mca")}
+          >
+            🌐 Online MCA
+          </button>
         </div>
 
-        {/* ── 01: Hero & Stats ── */}
+        {/* Sub-tabs for Undergraduate */}
+        {acPageTab === "undergraduate" && (
+          <div className="sub-tabs" style={{ flexWrap: "wrap", gap: "6px" }}>
+            {acTabs.map((t) => (
+              <button
+                key={t.key}
+                className={`sub-tab ${acTab === t.key ? "active" : ""}`}
+                onClick={() => setAcTab(t.key)}
+              >
+                {t.label} {t.count != null ? `(${t.count})` : ""}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Sub-tabs for Postgraduate */}
+        {acPageTab === "postgraduate" && (
+          <div className="sub-tabs" style={{ flexWrap: "wrap", gap: "6px" }}>
+            {pgTabs.map((t) => (
+              <button
+                key={t.key}
+                className={`sub-tab ${pgTab === t.key ? "active" : ""}`}
+                onClick={() => setPgTab(t.key)}
+              >
+                {t.label} {t.count != null ? `(${t.count})` : ""}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {acPageTab === "phd" && (
+          <div className="sub-tabs" style={{ flexWrap: "wrap", gap: "6px" }}>
+            {phdTabs.map((t) => (
+              <button
+                key={t.key}
+                className={`sub-tab ${phdTab === t.key ? "active" : ""}`}
+                onClick={() => setPhdTab(t.key)}
+              >
+                {t.label} {t.count != null ? `(${t.count})` : ""}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {acPageTab === "online_mca" && (
+          <div className="sub-tabs" style={{ flexWrap: "wrap", gap: "6px" }}>
+            {mcaTabs.map((t) => (
+              <button
+                key={t.key}
+                className={`sub-tab ${mcaTab === t.key ? "active" : ""}`}
+                onClick={() => setMcaTab(t.key)}
+              >
+                {t.label} {t.count != null ? `(${t.count})` : ""}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* ── UNDERGRADUATE SECTIONS ── */}
+        {acPageTab === "undergraduate" && (
+          <>
+            {/* ── 01: Hero & Stats ── */}
         {acTab === "hero" && (
           <div className="ac-subsection">
             <div className="obj-form" style={{ marginBottom: "28px" }}>
@@ -2036,6 +2389,54 @@ export default function AdminDashboard() {
                   }
                 />
               </div>
+              <div className="form-group">
+                <label>Hero Background Image</label>
+                <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
+                  <input
+                    value={ac.hero?.bgImage || ""}
+                    disabled={!canAddImage}
+                    placeholder="Image URL (https://...) or choose file"
+                    onChange={(e) =>
+                      updateAcSection("hero", { ...ac.hero, bgImage: e.target.value })
+                    }
+                    style={{ flex: 1 }}
+                  />
+                  {canAddImage && (
+                    <label className="btn btn-secondary" style={{ cursor: "pointer", margin: 0, padding: "8px 12px", whiteSpace: "nowrap" }}>
+                      📁 Upload
+                      <input
+                        type="file"
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={(e) => {
+                          const f = e.target.files?.[0];
+                          if (f) {
+                            const r = new FileReader();
+                            r.onload = (ev) => {
+                              updateAcSection("hero", { ...ac.hero, bgImage: ev.target.result });
+                              showToast("Hero image loaded!");
+                            };
+                            r.readAsDataURL(f);
+                          }
+                        }}
+                      />
+                    </label>
+                  )}
+                </div>
+                {ac.hero?.bgImage && (
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "6px", background: "#161b22", padding: "6px 10px", borderRadius: "6px" }}>
+                    <img src={ac.hero.bgImage} alt="Hero preview" style={{ width: "90px", height: "50px", objectFit: "cover", borderRadius: "4px" }} />
+                    <span style={{ fontSize: "0.75rem", color: "#8b949e", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {ac.hero.bgImage.startsWith("data:") ? "Local Image File" : ac.hero.bgImage}
+                    </span>
+                    {canAddImage && (
+                      <button type="button" className="btn-icon delete" onClick={() => updateAcSection("hero", { ...ac.hero, bgImage: "" })} title="Clear image">
+                        🗑️
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
               {canEdit && (
                 <button
                   className="btn btn-primary"
@@ -2053,7 +2454,7 @@ export default function AdminDashboard() {
               {canAdd && (
                 <button
                   className="btn btn-primary"
-                  onClick={() => openAcAdd("heroStats", { value: "4 yrs", label: "Duration" })}
+                  onClick={() => openAcAdd("heroStats", { value: "4 yrs", label: "Duration" }, {}, "undergraduate")}
                 >
                   ➕ Add Stat
                 </button>
@@ -2066,21 +2467,46 @@ export default function AdminDashboard() {
                   <tr>
                     <th>Value</th>
                     <th>Label</th>
+                    <th>Swap / Order</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {(ac.heroStats || []).map((s) => (
+                  {(ac.heroStats || []).map((s, idx) => (
                     <tr key={s.id}>
                       <td style={{ fontWeight: "700", color: "#38bdf8" }}>{s.value}</td>
                       <td>{s.label}</td>
+                      <td>
+                        {canMove && (
+                          <div className="btn-move-group">
+                            <button
+                              type="button"
+                              className="btn-icon btn-move"
+                              disabled={idx === 0}
+                              onClick={() => handleMoveAcItem("undergraduate", "heroStats", idx, "up")}
+                              title="Move Up"
+                            >
+                              ⬆️
+                            </button>
+                            <button
+                              type="button"
+                              className="btn-icon btn-move"
+                              disabled={idx === (ac.heroStats || []).length - 1}
+                              onClick={() => handleMoveAcItem("undergraduate", "heroStats", idx, "down")}
+                              title="Move Down"
+                            >
+                              ⬇️
+                            </button>
+                          </div>
+                        )}
+                      </td>
                       <td>
                         <div className="row-actions">
                           {canEdit && (
                             <button
                               className="btn-icon edit"
                               title="Edit"
-                              onClick={() => openAcEdit("heroStats", s)}
+                              onClick={() => openAcEdit("heroStats", s, {}, "undergraduate")}
                             >
                               ✏️
                             </button>
@@ -2162,12 +2588,21 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {(ac.studentLife?.items || []).map((item) => (
+                  {(ac.studentLife?.items || []).map((item, idx) => (
                     <tr key={item.id}>
                       <td style={{ fontWeight: "600", minWidth: "160px" }}>{item.title}</td>
                       <td>{item.text}</td>
+                      {item.image && (
+                        <td><img src={item.image} alt="" style={{ width: "60px", height: "40px", objectFit: "cover", borderRadius: "4px" }} /></td>
+                      )}
                       <td>
                         <div className="row-actions">
+                          {canMove && (
+                            <>
+                              <button className="btn-icon" title="Move Up" onClick={() => handleMoveAcItem("undergraduate", "studentLife", idx, "up")}>⬆️</button>
+                              <button className="btn-icon" title="Move Down" onClick={() => handleMoveAcItem("undergraduate", "studentLife", idx, "down")}>⬇️</button>
+                            </>
+                          )}
                           {canEdit && (
                             <button
                               className="btn-icon edit"
@@ -2254,7 +2689,7 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {(ac.pride?.items || []).map((item) => (
+                  {(ac.pride?.items || []).map((item, idx) => (
                     <tr key={item.id}>
                       <td style={{ fontWeight: "700", color: "#38bdf8", minWidth: "120px" }}>
                         {item.stat}
@@ -2262,6 +2697,12 @@ export default function AdminDashboard() {
                       <td>{item.text}</td>
                       <td>
                         <div className="row-actions">
+                          {canMove && (
+                            <>
+                              <button className="btn-icon" title="Move Up" onClick={() => handleMoveAcItem("undergraduate", "pride", idx, "up")}>⬆️</button>
+                              <button className="btn-icon" title="Move Down" onClick={() => handleMoveAcItem("undergraduate", "pride", idx, "down")}>⬇️</button>
+                            </>
+                          )}
                           {canEdit && (
                             <button
                               className="btn-icon edit"
@@ -2340,7 +2781,7 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {(ac.communities?.items || []).map((item) => (
+                  {(ac.communities?.items || []).map((item, idx) => (
                     <tr key={item.id}>
                       <td>
                         <span className="badge badge-green">{item.tag}</span>
@@ -2354,6 +2795,12 @@ export default function AdminDashboard() {
                       </td>
                       <td>
                         <div className="row-actions">
+                          {canMove && (
+                            <>
+                              <button className="btn-icon" title="Move Up" onClick={() => handleMoveAcItem("undergraduate", "communities", idx, "up")}>⬆️</button>
+                              <button className="btn-icon" title="Move Down" onClick={() => handleMoveAcItem("undergraduate", "communities", idx, "down")}>⬇️</button>
+                            </>
+                          )}
                           {canEdit && (
                             <button
                               className="btn-icon edit"
@@ -2440,12 +2887,21 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {(ac.scholarships?.items || []).map((item) => (
+                  {(ac.scholarships?.items || []).map((item, idx) => (
                     <tr key={item.id}>
                       <td style={{ fontWeight: "600", minWidth: "160px" }}>{item.title}</td>
                       <td>{item.text}</td>
+                      {item.image && (
+                        <td><img src={item.image} alt="" style={{ width: "60px", height: "40px", objectFit: "cover", borderRadius: "4px" }} /></td>
+                      )}
                       <td>
                         <div className="row-actions">
+                          {canMove && (
+                            <>
+                              <button className="btn-icon" title="Move Up" onClick={() => handleMoveAcItem("undergraduate", "scholarships", idx, "up")}>⬆️</button>
+                              <button className="btn-icon" title="Move Down" onClick={() => handleMoveAcItem("undergraduate", "scholarships", idx, "down")}>⬇️</button>
+                            </>
+                          )}
                           {canEdit && (
                             <button
                               className="btn-icon edit"
@@ -3201,7 +3657,7 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {(ac.events?.items || []).map((ev) => (
+                  {(ac.events?.items || []).map((ev, idx) => (
                     <tr key={ev.id}>
                       <td>
                         <span className="badge badge-blue">{ev.type}</span>
@@ -3211,6 +3667,12 @@ export default function AdminDashboard() {
                       <td>{ev.by}</td>
                       <td>
                         <div className="row-actions">
+                          {canMove && (
+                            <>
+                              <button className="btn-icon" title="Move Up" onClick={() => handleMoveAcItem("undergraduate", "events", idx, "up")}>⬆️</button>
+                              <button className="btn-icon" title="Move Down" onClick={() => handleMoveAcItem("undergraduate", "events", idx, "down")}>⬇️</button>
+                            </>
+                          )}
                           {canEdit && (
                             <button
                               className="btn-icon edit"
@@ -3298,7 +3760,7 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {(ac.socialMedia?.links || []).map((s) => (
+                  {(ac.socialMedia?.links || []).map((s, idx) => (
                     <tr key={s.id}>
                       <td style={{ fontWeight: "700" }}>{s.name}</td>
                       <td style={{ color: "#38bdf8" }}>{s.handle}</td>
@@ -3309,6 +3771,12 @@ export default function AdminDashboard() {
                       </td>
                       <td>
                         <div className="row-actions">
+                          {canMove && (
+                            <>
+                              <button className="btn-icon" title="Move Up" onClick={() => handleMoveAcItem("undergraduate", "socialMedia", idx, "up")}>⬆️</button>
+                              <button className="btn-icon" title="Move Down" onClick={() => handleMoveAcItem("undergraduate", "socialMedia", idx, "down")}>⬇️</button>
+                            </>
+                          )}
                           {canEdit && (
                             <button
                               className="btn-icon edit"
@@ -3397,14 +3865,25 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {(ac.alumni?.items || []).map((a) => (
+                  {(ac.alumni?.items || []).map((a, idx) => (
                     <tr key={a.id}>
-                      <td style={{ fontWeight: "700" }}>{a.name}</td>
+                      <td style={{ fontWeight: "700" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                          {a.image && <img src={a.image} alt="" style={{ width: "36px", height: "36px", objectFit: "cover", borderRadius: "50%" }} />}
+                          {a.name}
+                        </div>
+                      </td>
                       <td>{a.batch}</td>
                       <td style={{ color: "#38bdf8" }}>{a.role}</td>
                       <td style={{ fontStyle: "italic", maxWidth: "340px" }}>"{a.quote}"</td>
                       <td>
                         <div className="row-actions">
+                          {canMove && (
+                            <>
+                              <button className="btn-icon" title="Move Up" onClick={() => handleMoveAcItem("undergraduate", "alumni", idx, "up")}>⬆️</button>
+                              <button className="btn-icon" title="Move Down" onClick={() => handleMoveAcItem("undergraduate", "alumni", idx, "down")}>⬇️</button>
+                            </>
+                          )}
                           {canEdit && (
                             <button
                               className="btn-icon edit"
@@ -3476,8 +3955,166 @@ export default function AdminDashboard() {
                   </>
                 )}
 
-                {/* Simple Title + Text Form (Student Life, Scholarships, InternshipsItem, PlacementsItem) */}
-                {["studentLife", "scholarships", "internshipsItem", "placementsItem"].includes(
+                {/* Student Life Form */}
+                {acModal.section === "studentLife" && (
+                  <>
+                    <div className="form-group">
+                      <label>Title</label>
+                      <input
+                        value={acModal.item.title || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, title: e.target.value },
+                          }))
+                        }
+                        placeholder="Title..."
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Description</label>
+                      <textarea
+                        rows={4}
+                        value={acModal.item.text || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, text: e.target.value },
+                          }))
+                        }
+                        placeholder="Description..."
+                      />
+                    </div>
+                    {/* Image Field */}
+                    <div className="form-group">
+                      <label>Image (URL or Upload)</label>
+                      <div style={{ display: "flex", gap: "8px", marginBottom: "6px" }}>
+                        <input
+                          value={acModal.item.image || ""}
+                          onChange={(e) =>
+                            setAcModal((m) => ({
+                              ...m,
+                              item: { ...m.item, image: e.target.value },
+                            }))
+                          }
+                          placeholder="https://... or upload below"
+                          style={{ flex: 1 }}
+                        />
+                        {canAddImage && (
+                          <label className="btn btn-secondary" style={{ cursor: "pointer", margin: 0, padding: "8px 12px", whiteSpace: "nowrap" }}>
+                            📁 Upload
+                            <input
+                              type="file"
+                              accept="image/*"
+                              style={{ display: "none" }}
+                              onChange={(e) => {
+                                const f = e.target.files?.[0];
+                                if (f) {
+                                  const r = new FileReader();
+                                  r.onload = (ev) => {
+                                    setAcModal((m) => ({ ...m, item: { ...m.item, image: ev.target.result } }));
+                                  };
+                                  r.readAsDataURL(f);
+                                }
+                              }}
+                            />
+                          </label>
+                        )}
+                      </div>
+                      {acModal.item.image && (
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px", background: "#161b22", padding: "6px 10px", borderRadius: "6px" }}>
+                          <img src={acModal.item.image} alt="Preview" style={{ width: "80px", height: "50px", objectFit: "cover", borderRadius: "4px" }} />
+                          <span style={{ fontSize: "0.75rem", color: "#8b949e", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            {acModal.item.image.startsWith("data:") ? "Local Image File" : acModal.item.image}
+                          </span>
+                          <button type="button" className="btn-icon delete" onClick={() => setAcModal((m) => ({ ...m, item: { ...m.item, image: "" } }))} title="Clear image">🗑️</button>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+
+                {/* Scholarships Form */}
+                {acModal.section === "scholarships" && (
+                  <>
+                    <div className="form-group">
+                      <label>Title</label>
+                      <input
+                        value={acModal.item.title || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, title: e.target.value },
+                          }))
+                        }
+                        placeholder="Title..."
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Description</label>
+                      <textarea
+                        rows={4}
+                        value={acModal.item.text || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, text: e.target.value },
+                          }))
+                        }
+                        placeholder="Description..."
+                      />
+                    </div>
+                    {/* Image Field */}
+                    <div className="form-group">
+                      <label>Image (URL or Upload)</label>
+                      <div style={{ display: "flex", gap: "8px", marginBottom: "6px" }}>
+                        <input
+                          value={acModal.item.image || ""}
+                          onChange={(e) =>
+                            setAcModal((m) => ({
+                              ...m,
+                              item: { ...m.item, image: e.target.value },
+                            }))
+                          }
+                          placeholder="https://... or upload below"
+                          style={{ flex: 1 }}
+                        />
+                        {canAddImage && (
+                          <label className="btn btn-secondary" style={{ cursor: "pointer", margin: 0, padding: "8px 12px", whiteSpace: "nowrap" }}>
+                            📁 Upload
+                            <input
+                              type="file"
+                              accept="image/*"
+                              style={{ display: "none" }}
+                              onChange={(e) => {
+                                const f = e.target.files?.[0];
+                                if (f) {
+                                  const r = new FileReader();
+                                  r.onload = (ev) => {
+                                    setAcModal((m) => ({ ...m, item: { ...m.item, image: ev.target.result } }));
+                                  };
+                                  r.readAsDataURL(f);
+                                }
+                              }}
+                            />
+                          </label>
+                        )}
+                      </div>
+                      {acModal.item.image && (
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px", background: "#161b22", padding: "6px 10px", borderRadius: "6px" }}>
+                          <img src={acModal.item.image} alt="Preview" style={{ width: "80px", height: "50px", objectFit: "cover", borderRadius: "4px" }} />
+                          <span style={{ fontSize: "0.75rem", color: "#8b949e", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            {acModal.item.image.startsWith("data:") ? "Local Image File" : acModal.item.image}
+                          </span>
+                          <button type="button" className="btn-icon delete" onClick={() => setAcModal((m) => ({ ...m, item: { ...m.item, image: "" } }))} title="Clear image">🗑️</button>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+
+                {/* Simple Title + Text Form (InternshipsItem, PlacementsItem) */}
+                {["internshipsItem", "placementsItem"].includes(
                   acModal.section
                 ) && (
                   <>
@@ -3541,6 +4178,52 @@ export default function AdminDashboard() {
                         placeholder="Achievement description..."
                       />
                     </div>
+                    {/* Image Field */}
+                    <div className="form-group">
+                      <label>Image (URL or Upload)</label>
+                      <div style={{ display: "flex", gap: "8px", marginBottom: "6px" }}>
+                        <input
+                          value={acModal.item.image || ""}
+                          onChange={(e) =>
+                            setAcModal((m) => ({
+                              ...m,
+                              item: { ...m.item, image: e.target.value },
+                            }))
+                          }
+                          placeholder="https://... or upload below"
+                          style={{ flex: 1 }}
+                        />
+                        {canAddImage && (
+                          <label className="btn btn-secondary" style={{ cursor: "pointer", margin: 0, padding: "8px 12px", whiteSpace: "nowrap" }}>
+                            📁 Upload
+                            <input
+                              type="file"
+                              accept="image/*"
+                              style={{ display: "none" }}
+                              onChange={(e) => {
+                                const f = e.target.files?.[0];
+                                if (f) {
+                                  const r = new FileReader();
+                                  r.onload = (ev) => {
+                                    setAcModal((m) => ({ ...m, item: { ...m.item, image: ev.target.result } }));
+                                  };
+                                  r.readAsDataURL(f);
+                                }
+                              }}
+                            />
+                          </label>
+                        )}
+                      </div>
+                      {acModal.item.image && (
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px", background: "#161b22", padding: "6px 10px", borderRadius: "6px" }}>
+                          <img src={acModal.item.image} alt="Preview" style={{ width: "80px", height: "50px", objectFit: "cover", borderRadius: "4px" }} />
+                          <span style={{ fontSize: "0.75rem", color: "#8b949e", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            {acModal.item.image.startsWith("data:") ? "Local Image File" : acModal.item.image}
+                          </span>
+                          <button type="button" className="btn-icon delete" onClick={() => setAcModal((m) => ({ ...m, item: { ...m.item, image: "" } }))} title="Clear image">🗑️</button>
+                        </div>
+                      )}
+                    </div>
                   </>
                 )}
 
@@ -3599,6 +4282,52 @@ export default function AdminDashboard() {
                         }
                         placeholder="https://bi0s.in"
                       />
+                    </div>
+                    {/* Image Field */}
+                    <div className="form-group">
+                      <label>Image (URL or Upload)</label>
+                      <div style={{ display: "flex", gap: "8px", marginBottom: "6px" }}>
+                        <input
+                          value={acModal.item.image || ""}
+                          onChange={(e) =>
+                            setAcModal((m) => ({
+                              ...m,
+                              item: { ...m.item, image: e.target.value },
+                            }))
+                          }
+                          placeholder="https://... or upload below"
+                          style={{ flex: 1 }}
+                        />
+                        {canAddImage && (
+                          <label className="btn btn-secondary" style={{ cursor: "pointer", margin: 0, padding: "8px 12px", whiteSpace: "nowrap" }}>
+                            📁 Upload
+                            <input
+                              type="file"
+                              accept="image/*"
+                              style={{ display: "none" }}
+                              onChange={(e) => {
+                                const f = e.target.files?.[0];
+                                if (f) {
+                                  const r = new FileReader();
+                                  r.onload = (ev) => {
+                                    setAcModal((m) => ({ ...m, item: { ...m.item, image: ev.target.result } }));
+                                  };
+                                  r.readAsDataURL(f);
+                                }
+                              }}
+                            />
+                          </label>
+                        )}
+                      </div>
+                      {acModal.item.image && (
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px", background: "#161b22", padding: "6px 10px", borderRadius: "6px" }}>
+                          <img src={acModal.item.image} alt="Preview" style={{ width: "80px", height: "50px", objectFit: "cover", borderRadius: "4px" }} />
+                          <span style={{ fontSize: "0.75rem", color: "#8b949e", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            {acModal.item.image.startsWith("data:") ? "Local Image File" : acModal.item.image}
+                          </span>
+                          <button type="button" className="btn-icon delete" onClick={() => setAcModal((m) => ({ ...m, item: { ...m.item, image: "" } }))} title="Clear image">🗑️</button>
+                        </div>
+                      )}
                     </div>
                   </>
                 )}
@@ -3845,6 +4574,236 @@ export default function AdminDashboard() {
                         placeholder="Testimonial quote..."
                       />
                     </div>
+                    {/* Image Field */}
+                    <div className="form-group">
+                      <label>Avatar Image (URL or Upload)</label>
+                      <div style={{ display: "flex", gap: "8px", marginBottom: "6px" }}>
+                        <input
+                          value={acModal.item.image || ""}
+                          onChange={(e) =>
+                            setAcModal((m) => ({
+                              ...m,
+                              item: { ...m.item, image: e.target.value },
+                            }))
+                          }
+                          placeholder="https://... or upload below"
+                          style={{ flex: 1 }}
+                        />
+                        {canAddImage && (
+                          <label className="btn btn-secondary" style={{ cursor: "pointer", margin: 0, padding: "8px 12px", whiteSpace: "nowrap" }}>
+                            📁 Upload
+                            <input
+                              type="file"
+                              accept="image/*"
+                              style={{ display: "none" }}
+                              onChange={(e) => {
+                                const f = e.target.files?.[0];
+                                if (f) {
+                                  const r = new FileReader();
+                                  r.onload = (ev) => {
+                                    setAcModal((m) => ({ ...m, item: { ...m.item, image: ev.target.result } }));
+                                  };
+                                  r.readAsDataURL(f);
+                                }
+                              }}
+                            />
+                          </label>
+                        )}
+                      </div>
+                      {acModal.item.image && (
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px", background: "#161b22", padding: "6px 10px", borderRadius: "6px" }}>
+                          <img src={acModal.item.image} alt="Preview" style={{ width: "50px", height: "50px", objectFit: "cover", borderRadius: "50%" }} />
+                          <span style={{ fontSize: "0.75rem", color: "#8b949e", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            {acModal.item.image.startsWith("data:") ? "Local Image File" : acModal.item.image}
+                          </span>
+                          <button type="button" className="btn-icon delete" onClick={() => setAcModal((m) => ({ ...m, item: { ...m.item, image: "" } }))} title="Clear image">🗑️</button>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+
+                {/* Specializations Form (PG) */}
+                {acModal.section === "specializations" && (
+                  <>
+                    <div className="form-group">
+                      <label>Icon / Emoji</label>
+                      <input
+                        value={acModal.item.icon || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, icon: e.target.value },
+                          }))
+                        }
+                        placeholder="e.g. 🔒 or icon class"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Title</label>
+                      <input
+                        value={acModal.item.title || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, title: e.target.value },
+                          }))
+                        }
+                        placeholder="Specialization title..."
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Description</label>
+                      <textarea
+                        rows={4}
+                        value={acModal.item.desc || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, desc: e.target.value },
+                          }))
+                        }
+                        placeholder="Specialization description..."
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Accent Color (CSS value)</label>
+                      <input
+                        value={acModal.item.color || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, color: e.target.value },
+                          }))
+                        }
+                        placeholder="e.g. #38bdf8 or rgba(56,189,248,0.15)"
+                      />
+                    </div>
+                    {/* Image Field */}
+                    <div className="form-group">
+                      <label>Image (URL or Upload)</label>
+                      <div style={{ display: "flex", gap: "8px", marginBottom: "6px" }}>
+                        <input
+                          value={acModal.item.image || ""}
+                          onChange={(e) =>
+                            setAcModal((m) => ({
+                              ...m,
+                              item: { ...m.item, image: e.target.value },
+                            }))
+                          }
+                          placeholder="https://... or upload below"
+                          style={{ flex: 1 }}
+                        />
+                        {canAddImage && (
+                          <label className="btn btn-secondary" style={{ cursor: "pointer", margin: 0, padding: "8px 12px", whiteSpace: "nowrap" }}>
+                            📁 Upload
+                            <input
+                              type="file"
+                              accept="image/*"
+                              style={{ display: "none" }}
+                              onChange={(e) => {
+                                const f = e.target.files?.[0];
+                                if (f) {
+                                  const r = new FileReader();
+                                  r.onload = (ev) => {
+                                    setAcModal((m) => ({ ...m, item: { ...m.item, image: ev.target.result } }));
+                                  };
+                                  r.readAsDataURL(f);
+                                }
+                              }}
+                            />
+                          </label>
+                        )}
+                      </div>
+                      {acModal.item.image && (
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px", background: "#161b22", padding: "6px 10px", borderRadius: "6px" }}>
+                          <img src={acModal.item.image} alt="Preview" style={{ width: "80px", height: "50px", objectFit: "cover", borderRadius: "4px" }} />
+                          <span style={{ fontSize: "0.75rem", color: "#8b949e", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            {acModal.item.image.startsWith("data:") ? "Local Image File" : acModal.item.image}
+                          </span>
+                          <button type="button" className="btn-icon delete" onClick={() => setAcModal((m) => ({ ...m, item: { ...m.item, image: "" } }))} title="Clear image">🗑️</button>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+
+                {/* Custom Areas Form */}
+                {acModal.section === "customAreas" && (
+                  <>
+                    <div className="form-group">
+                      <label>Title</label>
+                      <input
+                        value={acModal.item.title || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, title: e.target.value },
+                          }))
+                        }
+                        placeholder="Area title..."
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Description</label>
+                      <textarea
+                        rows={4}
+                        value={acModal.item.text || ""}
+                        onChange={(e) =>
+                          setAcModal((m) => ({
+                            ...m,
+                            item: { ...m.item, text: e.target.value },
+                          }))
+                        }
+                        placeholder="Description..."
+                      />
+                    </div>
+                    {/* Image Field */}
+                    <div className="form-group">
+                      <label>Image (URL or Upload)</label>
+                      <div style={{ display: "flex", gap: "8px", marginBottom: "6px" }}>
+                        <input
+                          value={acModal.item.image || ""}
+                          onChange={(e) =>
+                            setAcModal((m) => ({
+                              ...m,
+                              item: { ...m.item, image: e.target.value },
+                            }))
+                          }
+                          placeholder="https://... or upload below"
+                          style={{ flex: 1 }}
+                        />
+                        {canAddImage && (
+                          <label className="btn btn-secondary" style={{ cursor: "pointer", margin: 0, padding: "8px 12px", whiteSpace: "nowrap" }}>
+                            📁 Upload
+                            <input
+                              type="file"
+                              accept="image/*"
+                              style={{ display: "none" }}
+                              onChange={(e) => {
+                                const f = e.target.files?.[0];
+                                if (f) {
+                                  const r = new FileReader();
+                                  r.onload = (ev) => {
+                                    setAcModal((m) => ({ ...m, item: { ...m.item, image: ev.target.result } }));
+                                  };
+                                  r.readAsDataURL(f);
+                                }
+                              }}
+                            />
+                          </label>
+                        )}
+                      </div>
+                      {acModal.item.image && (
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px", background: "#161b22", padding: "6px 10px", borderRadius: "6px" }}>
+                          <img src={acModal.item.image} alt="Preview" style={{ width: "80px", height: "50px", objectFit: "cover", borderRadius: "4px" }} />
+                          <span style={{ fontSize: "0.75rem", color: "#8b949e", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            {acModal.item.image.startsWith("data:") ? "Local Image File" : acModal.item.image}
+                          </span>
+                          <button type="button" className="btn-icon delete" onClick={() => setAcModal((m) => ({ ...m, item: { ...m.item, image: "" } }))} title="Clear image">🗑️</button>
+                        </div>
+                      )}
+                    </div>
                   </>
                 )}
               </div>
@@ -3859,6 +4818,8 @@ export default function AdminDashboard() {
             </div>
           </div>
         )}
+        </>
+      )}
       </div>
     );
   };
@@ -5168,13 +6129,20 @@ export default function AdminDashboard() {
                   >
                     <div className="priv-title-group">
                       <span>🎓</span>
-                      <span>Academics Page</span>
+                      <span>Academics (All Pages)</span>
                       <span className="priv-badge" style={{ background: "rgba(56,189,248,0.15)", color: "#38bdf8" }}>
                         Key Privilege
                       </span>
                     </div>
                     <div className="priv-actions-group">
-                      {["view", "add", "edit", "delete"].map((act) => (
+                      {[
+                        { key: "view", label: "View" },
+                        { key: "add", label: "Add" },
+                        { key: "edit", label: "Edit" },
+                        { key: "delete", label: "Delete" },
+                        { key: "image", label: "🖼️ Add Image" },
+                        { key: "move", label: "↕️ Swap / Move" },
+                      ].map(({ key: act, label }) => (
                         <label key={act} className="priv-checkbox-label">
                           <input
                             type="checkbox"
@@ -5196,7 +6164,7 @@ export default function AdminDashboard() {
                               }));
                             }}
                           />
-                          {act.charAt(0).toUpperCase() + act.slice(1)}
+                          {label}
                         </label>
                       ))}
                     </div>
@@ -6461,11 +7429,18 @@ export default function AdminDashboard() {
                 >
                   <div className="priv-title-group">
                     <span>🎓</span>
-                    <span>Academics Page</span>
+                    <span>Academics (All Pages)</span>
                     <span className="priv-badge priv-academic">Key Privilege</span>
                   </div>
                   <div className="priv-actions-group">
-                    {["view", "add", "edit", "delete"].map((act) => (
+                    {[
+                      { key: "view", label: "View" },
+                      { key: "add", label: "Add" },
+                      { key: "edit", label: "Edit" },
+                      { key: "delete", label: "Delete" },
+                      { key: "image", label: "🖼️ Add Image" },
+                      { key: "move", label: "↕️ Swap / Move" },
+                    ].map(({ key: act, label }) => (
                       <label key={act} className="priv-checkbox-label">
                         <input
                           type="checkbox"
@@ -6486,7 +7461,7 @@ export default function AdminDashboard() {
                             }));
                           }}
                         />
-                        {act.charAt(0).toUpperCase() + act.slice(1)}
+                        {label}
                       </label>
                     ))}
                   </div>

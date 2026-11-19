@@ -29,21 +29,25 @@ const academicPrograms = [
     name: "B.Tech. in CSE (Cyber Security)",
     level: "Undergraduate Program",
     desc: "4-year engineering program focused on systems security, network forensics, cryptography, and AI-driven defense.",
+    link: "/academics",
   },
   {
     name: "M.Tech. in Cybersecurity",
     level: "Postgraduate Program",
     desc: "Advanced specialization in systems security, cloud security, and AI defense with international dual degrees.",
+    link: "/academics/postgraduate",
   },
   {
     name: "Ph.D. in Cybersecurity",
     level: "Doctoral Program",
     desc: "Advanced research in Agentic AI, Sovereign AI, Cloud Trust Modeling, and Critical Infrastructure Protection.",
+    link: "/academics/phd",
   },
   {
     name: "Online MCA in Cybersecurity",
     level: "Amrita Online",
     desc: "Globally recognized flexible postgraduate degree program for domestic and international students and working professionals.",
+    link: "/academics/online-mca",
   },
 ];
 
@@ -339,7 +343,7 @@ export default function Home() {
                 </div>
                 <h3 className="rpc-name">{prog.name}</h3>
                 <p className="rpc-desc">{prog.desc}</p>
-                <Link to="/academics" className="rpc-action">
+                <Link to={prog.link || "/academics"} className="rpc-action">
                   Learn More <span>→</span>
                 </Link>
               </div>

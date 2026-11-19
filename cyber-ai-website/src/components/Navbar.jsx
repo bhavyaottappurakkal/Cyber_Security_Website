@@ -5,7 +5,10 @@ import './Navbar.css'
 const navItems = [
   { label: 'Home', path: '/' },
   { label: 'About Us', path: '/about' },
-  { label: 'Academics', path: '/academics' },
+  { label: 'Academics — Undergraduate', path: '/academics' },
+  { label: 'Academics — Postgraduate', path: '/academics/postgraduate' },
+  { label: 'Academics — Ph.D.', path: '/academics/phd' },
+  { label: 'Academics — Online MCA', path: '/academics/online-mca' },
   { label: 'Research', path: '/research' },
   { label: 'Projects & White Papers', path: '/projects' },
   { label: 'Faculty', path: '/faculty' },
@@ -50,7 +53,18 @@ export default function Navbar() {
           {/* Desktop Navigation Links */}
           <nav className="desktop-nav" aria-label="Main navigation">
             <Link to="/about" className={`desk-link ${location.pathname === '/about' ? 'active' : ''}`}>About</Link>
-            <Link to="/academics" className={`desk-link ${location.pathname === '/academics' ? 'active' : ''}`}>Academics</Link>
+            {/* Academics dropdown */}
+            <div className="desk-dropdown">
+              <Link to="/academics" className={`desk-link ${location.pathname.startsWith('/academics') ? 'active' : ''}`}>
+                Academics <span className="desk-dropdown-caret">▾</span>
+              </Link>
+              <div className="desk-dropdown-menu">
+                <Link to="/academics" className="desk-dropdown-item">Undergraduate (B.Tech)</Link>
+                <Link to="/academics/postgraduate" className="desk-dropdown-item">Postgraduate (M.Tech)</Link>
+                <Link to="/academics/phd" className="desk-dropdown-item">Doctoral (Ph.D.)</Link>
+                <Link to="/academics/online-mca" className="desk-dropdown-item">Online MCA</Link>
+              </div>
+            </div>
             <Link to="/research" className={`desk-link ${location.pathname === '/research' ? 'active' : ''}`}>Research</Link>
             <Link to="/projects" className={`desk-link ${location.pathname === '/projects' ? 'active' : ''}`}>Projects</Link>
             <Link to="/faculty" className={`desk-link ${location.pathname === '/faculty' ? 'active' : ''}`}>Faculty</Link>

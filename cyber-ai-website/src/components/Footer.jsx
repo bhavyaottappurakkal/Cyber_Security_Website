@@ -154,16 +154,16 @@ export default function Footer() {
                 <Link to="/academics">B.C.A. (Honours) Cyber Security</Link>
               </li>
               <li>
-                <Link to="/academics">M.Tech. Cyber Security</Link>
+                <Link to="/academics/postgraduate">M.Tech. Cyber Security</Link>
               </li>
               <li>
-                <Link to="/academics">MCA in Cyber Security</Link>
+                <Link to="/academics/online-mca">MCA in Cyber Security</Link>
               </li>
               <li>
-                <Link to="/academics">Ph.D. in Cyber Security</Link>
+                <Link to="/academics/phd">Ph.D. in Cyber Security</Link>
               </li>
               <li>
-                <Link to="/academics">Online MCA in Cybersecurity</Link>
+                <Link to="/academics/online-mca">Online MCA in Cybersecurity</Link>
               </li>
             </ul>
           </div>

@@ -14,6 +14,9 @@ import NewsEvents from './pages/NewsEvents'
 import Contact from './pages/Contact'
 import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
+import PostGraduate from './pages/PostGraduate'
+import PhD from './pages/PhD'
+import OnlineMCA from './pages/OnlineMCA'
 import './App.css'
 
 // Routes where Navbar and Footer should be hidden
@@ -31,6 +34,9 @@ function AppLayout() {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/academics" element={<Academics />} />
+          <Route path="/academics/postgraduate" element={<PostGraduate />} />
+          <Route path="/academics/phd" element={<PhD />} />
+          <Route path="/academics/online-mca" element={<OnlineMCA />} />
           <Route path="/research" element={<Research />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/faculty" element={<Faculty />} />
