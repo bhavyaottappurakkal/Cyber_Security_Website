@@ -1,6 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { DEFAULT_POSTGRADUATE_CONTENT, normalizePostgraduate } from "../data/academicsData";
+import {
+  DEFAULT_POSTGRADUATE_CONTENT,
+  getAcademicHeroAnimationClass,
+  getAcademicHeroGradientClass,
+  normalizePostgraduate,
+} from "../data/academicsData";
 import "./Academics.css";
 
 // ── Table of Contents Items ──────────────────────────────────────────────────
@@ -114,11 +119,12 @@ export default function PostGraduate() {
           <img
             src={hero?.bgImage || "https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?auto=format&fit=crop&w=1920&q=85"}
             alt="Postgraduate Cybersecurity Research"
-            className="ug-hero-slide-img ug-animate-ken-burns"
+            className={`ug-hero-slide-img ${getAcademicHeroAnimationClass(hero?.animation)}`}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
             onError={(e) => { e.target.style.display = "none"; }}
           />
-          <div className="ug-hero-gradient-1" />
-          <div className="ug-tech-dot-grid" />
+          <div className={getAcademicHeroGradientClass(hero?.gradient)} style={{ position: "absolute", inset: 0 }} />
+          <div className="ug-tech-dot-grid" style={{ position: "absolute", inset: 0, opacity: 0.4, pointerEvents: "none" }} />
 
           <div className="ug-hero-foreground">
             <div className="ug-container ug-hero-content-wrapper">
@@ -129,24 +135,21 @@ export default function PostGraduate() {
                     Academics
                   </Link>
                   <span className="ug-breadcrumb-sep">·</span>
-                  <span className="ug-breadcrumb-page">{hero?.eyebrow || "Postgraduate Programme"}</span>
+                  <span className="ug-breadcrumb-page">{hero?.eyebrow || "Academic Programmes"}</span>
                 </div>
 
-                <h1 className="ug-hero-title">{hero?.title || "M.Tech in Cybersecurity"}</h1>
+                <h1 className="ug-hero-title">{hero?.title || "Post Graduate Programme"}</h1>
                 <p className="ug-hero-subtitle">
                   {hero?.subtitle ||
-                    "Advanced specialization in systems security, cloud defense, AI-driven protection, and cryptographic engineering with international dual-degree pathways at top global universities."}
+                    "A two-year M.Tech that blends advanced systems security, cloud defense, AI-driven protection, and cryptographic engineering with international dual-degree pathways at top global universities."}
                 </p>
 
                 <div className="ug-hero-actions">
                   <a href="#curriculum" className="ug-btn-crimson">
-                    Explore Syllabus
+                    Explore 4-Semester Curriculum
                   </a>
-                  <a href="#dual-degree" className="ug-btn-glass">
-                    Dual Degree Pathways
-                  </a>
-                  <a href="#fellowships" className="ug-btn-glass">
-                    GATE &amp; Fellowships
+                  <a href="#specializations" className="ug-btn-glass">
+                    Discover Specializations
                   </a>
                 </div>
               </div>

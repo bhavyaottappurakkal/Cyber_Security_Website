@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { DEFAULT_ONLINE_MCA_CONTENT, normalizeOnlineMCA } from "../data/academicsData";
+import {
+  DEFAULT_ONLINE_MCA_CONTENT,
+  getAcademicHeroAnimationClass,
+  getAcademicHeroGradientClass,
+  normalizeOnlineMCA,
+} from "../data/academicsData";
 import "./Academics.css";
 
 const MCA_TOC_ITEMS = [
@@ -84,11 +89,12 @@ export default function OnlineMCA() {
           <img
             src={hero?.bgImage || "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?auto=format&fit=crop&w=1920&q=85"}
             alt="Online MCA Cybersecurity"
-            className="ug-hero-slide-img ug-animate-ken-burns"
+            className={`ug-hero-slide-img ${getAcademicHeroAnimationClass(hero?.animation)}`}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
             onError={(e) => { e.target.style.display = "none"; }}
           />
-          <div className="ug-hero-gradient-2" />
-          <div className="ug-tech-dot-grid" />
+          <div className={getAcademicHeroGradientClass(hero?.gradient)} style={{ position: "absolute", inset: 0 }} />
+          <div className="ug-tech-dot-grid" style={{ position: "absolute", inset: 0, opacity: 0.4, pointerEvents: "none" }} />
 
           <div className="ug-hero-foreground">
             <div className="ug-container ug-hero-content-wrapper">
@@ -99,24 +105,21 @@ export default function OnlineMCA() {
                     Academics
                   </Link>
                   <span className="ug-breadcrumb-sep">·</span>
-                  <span className="ug-breadcrumb-page">{hero?.eyebrow || "Amrita AHEAD Online"}</span>
+                  <span className="ug-breadcrumb-page">{hero?.eyebrow || "Academic Programmes"}</span>
                 </div>
 
-                <h1 className="ug-hero-title">{hero?.title || "Online MCA in Cybersecurity"}</h1>
+                <h1 className="ug-hero-title">{hero?.title || "Online MCA Programme"}</h1>
                 <p className="ug-hero-subtitle">
                   {hero?.subtitle ||
-                    "Globally recognized, fully online Master of Computer Applications in Cybersecurity — designed for students and working professionals worldwide."}
+                    "A globally recognized, fully online Master of Computer Applications in Cybersecurity — designed for students and working professionals worldwide."}
                 </p>
 
                 <div className="ug-hero-actions">
-                  <a href="#highlights" className="ug-btn-crimson">
-                    Program Highlights
+                  <a href="#curriculum" className="ug-btn-crimson">
+                    Explore 4-Semester Curriculum
                   </a>
-                  <a href="#curriculum" className="ug-btn-glass">
-                    View Syllabus
-                  </a>
-                  <a href="#faqs" className="ug-btn-glass">
-                    Eligibility &amp; FAQs
+                  <a href="#highlights" className="ug-btn-glass">
+                    Discover Program Highlights
                   </a>
                 </div>
               </div>

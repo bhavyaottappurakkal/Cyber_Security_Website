@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { getAcademicHeroAnimationClass, getAcademicHeroGradientClass } from "../data/academicsData";
 import "./Academics.css";
 
 // ── Default Academics Data ────────────────────────────────────────────────────
@@ -8,6 +9,9 @@ export const DEFAULT_ACADEMICS_CONTENT = {
     title: "Under Graduate Programme",
     subtitle:
       "A four-year B.Tech that blends strong computing fundamentals with research, open source, security and a values-driven campus life.",
+    animation: "ken-burns",
+    gradient: "crimson",
+    slideInterval: 6500,
   },
   heroStats: [
     { id: 1, value: "4 yrs", label: "B.Tech Duration", badge: "UG", badgeStyle: "crimson" },
@@ -782,11 +786,12 @@ export default function Academics() {
   /* ── Hero slider ── */
   const [heroIdx, setHeroIdx] = useState(0);
   const heroTimer = useRef(null);
+  const heroSlideInterval = Number(content.hero?.slideInterval) || 6500;
 
   const startHeroTimer = useCallback(() => {
     clearInterval(heroTimer.current);
-    heroTimer.current = setInterval(() => setHeroIdx(i => (i + 1) % HERO_SLIDES.length), 6500);
-  }, []);
+    heroTimer.current = setInterval(() => setHeroIdx(i => (i + 1) % HERO_SLIDES.length), heroSlideInterval);
+  }, [heroSlideInterval]);
 
   useEffect(() => { startHeroTimer(); return () => clearInterval(heroTimer.current); }, [startHeroTimer]);
 
@@ -879,12 +884,12 @@ export default function Academics() {
               className={`ug-hero-fade-slide${idx === heroIdx ? " active" : ""}`}
             >
               <img
-                src={slide.img}
+                src={idx === 0 && hero?.bgImage ? hero.bgImage : slide.img}
                 alt={slide.alt}
-                className="ug-hero-slide-img ug-animate-ken-burns"
+                className={`ug-hero-slide-img ${getAcademicHeroAnimationClass(hero?.animation)}`}
                 onError={e => { e.target.style.display = "none"; }}
               />
-              <div className={`absolute inset-0 ${slide.gradientClass}`} style={{ position: "absolute", inset: 0 }}></div>
+              <div className={`absolute inset-0 ${getAcademicHeroGradientClass(hero?.gradient)}`} style={{ position: "absolute", inset: 0 }}></div>
             </div>
           ))}
 

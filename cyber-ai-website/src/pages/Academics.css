@@ -44,6 +44,15 @@
   animation: ugKenBurnsPan 20s ease-in-out infinite;
 }
 
+@keyframes ugHeroFade {
+  from { opacity: 0.62; }
+  to { opacity: 0.9; }
+}
+
+.ug-animate-hero-fade {
+  animation: ugHeroFade 4s ease-in-out infinite alternate;
+}
+
 /* ── Hero Crossfade Slides ─────────────────────────────────────── */
 .ug-hero-fade-slide {
   position: absolute;

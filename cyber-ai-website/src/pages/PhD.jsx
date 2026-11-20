@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { DEFAULT_PHD_CONTENT, normalizePhD } from "../data/academicsData";
+import {
+  DEFAULT_PHD_CONTENT,
+  getAcademicHeroAnimationClass,
+  getAcademicHeroGradientClass,
+  normalizePhD,
+} from "../data/academicsData";
 import "./Academics.css";
 
 const PHD_TOC_ITEMS = [
@@ -83,11 +88,12 @@ export default function PhD() {
           <img
             src={hero?.bgImage || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1920&q=85"}
             alt="PhD Research in Cybersecurity"
-            className="ug-hero-slide-img ug-animate-ken-burns"
+            className={`ug-hero-slide-img ${getAcademicHeroAnimationClass(hero?.animation)}`}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
             onError={(e) => { e.target.style.display = "none"; }}
           />
-          <div className="ug-hero-gradient-2" />
-          <div className="ug-tech-dot-grid" />
+          <div className={getAcademicHeroGradientClass(hero?.gradient)} style={{ position: "absolute", inset: 0 }} />
+          <div className="ug-tech-dot-grid" style={{ position: "absolute", inset: 0, opacity: 0.4, pointerEvents: "none" }} />
 
           <div className="ug-hero-foreground">
             <div className="ug-container ug-hero-content-wrapper">
@@ -98,24 +104,21 @@ export default function PhD() {
                     Academics
                   </Link>
                   <span className="ug-breadcrumb-sep">·</span>
-                  <span className="ug-breadcrumb-page">{hero?.eyebrow || "Doctoral Programme"}</span>
+                  <span className="ug-breadcrumb-page">{hero?.eyebrow || "Academic Programmes"}</span>
                 </div>
 
-                <h1 className="ug-hero-title">{hero?.title || "Ph.D. in Cybersecurity"}</h1>
+                <h1 className="ug-hero-title">{hero?.title || "Doctoral Programme"}</h1>
                 <p className="ug-hero-subtitle">
                   {hero?.subtitle ||
-                    "Advanced research in Agentic AI, Sovereign AI, Cloud Trust Modeling, and Critical Infrastructure Protection — pushing the frontiers of cybersecurity science."}
+                    "A research-intensive Ph.D. that pushes the frontiers of Agentic AI, Sovereign AI, Cloud Trust Modeling, and Critical Infrastructure Protection in cybersecurity science."}
                 </p>
 
                 <div className="ug-hero-actions">
-                  <a href="#research" className="ug-btn-crimson">
-                    Research Thrusts
+                  <a href="#roadmap" className="ug-btn-crimson">
+                    Explore PhD Roadmap
                   </a>
-                  <a href="#roadmap" className="ug-btn-glass">
-                    PhD Roadmap
-                  </a>
-                  <a href="#fellowships" className="ug-btn-glass">
-                    Doctoral Fellowships
+                  <a href="#research" className="ug-btn-glass">
+                    Discover Research Areas
                   </a>
                 </div>
               </div>

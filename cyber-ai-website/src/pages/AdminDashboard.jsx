@@ -614,6 +614,8 @@ export default function AdminDashboard() {
     item: {},
     meta: {},
   });
+  const [academicJsonDrafts, setAcademicJsonDrafts] = useState({});
+  const [academicJsonErrors, setAcademicJsonErrors] = useState({});
 
   // Single-object section local copies
   const [localHero, setLocalHero] = useState({ ...INITIAL_DATA.heroContent });
@@ -1990,7 +1992,10 @@ export default function AdminDashboard() {
     const pgTabs = [
       { key: "hero", label: "🏷️ Hero & Stats", count: pg.heroStats?.length },
       { key: "specializations", label: "🔐 Specializations", count: pg.specializations?.length },
+      { key: "researchLabs", label: "🧪 Research Labs", count: pg.researchLabs?.length },
+      { key: "fellowships", label: "🎓 Fellowships", count: pg.fellowships?.length },
       { key: "curriculum", label: "📚 Curriculum", count: pg.curriculum?.length },
+      { key: "internships", label: "🏢 Internships", count: pg.internships?.length },
       { key: "dualDegreePartners", label: "✈️ Dual Degree", count: pg.dualDegreePartners?.length },
       { key: "placements", label: "💼 Placements", count: pg.placements?.length },
       { key: "alumni", label: "👨‍🎓 Alumni", count: pg.alumni?.length },
@@ -2001,6 +2006,7 @@ export default function AdminDashboard() {
       { key: "hero", label: "🏷️ Hero & Stats", count: phd.heroStats?.length },
       { key: "researchAreas", label: "🔬 Research Areas", count: phd.researchAreas?.length },
       { key: "fundingPartners", label: "🏛️ Funding Partners", count: phd.fundingPartners?.length },
+      { key: "fellowships", label: "🎓 Fellowships", count: phd.fellowships?.length },
       { key: "phdGuide", label: "🗺️ PhD Roadmap", count: phd.phdGuide?.length },
       { key: "alumni", label: "👨‍🎓 Alumni Doctors", count: phd.alumni?.length },
       { key: "customAreas", label: "➕ Custom Areas", count: phd.customAreas?.length || 0 },
@@ -2014,6 +2020,151 @@ export default function AdminDashboard() {
       { key: "placements", label: "💼 Placements", count: mca.placements?.length },
       { key: "customAreas", label: "➕ Custom Areas", count: mca.customAreas?.length || 0 },
     ];
+
+    const activeProgram = {
+      postgraduate: { key: "postgraduate", content: pg, tab: pgTab, tabs: pgTabs },
+      phd: { key: "phd", content: phd, tab: phdTab, tabs: phdTabs },
+      online_mca: { key: "online_mca", content: mca, tab: mcaTab, tabs: mcaTabs },
+    }[acPageTab];
+    const canManageProgramContent = canAdd && canEdit && canDelete && canAddImage && canMove;
+
+    const updateProgramHero = (patch) => {
+      if (!activeProgram || !canEdit) return;
+      updateProgSection(activeProgram.key, "hero", {
+        ...(activeProgram.content.hero || {}),
+        ...patch,
+      });
+    };
+
+    const saveProgramJson = (section, currentValue) => {
+      if (!activeProgram || !canManageProgramContent) {
+        showToast("Full academic content privileges are required to edit this section.");
+        return;
+      }
+
+      const draftKey = `${activeProgram.key}:${section}`;
+      const draft = academicJsonDrafts[draftKey] ?? JSON.stringify(currentValue, null, 2);
+      try {
+        const parsed = JSON.parse(draft);
+        if (
+          parsed === null ||
+          typeof parsed !== "object" ||
+          Array.isArray(parsed) !== Array.isArray(currentValue)
+        ) {
+          throw new Error("Keep the section's current JSON type (array or object).");
+        }
+
+        updateProgSection(activeProgram.key, section, parsed);
+        setAcademicJsonDrafts((prev) => {
+          const next = { ...prev };
+          delete next[draftKey];
+          return next;
+        });
+        setAcademicJsonErrors((prev) => ({ ...prev, [draftKey]: "" }));
+        showToast("Academic content saved!");
+      } catch (error) {
+        const message = error instanceof SyntaxError
+          ? "Invalid JSON. Check commas, quotes, and brackets."
+          : error.message;
+        setAcademicJsonErrors((prev) => ({ ...prev, [draftKey]: message }));
+      }
+    };
+
+    const addBlankProgramItem = (section, currentValue) => {
+      if (!canManageProgramContent) return;
+      const draftKey = `${activeProgram.key}:${section}`;
+      const source = academicJsonDrafts[draftKey] ?? JSON.stringify(currentValue, null, 2);
+      try {
+        const parsed = JSON.parse(source);
+        if (!Array.isArray(parsed)) throw new Error("This section does not contain a list.");
+
+        const example = parsed.find((item) => item && typeof item === "object" && !Array.isArray(item));
+        const blankItem = example
+          ? Object.fromEntries(
+              Object.entries(example).map(([field, value]) => [
+                field,
+                field === "id"
+                  ? newId(parsed)
+                  : Array.isArray(value)
+                  ? []
+                  : value && typeof value === "object"
+                  ? {}
+                  : typeof value === "number"
+                  ? 0
+                  : typeof value === "boolean"
+                  ? false
+                  : "",
+              ])
+            )
+          : { id: newId(parsed), title: "", text: "", image: "" };
+
+        setAcademicJsonDrafts((prev) => ({
+          ...prev,
+          [draftKey]: JSON.stringify([...parsed, blankItem], null, 2),
+        }));
+        setAcademicJsonErrors((prev) => ({ ...prev, [draftKey]: "" }));
+      } catch (error) {
+        setAcademicJsonErrors((prev) => ({
+          ...prev,
+          [draftKey]: error instanceof SyntaxError
+            ? "Invalid JSON. Fix the section before adding an item."
+            : error.message,
+        }));
+      }
+    };
+
+    const renderProgramJsonEditor = (section, value, title) => {
+      const draftKey = `${activeProgram.key}:${section}`;
+      const draft = academicJsonDrafts[draftKey] ?? JSON.stringify(value, null, 2);
+      const isList = Array.isArray(value);
+      return (
+        <div className="obj-form">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+            <h3 style={{ color: "#c9d1d9", margin: 0 }}>{title}</h3>
+            {isList && canManageProgramContent && (
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => addBlankProgramItem(section, value)}
+              >
+                ➕ Add blank item
+              </button>
+            )}
+          </div>
+          <p style={{ color: "#8b949e", fontSize: "0.85rem" }}>
+            Edit all text, links, images, nested details, and list order here. Keep this content as valid JSON.
+          </p>
+          <textarea
+            rows={18}
+            value={draft}
+            disabled={!canManageProgramContent}
+            spellCheck={false}
+            aria-label={`${title} JSON`}
+            onChange={(e) => {
+              setAcademicJsonDrafts((prev) => ({ ...prev, [draftKey]: e.target.value }));
+              setAcademicJsonErrors((prev) => ({ ...prev, [draftKey]: "" }));
+            }}
+            style={{ width: "100%", fontFamily: "monospace", whiteSpace: "pre", overflowX: "auto" }}
+          />
+          {academicJsonErrors[draftKey] && (
+            <p role="alert" style={{ color: "#f87171" }}>{academicJsonErrors[draftKey]}</p>
+          )}
+          {canManageProgramContent ? (
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => saveProgramJson(section, value)}
+            >
+              💾 Save {title}
+            </button>
+          ) : (
+            <p style={{ color: "#fbbf24" }}>
+              Full Add, Edit, Delete, Image, and Reorder privileges are required for this section.
+            </p>
+          )}
+        </div>
+      );
+    };
 
     const openAcAdd = (section, defaultObj = {}, meta = {}, program = null) => {
       setAcModal({

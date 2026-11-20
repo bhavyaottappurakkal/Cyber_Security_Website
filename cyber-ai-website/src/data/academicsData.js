@@ -1,13 +1,30 @@
 // ── Academic Programs Data & Defaults ─────────────────────────────────────────────
 
+export function getAcademicHeroAnimationClass(animation) {
+  if (animation === "fade") return "ug-animate-hero-fade";
+  if (animation === "none") return "";
+  return "ug-animate-ken-burns";
+}
+
+export function getAcademicHeroGradientClass(gradient) {
+  const gradients = {
+    crimson: "ug-hero-gradient-1",
+    cyan: "ug-hero-gradient-2",
+    royal: "ug-hero-gradient-4",
+  };
+  return gradients[gradient] || gradients.crimson;
+}
+
 export const DEFAULT_POSTGRADUATE_CONTENT = {
   hero: {
-    eyebrow: "Academics · Academic Programmes",
-    title: "Postgraduate (M.Tech in Cybersecurity)",
+    eyebrow: "Academic Programmes",
+    title: "Post Graduate Programme",
     subtitle:
-      "Advanced specialization in systems security, cloud defense, AI-driven protection, and cryptographic engineering with international dual-degree pathways at top global universities.",
+      "A two-year M.Tech that blends advanced systems security, cloud defense, AI-driven protection, and cryptographic engineering with international dual-degree pathways at top global universities.",
     bgImage:
       "https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?auto=format&fit=crop&w=1920&q=85",
+    animation: "ken-burns",
+    gradient: "crimson",
   },
   heroStats: [
     { id: 1, value: "2 yrs", label: "M.Tech Duration", badge: "PG", badgeStyle: "cyan" },
@@ -229,12 +246,14 @@ export const DEFAULT_POSTGRADUATE_CONTENT = {
 
 export const DEFAULT_PHD_CONTENT = {
   hero: {
-    eyebrow: "Academics · Academic Programmes",
-    title: "Ph.D. in Cybersecurity",
+    eyebrow: "Academic Programmes",
+    title: "Doctoral Programme",
     subtitle:
-      "Advanced research in Agentic AI, Sovereign AI, Cloud Trust Modeling, and Critical Infrastructure Protection — pushing the frontiers of cybersecurity science.",
+      "A research-intensive Ph.D. that pushes the frontiers of Agentic AI, Sovereign AI, Cloud Trust Modeling, and Critical Infrastructure Protection in cybersecurity science.",
     bgImage:
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1920&q=85",
+    animation: "ken-burns",
+    gradient: "crimson",
   },
   heroStats: [
     { id: 1, value: "3–5 yrs", label: "PhD Duration", badge: "PhD", badgeStyle: "royal" },
@@ -393,12 +412,14 @@ export const DEFAULT_PHD_CONTENT = {
 
 export const DEFAULT_ONLINE_MCA_CONTENT = {
   hero: {
-    eyebrow: "Academics · Academic Programmes",
-    title: "Online MCA in Cybersecurity",
+    eyebrow: "Academic Programmes",
+    title: "Online MCA Programme",
     subtitle:
-      "Globally recognized, fully online Master of Computer Applications in Cybersecurity — designed for students and working professionals worldwide.",
+      "A globally recognized, fully online Master of Computer Applications in Cybersecurity — designed for students and working professionals worldwide.",
     bgImage:
       "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?auto=format&fit=crop&w=1920&q=85",
+    animation: "ken-burns",
+    gradient: "crimson",
   },
   heroStats: [
     { id: 1, value: "2 yrs", label: "MCA Duration", badge: "PG", badgeStyle: "cyan" },
