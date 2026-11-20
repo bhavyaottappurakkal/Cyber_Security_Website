@@ -1,29 +1,6 @@
 import { Link } from "react-router-dom";
 import "./Home.css";
 
-const keyHighlights = [
-  {
-    title: "CORE Designation",
-    badge: "Govt. of India",
-    desc: "Designated as a Center of Relevance and Excellence (CORE) for Cybersecurity in India (Mission REACH, Govt. of India).",
-  },
-  {
-    title: "Accredited 'A++' Grade",
-    badge: "NAAC Accredited",
-    desc: "Accredited 'A++' Grade by NAAC.",
-  },
-  {
-    title: "World's Top 100",
-    badge: "THE Impact Rankings",
-    desc: "Ranked in the World’s Top 100 Universities in Times Higher Education (THE) Impact Rankings.",
-  },
-  {
-    title: "100+ Patents Granted",
-    badge: "Innovation Record",
-    desc: "100+ Patents Granted across Amrita Vishwa Vidyapeetham.",
-  },
-];
-
 const academicPrograms = [
   {
     name: "B.Tech. in CSE (Cyber Security)",
@@ -129,9 +106,6 @@ export default function Home() {
                 <Link to="/research" className="btn-ref-primary">
                   Explore Research
                 </Link>
-                <Link to="/academics" className="btn-ref-secondary">
-                  Academic Programs
-                </Link>
               </div>
 
             </div>
@@ -232,8 +206,8 @@ export default function Home() {
                 </svg>
                 <a
                   className="globe-scroll-link"
-                  href="#highlights"
-                  aria-label="Scroll to key highlights"
+                  href="#welcome"
+                  aria-label="Scroll to welcome section"
                 >
                   <span aria-hidden="true">↓</span>
                 </a>
@@ -243,32 +217,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 2. KEY HIGHLIGHTS SECTION ── */}
-      <section id="highlights" className="section ref-highlights-section">
-        <div className="container">
-          <div className="ref-section-header">
-            <span className="ref-sub-heading">Institutional Prestige</span>
-            <h2 className="ref-section-title">Key Institutional Highlights</h2>
-            <div className="ref-accent-bar"></div>
-          </div>
-
-          <div className="highlights-quad-grid">
-            {keyHighlights.map((h, i) => (
-              <div key={i} className="highlight-quad-card">
-                <div className="hqc-top">
-                  <span className="hqc-icon">{h.icon}</span>
-                  <span className="hqc-badge">{h.badge}</span>
-                </div>
-                <h3 className="hqc-title">{h.title}</h3>
-                <p className="hqc-desc">{h.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ── 3. WELCOME & INTRODUCTION ── */}
-      <section className="section ref-welcome-section">
+      <section id="welcome" className="section ref-welcome-section">
         <div className="container">
           <div className="ref-welcome-box">
             <div className="ref-welcome-content">
@@ -299,7 +249,7 @@ export default function Home() {
 
               {/* Online MCA Callout */}
               <div className="ref-online-mca-banner">
-                <div className="mca-badge-icon">🌐</div>
+                <div className="mca-badge-icon"></div>
                 <div className="mca-badge-info">
                   <h4>Globally Recognized Online MCA Cybersecurity</h4>
                   <p>

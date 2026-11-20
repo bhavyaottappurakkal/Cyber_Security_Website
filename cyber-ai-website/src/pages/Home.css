@@ -402,73 +402,6 @@
 }
 
 /* ===================================================
-   2. KEY HIGHLIGHTS SECTION
-   =================================================== */
-.ref-highlights-section {
-  background: var(--white);
-  padding: 85px 0;
-}
-
-.highlights-quad-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
-}
-
-.highlight-quad-card {
-  background: #f8fcfd;
-  border: 1px solid #e1edef;
-  border-radius: 14px;
-  padding: 32px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  transition: var(--transition);
-}
-
-.highlight-quad-card:hover {
-  background: var(--white);
-  transform: translateY(-4px);
-  border-color: #92cbd6;
-  box-shadow: 0 10px 25px rgba(16, 45, 51, 0.08);
-}
-
-.hqc-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.hqc-icon {
-  font-size: 2.2rem;
-}
-
-.hqc-badge {
-  font-size: 0.725rem;
-  font-weight: 700;
-  color: #276e7d;
-  background: #e2f2f5;
-  padding: 4px 10px;
-  border-radius: 12px;
-  border: 1px solid #cce5ea;
-}
-
-.hqc-title {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #0e2930;
-  line-height: 1.35;
-  margin: 0;
-}
-
-.hqc-desc {
-  font-size: 0.85rem;
-  color: #55717b;
-  line-height: 1.6;
-  margin: 0;
-}
-
-/* ===================================================
    3. WELCOME & INTRODUCTION
    =================================================== */
 .ref-welcome-section {
@@ -804,7 +737,6 @@
    RESPONSIVE DESIGN
    =================================================== */
 @media (max-width: 1200px) {
-  .highlights-quad-grid,
   .ref-programs-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -827,7 +759,6 @@
   .ref-hero-section {
     padding: 50px 0 60px;
   }
-  .highlights-quad-grid,
   .ref-programs-grid {
     grid-template-columns: 1fr;
   }

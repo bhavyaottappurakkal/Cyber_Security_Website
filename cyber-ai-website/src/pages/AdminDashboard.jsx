@@ -387,7 +387,7 @@ const INITIAL_DATA = {
     },
   ],
   heroContent: {
-    tagline: "CENTER OF RELEVANCE & EXCELLENCE",
+    // tagline: "CENTER OF RELEVANCE & EXCELLENCE",
     title: "Amrita Center for Cybersecurity Systems and Networks",
     description:
       "Fostering innovative research and education in Cybersecurity and Artificial Intelligence through partnerships across industry, academia, and the government.",
