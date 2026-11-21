@@ -1,380 +1,474 @@
-import { Link } from "react-router-dom";
-import "./Home.css";
+import { useState, useEffect, useRef } from 'react'
+import './Home.css'
 
-const academicPrograms = [
+const HERO_SLIDES = [
   {
-    name: "B.Tech. in CSE (Cyber Security)",
-    level: "Undergraduate Program",
-    desc: "4-year engineering program focused on systems security, network forensics, cryptography, and AI-driven defense.",
-    link: "/academics",
+    image: '/hero-students.jpg',
+    eyebrow: 'Featured Story',
+    title: 'Research That Moves the World Forward',
+    desc: 'A template showcase for breakthrough research, interdisciplinary collaboration, and global academic impact.',
+    ctaLabel: 'Explore Research',
+    ctaTarget: 'news',
   },
   {
-    name: "M.Tech. in Cybersecurity",
-    level: "Postgraduate Program",
-    desc: "Advanced specialization in systems security, cloud security, and AI defense with international dual degrees.",
-    link: "/academics/postgraduate",
+    image: '/sample_hero_img.jpg',
+    eyebrow: 'Campus & Innovation',
+    title: 'A Historic Investment in Education',
+    desc: 'Expanding opportunities across science, engineering, humanities, and creative inquiry for future leaders.',
+    ctaLabel: 'Learn More',
+    ctaTarget: 'feature',
   },
   {
-    name: "Ph.D. in Cybersecurity",
-    level: "Doctoral Program",
-    desc: "Advanced research in Agentic AI, Sovereign AI, Cloud Trust Modeling, and Critical Infrastructure Protection.",
-    link: "/academics/phd",
+    image: '/sample_headline.jpg',
+    eyebrow: 'Academic Excellence',
+    title: 'Preparing Leaders for Tomorrow',
+    desc: 'Connecting rigorous scholarship with real-world problem solving across every discipline.',
+    ctaLabel: 'Explore Academics',
+    ctaTarget: 'academics',
   },
-  {
-    name: "Online MCA in Cybersecurity",
-    level: "Amrita Online",
-    desc: "Globally recognized flexible postgraduate degree program for domestic and international students and working professionals.",
-    link: "/academics/online-mca",
-  },
-];
+]
 
-const researchFocusAreas = [
-  { name: "Agentic AI Systems" },
-  { name: "Physical AI and Intelligent Autonomous Systems" },
-  { name: "AI Sovereignty and Trusted AI Infrastructure" },
-  { name: "Cloud Computing & Hypervisor Security" },
-  { name: "Internet of Things (IoT) Security" },
-  { name: "Cryptography" },
-  { name: "Healthcare Security" },
-  { name: "Big Data Analytics" },
-  { name: "Automotive Security" },
-  { name: "Security Data Visualization" },
-  { name: "Security Education" },
-];
+const FEATURED_NEWS_MAIN = {
+  image: '/sample_headline.jpg',
+  category: 'Rankings & Impact',
+  title: 'University Ranks Among Top Institutions Worldwide in Interdisciplinary Science',
+  excerpt:
+    'Recognition highlights collaborative research initiatives, faculty leadership, and cross-disciplinary academic programs.',
+}
 
-const insideCenterItems = [
+const FEATURED_NEWS_LIST = [
   {
-    title: "Partners",
-    tag: "Strategic Alliances",
-
-    desc: "Strategic research partnerships with premier global universities and Indian government organizations such as the Indian Space Research Organisation (ISRO) and the Department of Science and Technology (DST).",
-    link: "/placements",
-    linkText: "Explore Partners & Collaborations",
+    image: '/sample_top.jpg',
+    category: 'Campus',
+    title: 'Inside Our Top-Ranked Technology-Ready Campus',
   },
   {
-    title: "Placements",
-    tag: "Industry Outcomes",
-
-    desc: "Consistent high-quality placements managed by the Directorate of Corporate & Industry Relations (CIR) across top multinational technology and cybersecurity firms.",
-    link: "/placements",
-    linkText: "View Placement Records & Recruiters",
+    image: '/hero-students.jpg',
+    category: 'Leadership',
+    title: 'Recognized Among Leading Colleges for Future Leaders',
   },
   {
-    title: "Publications",
-    tag: "Research Impact",
-
-    desc: "Extensive research contributions published in internationally renowned journals and conferences.",
-    link: "/projects",
-    linkText: "Explore Projects & White Papers",
+    image: '/sample_hero_img.jpg',
+    category: 'Open Learning',
+    title: 'Expanding Access to Core Courses Through Open Learning',
   },
-];
+  {
+    image: '/sample_headline.jpg',
+    category: 'Research',
+    title: 'National Faculty Awards Support Wide-Ranging Discovery',
+  },
+]
+
+const CAROUSEL_ITEMS = [
+  {
+    image: '/sample_hero_img.jpg',
+    eyebrow: 'Initiative 01',
+    title: 'A Historic Investment to Build a New Model',
+    desc: 'Modern facilities, collaborative studios, and cross-campus research hubs designed for discovery.',
+  },
+  {
+    image: '/hero-students.jpg',
+    eyebrow: 'Initiative 02',
+    title: 'Interdisciplinary Laboratories & Research Centers',
+    desc: 'Bringing together scholars, engineers, and designers to solve complex societal challenges.',
+  },
+  {
+    image: '/sample_top.jpg',
+    eyebrow: 'Initiative 03',
+    title: 'Global Partnerships & Community Engagement',
+    desc: 'Connecting campus research with public institutions, industry partners, and global communities.',
+  },
+]
+
+const FACULTY_STATS = [
+  { stat: '1,400+', label: 'Faculty & Researchers' },
+  { stat: '20+', label: 'Interdisciplinary Centers' },
+  { stat: '100+', label: 'Countries Represented' },
+]
+
+const VERTICAL_TABS = [
+  {
+    id: 'tab-1',
+    title: 'Founding Vision & Discovery',
+    heading: 'Pioneering Practical & Theoretical Scholarship',
+    desc: 'Since our founding, bold ideas and hands-on inquiry have shaped new fields of study and transformed industries.',
+    image: '/sample_hero_img.jpg',
+  },
+  {
+    id: 'tab-2',
+    title: 'Interdisciplinary Research',
+    heading: 'Breaking Boundaries Across Disciplines',
+    desc: 'Collaborations between engineering, science, policy, and design create solutions that no single field could achieve alone.',
+    image: '/hero-students.jpg',
+  },
+  {
+    id: 'tab-3',
+    title: 'Global Impact & Future',
+    heading: 'Shaping the Next Century of Innovation',
+    desc: 'Equipping students and researchers with the tools, ethics, and curiosity to lead in a rapidly changing world.',
+    image: '/sample_headline.jpg',
+  },
+]
+
+const ACADEMIC_CARDS = [
+  {
+    eyebrow: 'Undergraduate',
+    title: 'Undergraduate Programs',
+    desc: 'Flexible, rigorous degree programs combining foundational theory with hands-on project experience.',
+  },
+  {
+    eyebrow: 'Graduate',
+    title: 'Master’s & Professional Degrees',
+    desc: 'Specialized graduate education designed for advanced technical depth and leadership.',
+  },
+  {
+    eyebrow: 'Doctoral',
+    title: 'Ph.D. & Research Fellowships',
+    desc: 'Original research alongside world-renowned faculty mentors in state-of-the-art laboratories.',
+  },
+]
+
+const EVENTS_LIST = [
+  {
+    month: 'NOV',
+    day: '18',
+    title: 'Annual Research & Innovation Symposium',
+    meta: '10:00 AM · Main Auditorium',
+  },
+  {
+    month: 'DEC',
+    day: '04',
+    title: 'Distinguished Lecture Series: Future of Science',
+    meta: '4:30 PM · Lecture Hall A',
+  },
+  {
+    month: 'DEC',
+    day: '12',
+    title: 'Graduate Admissions & Program Information Session',
+    meta: '2:00 PM · Virtual & On-Campus',
+  },
+]
+
+function RevealSection({ id, className, children }) {
+  const ref = useRef(null)
+  const [visible, setVisible] = useState(id === 'home')
+  const [replay, setReplay] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setVisible(true)
+          }
+        })
+      },
+      { threshold: 0.05, rootMargin: '0px 0px -40px 0px' }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const onNavigate = (e) => {
+      if (e.detail?.id === id) {
+        setVisible(true)
+        setReplay(false)
+        requestAnimationFrame(() => setReplay(true))
+      }
+    }
+    window.addEventListener('section-navigate', onNavigate)
+    return () => window.removeEventListener('section-navigate', onNavigate)
+  }, [id])
+
+  return (
+    <section
+      id={id}
+      ref={ref}
+      className={`${className} cmu-section-anchor ${visible ? 'cmu-visible' : ''} ${replay ? 'cmu-replay' : ''}`}
+    >
+      {children}
+    </section>
+  )
+}
 
 export default function Home() {
+  const [heroSlide, setHeroSlide] = useState(0)
+  const [heroPaused, setHeroPaused] = useState(false)
+
+  const [cmsData] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('adminSiteData') || 'null')
+    } catch {
+      return null
+    }
+  })
+
+  const heroSlides = HERO_SLIDES.map((slide, idx) => {
+    if (idx === 0 && cmsData?.heroContent) {
+      return {
+        ...slide,
+        title: cmsData.heroContent.title || slide.title,
+        desc: cmsData.heroContent.description || slide.desc,
+        ctaLabel: cmsData.heroContent.btn1 || slide.ctaLabel,
+      }
+    }
+    return slide
+  })
+
+  const newsItems = cmsData?.news?.length
+    ? cmsData.news.slice(0, 4).map((n, i) => ({
+        image: FEATURED_NEWS_LIST[i % FEATURED_NEWS_LIST.length].image,
+        category: n.category || 'News',
+        title: n.title,
+      }))
+    : FEATURED_NEWS_LIST
+
+  const eventsItems = cmsData?.events?.length
+    ? cmsData.events.slice(0, 3).map((ev) => ({
+        month: (ev.month || 'NOV').toUpperCase().slice(0, 3),
+        day: ev.day || '18',
+        title: ev.title,
+        meta: ev.venue || ev.time || 'Campus Auditorium',
+      }))
+    : EVENTS_LIST
+
+  const facultyStats = cmsData?.faculty?.length
+    ? [
+        { stat: `${cmsData.faculty.length}+`, label: 'Faculty & Researchers' },
+        ...FACULTY_STATS.slice(1),
+      ]
+    : FACULTY_STATS
+
+  const featureTitle =
+    cmsData?.aboutContent?.hero?.title || 'Celebration of Innovation & Heritage'
+  const featureDesc =
+    cmsData?.aboutContent?.overview?.paragraphs?.[0] ||
+    'Highlighting milestones, community stories, and collaborative achievements across our campus and global network.'
+
+  const academicItems = cmsData?.academicsContent?.programs?.length
+    ? cmsData.academicsContent.programs
+    : ACADEMIC_CARDS
+
+  useEffect(() => {
+    if (heroPaused) return
+    const timer = setInterval(() => {
+      setHeroSlide((prev) => (prev + 1) % HERO_SLIDES.length)
+    }, 6000)
+    return () => clearInterval(timer)
+  }, [heroPaused])
+
+  const scrollToSection = (e, targetId) => {
+    e.preventDefault()
+    const el = document.getElementById(targetId)
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      window.dispatchEvent(new CustomEvent('section-navigate', { detail: { id: targetId } }))
+    }
+  }
+
   return (
-    <div className="home-page-ref">
-      {/* ── 1. HERO BANNER (MATCHING REFERENCE IMAGE) ── */}
-      <section className="ref-hero-section">
-        <div className="container ref-hero-container">
-          <div className="ref-hero-grid">
-            {/* Left Column: Editorial Headline & Content */}
-            <div className="ref-hero-left">
-              {/* Center of Relevance Tag */}
-              <div className="ref-hero-tag">
-                <span className="ref-tag-line"></span>
-                <span className="ref-tag-text">
-                  CENTER OF RELEVANCE &amp; EXCELLENCE
-                </span>
+    <div className="cmu-page">
+      {/* 1. HERO (Hero Hero--home Hero--tall theme-dark) */}
+      <section
+        id="home"
+        className="Hero Hero--home Hero--tall theme-dark cmu-section-anchor"
+        onMouseEnter={() => setHeroPaused(true)}
+        onMouseLeave={() => setHeroPaused(false)}
+      >
+        <div className="cmu-hero-viewport">
+          <div
+            className="cmu-hero-track"
+            style={{ transform: `translateX(-${heroSlide * 100}%)` }}
+          >
+            {heroSlides.map((slide, idx) => (
+              <div key={idx} className="cmu-hero-slide">
+                <img src={slide.image} alt={slide.title} className="cmu-hero-img" />
+                <div className="cmu-hero-overlay" aria-hidden="true" />
+                <div className="cmu-wrap cmu-hero-inner">
+                  <div className="cmu-hero-content">
+                    <span className="cmu-eyebrow cmu-eyebrow--red">{slide.eyebrow}</span>
+                    <h1 className="cmu-h1">{slide.title}</h1>
+                    <p className="cmu-hero-lead">{slide.desc}</p>
+                    <a
+                      href={`#${slide.ctaTarget}`}
+                      onClick={(e) => scrollToSection(e, slide.ctaTarget)}
+                      className="cmu-btn cmu-btn--red"
+                    >
+                      {slide.ctaLabel}
+                    </a>
+                  </div>
+                </div>
               </div>
+            ))}
+          </div>
+        </div>
 
-              {/* Main Headline (Editorial Serif Typography) */}
-              <h1 className="ref-hero-title">
-                Amrita Center for <br />
-                <span className="ref-hero-teal">
-                  Cybersecurity Systems and Networks
-                </span>
-              </h1>
+        <button
+          type="button"
+          className="cmu-arrow cmu-arrow--prev"
+          onClick={() => setHeroSlide((prev) => (prev - 1 + HERO_SLIDES.length) % HERO_SLIDES.length)}
+          aria-label="Previous slide"
+        >
+          ‹
+        </button>
+        <button
+          type="button"
+          className="cmu-arrow cmu-arrow--next"
+          onClick={() => setHeroSlide((prev) => (prev + 1) % HERO_SLIDES.length)}
+          aria-label="Next slide"
+        >
+          ›
+        </button>
 
-              {/* Subtitle / Description */}
-              <p className="ref-hero-desc">
-                Fostering innovative research and education in Cybersecurity and
-                Artificial Intelligence through partnerships across industry,
-                academia, and the government.
-              </p>
+        <div className="cmu-dots" aria-label="Hero slide indicators">
+          {HERO_SLIDES.map((_, idx) => (
+            <button
+              key={idx}
+              type="button"
+              className={`cmu-dot ${heroSlide === idx ? 'is-active' : ''}`}
+              onClick={() => setHeroSlide(idx)}
+              aria-label={`Slide ${idx + 1}`}
+            />
+          ))}
+        </div>
+      </section>
 
-              {/* Action Buttons */}
-              <div className="ref-hero-actions">
-                <Link to="/research" className="btn-ref-primary">
-                  Explore Research
-                </Link>
+      {/* 2. NEWS & EVENTS COMBINED (Section Section--gray Section--bg-split-alt) */}
+      <RevealSection id="news" className="Section Section--gray Section--bg-split-alt">
+        <div className="cmu-wrap">
+          <div className="cmu-section-hd">
+            <h2 className="cmu-h2">News &amp; Events</h2>
+          </div>
+
+          <div className="cmu-news-layout">
+            <article className="cmu-news-lead">
+              <div className="cmu-news-lead-img">
+                <img src={FEATURED_NEWS_MAIN.image} alt={FEATURED_NEWS_MAIN.title} />
               </div>
-
-            </div>
-
-            {/* Right Column: Animated cybersecurity globe */}
-            <div className="ref-hero-right">
-              <div
-                className="cyber-globe-visual"
-                role="img"
-                aria-label="Animated cybersecurity network globe with a central lock"
-              >
-                <span className="globe-label globe-label-left">HASH :: OK</span>
-                <span className="globe-label globe-label-right">0x4F0CB4</span>
-                <span className="globe-label globe-label-bottom">
-                  SECURE NETWORK
-                </span>
-                <svg
-                  className="globe-svg"
-                  viewBox="0 0 640 640"
-                  aria-hidden="true"
-                >
-                  <defs>
-                    <clipPath id="globe-clip">
-                      <circle cx="320" cy="320" r="290" />
-                    </clipPath>
-                  </defs>
-                  <circle className="globe-outline" cx="320" cy="320" r="290" />
-                  <g className="globe-grid" clipPath="url(#globe-clip)">
-                    <ellipse cx="320" cy="320" rx="72" ry="290" />
-                    <ellipse cx="320" cy="320" rx="150" ry="290" />
-                    <ellipse cx="320" cy="320" rx="222" ry="290" />
-                    <ellipse cx="320" cy="320" rx="290" ry="88" />
-                    <ellipse cx="320" cy="320" rx="290" ry="172" />
-                    <path d="M56 178 Q320 286 584 178" />
-                    <path d="M38 430 Q320 332 602 430" />
-                    <path d="M118 91 Q260 286 484 548" />
-                    <path d="M516 91 Q380 286 132 548" />
-                    <path d="M86 305 L208 225 L320 320 L454 236 L562 316" />
-                    <path d="M98 398 L222 455 L320 320 L430 444 L550 382" />
-                    <path d="M208 225 L222 455 M454 236 L430 444 M86 305 L98 398 M562 316 L550 382" />
-                  </g>
-                  <g className="globe-orbits">
-                    <ellipse
-                      className="globe-orbit globe-orbit-one"
-                      cx="320"
-                      cy="320"
-                      rx="370"
-                      ry="104"
-                    />
-                    <ellipse
-                      className="globe-orbit globe-orbit-two"
-                      cx="320"
-                      cy="320"
-                      rx="370"
-                      ry="104"
-                    />
-                  </g>
-                  <g className="globe-nodes" clipPath="url(#globe-clip)">
-                    <circle cx="118" cy="177" r="4" />
-                    <circle cx="208" cy="225" r="4" />
-                    <circle cx="320" cy="116" r="4" />
-                    <circle cx="454" cy="236" r="4" />
-                    <circle cx="562" cy="316" r="4" />
-                    <circle cx="98" cy="398" r="4" />
-                    <circle cx="222" cy="455" r="4" />
-                    <circle cx="430" cy="444" r="4" />
-                    <circle cx="520" cy="486" r="4" />
-                    <circle cx="154" cy="322" r="4" />
-                    <circle cx="390" cy="170" r="4" />
-                    <circle cx="320" cy="520" r="4" />
-                    <circle cx="262" cy="290" r="3" />
-                    <circle cx="400" cy="350" r="3" />
-                    <circle cx="178" cy="414" r="3" />
-                    <circle cx="480" cy="290" r="3" />
-                    <circle cx="260" cy="486" r="3" />
-                    <circle cx="366" cy="248" r="3" />
-                    <circle cx="130" cy="260" r="3" />
-                    <circle cx="506" cy="390" r="3" />
-                  </g>
-                  <circle
-                    className="lock-halo lock-halo-outer"
-                    cx="320"
-                    cy="320"
-                    r="64"
-                  />
-                  <circle
-                    className="lock-halo lock-halo-inner"
-                    cx="320"
-                    cy="320"
-                    r="42"
-                  />
-                  <g className="globe-lock" transform="translate(320 320)">
-                    <path d="M-17 -5v-10a17 17 0 0 1 34 0v10" />
-                    <rect x="-24" y="-7" width="48" height="39" rx="7" />
-                    <circle cx="0" cy="10" r="4" />
-                    <path d="M0 14v8" />
-                  </g>
-                </svg>
-                <a
-                  className="globe-scroll-link"
-                  href="#welcome"
-                  aria-label="Scroll to welcome section"
-                >
-                  <span aria-hidden="true">↓</span>
+              <div className="cmu-news-lead-body">
+                <span className="cmu-eyebrow">{FEATURED_NEWS_MAIN.category}</span>
+                <h3 className="cmu-h3">{FEATURED_NEWS_MAIN.title}</h3>
+                <p>{FEATURED_NEWS_MAIN.excerpt}</p>
+                <a href="#news" onClick={(e) => e.preventDefault()} className="cmu-link">
+                  Read More →
                 </a>
               </div>
+            </article>
+
+            <div className="cmu-news-grid">
+              {newsItems.map((item, idx) => (
+                <article key={idx} className="cmu-news-card">
+                  <div className="cmu-news-card-img">
+                    <img src={item.image} alt={item.title} />
+                  </div>
+                  <div className="cmu-news-card-body">
+                    <span className="cmu-eyebrow">{item.category}</span>
+                    <h4 className="cmu-h5">{item.title}</h4>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <div id="events" style={{ marginTop: '56px' }}>
+            <div className="cmu-section-hd">
+              <h3 className="cmu-h3">Upcoming Events</h3>
+            </div>
+
+            <div className="cmu-events-grid">
+              {eventsItems.map((ev, idx) => (
+                <div key={idx} className="cmu-event-card">
+                  <div className="cmu-event-date">
+                    <span className="cmu-event-month">{ev.month}</span>
+                    <span className="cmu-event-day">{ev.day}</span>
+                  </div>
+                  <div className="cmu-event-info">
+                    <h4 className="cmu-h5">{ev.title}</h4>
+                    <p className="cmu-event-meta">{ev.meta}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-      </section>
+      </RevealSection>
 
-      {/* ── 3. WELCOME & INTRODUCTION ── */}
-      <section id="welcome" className="section ref-welcome-section">
-        <div className="container">
-          <div className="ref-welcome-box">
-            <div className="ref-welcome-content">
-              <span className="ref-sub-heading">
-                Welcome &amp; Introduction
-              </span>
-              <h2 className="ref-welcome-title">
-                Amrita Center for Cybersecurity Systems and Networks
-              </h2>
-              <div className="ref-accent-bar ref-accent-bar-left"></div>
-
-              <p className="ref-welcome-lead">
-                The Amrita Center for Cybersecurity Systems and Networks
-                promotes partnerships between industry, academia, and the
-                government to foster innovative research and education in
-                cybersecurity, thus enhancing knowledge, deriving solutions,
-                benefiting society, and mitigating risks.
-              </p>
-
-              <p className="ref-welcome-p">
-                The Center is supported by the Government of India through many
-                of its Departments and Mission REACH programs. As a designated{" "}
-                <strong>Center of Relevance and Excellence (CORE)</strong> for
-                cybersecurity in India, the Center fosters a core group of
-                experts who disseminate knowledge across the ever-expanding
-                frontiers of cybersecurity and AI.
-              </p>
-
-              {/* Online MCA Callout */}
-              <div className="ref-online-mca-banner">
-                <div className="mca-badge-icon"></div>
-                <div className="mca-badge-info">
-                  <h4>Globally Recognized Online MCA Cybersecurity</h4>
-                  <p>
-                    The Center also offers the globally recognized Online MCA
-                    Cybersecurity program through Amrita Online, attracting
-                    students and working professionals from around the world.
-                  </p>
-                </div>
-                <Link to="/academics" className="mca-cta-btn">
-                  View Program →
-                </Link>
-              </div>
-            </div>
+      {/* 3. FEATURE PANEL (FeaturePanel) */}
+      <RevealSection id="feature" className="FeaturePanel">
+        <div className="cmu-feature-grid">
+          <div className="cmu-feature-media">
+            <img src="/sample_top.jpg" alt="Feature highlight" />
+          </div>
+          <div className="cmu-feature-body">
+            <span className="cmu-eyebrow cmu-eyebrow--light">Campus Spotlight</span>
+            <h2 className="cmu-h2 cmu-h2--white">{featureTitle}</h2>
+            <p className="cmu-feature-text">
+              {featureDesc}
+            </p>
+            <a
+              href="#academics"
+              onClick={(e) => scrollToSection(e, 'academics')}
+              className="cmu-btn cmu-btn--outline-white"
+            >
+              Explore Programs
+            </a>
           </div>
         </div>
-      </section>
+      </RevealSection>
 
-      {/* ── 4. QUICK OVERVIEW OF CORE SECTIONS ── */}
-
-      {/* CORE SECTION 1: ACADEMICS */}
-      <section className="section ref-core-academics">
-        <div className="container">
-          <div className="ref-section-header">
-            <span className="ref-sub-heading">
-              Quick Overview · Core Section 01
-            </span>
-            <h2 className="ref-section-title">Academics</h2>
-            <div className="ref-accent-bar"></div>
-            <p className="ref-section-lead">
-              Comprehensive undergraduate, postgraduate, doctoral, and online
-              degree programs in Cybersecurity and AI.
-            </p>
+      {/* 5. FACULTY STATS & TESTIMONIAL (Section) */}
+      <RevealSection id="faculty" className="Section Section--white">
+        <div className="cmu-wrap">
+          <div className="cmu-section-hd">
+            <h2 className="cmu-h2">Faculty Who Are Leaders in Their Fields</h2>
           </div>
 
-          <div className="ref-programs-grid">
-            {academicPrograms.map((prog, idx) => (
-              <div key={idx} className="ref-program-card">
-                <div className="rpc-top">
-                  <span className="rpc-icon">{prog.icon}</span>
-                  <span className="rpc-level">{prog.level}</span>
-                </div>
-                <h3 className="rpc-name">{prog.name}</h3>
-                <p className="rpc-desc">{prog.desc}</p>
-                <Link to={prog.link || "/academics"} className="rpc-action">
-                  Learn More <span>→</span>
-                </Link>
+          <div className="cmu-stats-grid">
+            {facultyStats.map((item, idx) => (
+              <div key={idx} className="cmu-stat-card">
+                <div className="cmu-stat-num">{item.stat}</div>
+                <div className="cmu-stat-label">{item.label}</div>
               </div>
             ))}
           </div>
 
-          <div className="ref-center-action">
-            <Link to="/academics" className="btn-ref-primary">
-              View Full Academics Curriculum →
-            </Link>
-          </div>
+          <blockquote className="cmu-quote-box">
+            <p className="cmu-quote-text">
+              “Our community thrives where curiosity meets real-world impact—empowering students and faculty to tackle the defining challenges of our era.”
+            </p>
+            <footer className="cmu-quote-author">— Faculty Leadership &amp; Academic Council</footer>
+          </blockquote>
         </div>
-      </section>
+      </RevealSection>
 
-      {/* CORE SECTION 2: RESEARCH FOCUS */}
-      <section className="section ref-core-research">
-        <div className="container">
-          <div className="ref-section-header">
-            <span className="ref-sub-heading">
-              Quick Overview · Core Section 02
-            </span>
-            <h2 className="ref-section-title">Research Focus</h2>
-            <div className="ref-accent-bar"></div>
-            <p className="ref-section-lead">
-              Pioneering interdisciplinary research to protect digital assets of
-              public and national importance.
+      {/* 5. ACADEMICS (Section Section--centered Section--black Section--bg-split) */}
+      <RevealSection id="academics" className="Section Section--centered Section--black Section--bg-split">
+        <div className="cmu-wrap">
+          <div className="cmu-section-hd cmu-section-hd--center">
+            <h2 className="cmu-h2 cmu-h2--white">Academics</h2>
+            <p className="cmu-section-sub cmu-section-sub--light">
+              Interdisciplinary degrees designed to inspire rigorous inquiry and creative leadership.
             </p>
           </div>
 
-          <div className="ref-research-grid">
-            {researchFocusAreas.map((area, idx) => (
-              <div key={idx} className="ref-research-pill">
-                <span className="rrp-index">
-                  {idx < 9 ? `0${idx + 1}` : idx + 1}
-                </span>
-                <span className="rrp-icon">{area.icon}</span>
-                <span className="rrp-name">{area.name}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="ref-center-action">
-            <Link to="/research" className="btn-ref-secondary">
-              {/* Explore All Detailed Research Descriptions → */}
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* CORE SECTION 3: INSIDE THE CENTER */}
-      <section className="section ref-core-inside">
-        <div className="container">
-          <div className="ref-section-header">
-            <span className="ref-sub-heading">
-              Quick Overview · Core Section 03
-            </span>
-            <h2 className="ref-section-title">Inside the Center</h2>
-            <div className="ref-accent-bar"></div>
-            <p className="ref-section-lead">
-              Global partnerships, exceptional placement outcomes, and
-              internationally recognized research contributions.
-            </p>
-          </div>
-
-          <div className="ref-inside-grid">
-            {insideCenterItems.map((item, idx) => (
-              <div key={idx} className="ref-inside-card">
-                <div className="ric-header">
-                  <div className="ric-icon">{item.icon}</div>
-                  <span className="ric-tag">{item.tag}</span>
-                </div>
-                <h3 className="ric-title">{item.title}</h3>
-                <p className="ric-desc">{item.desc}</p>
-                <Link to={item.link} className="ric-link">
-                  {item.linkText}
-                </Link>
+          <div className="cmu-academics-grid">
+            {academicItems.map((card, idx) => (
+              <div key={idx} className="cmu-academic-card">
+                <span className="cmu-eyebrow">{card.eyebrow}</span>
+                <h3 className="cmu-h4">{card.title}</h3>
+                <p>{card.desc}</p>
+                <a href="#academics" onClick={(e) => e.preventDefault()} className="cmu-link">
+                  Learn More →
+                </a>
               </div>
             ))}
           </div>
         </div>
-      </section>
+      </RevealSection>
     </div>
-  );
+  )
 }

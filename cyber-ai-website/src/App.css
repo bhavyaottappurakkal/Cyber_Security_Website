@@ -7,11 +7,73 @@
 
 .main-content {
   flex: 1;
-  margin-top: 60px;
+  margin-top: 64px;
 }
 
 @media (max-width: 680px) {
   .main-content {
-    margin-top: 60px;
+    margin-top: 64px;
+  }
+}
+
+@keyframes pageSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sectionSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(48px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sectionSlideUpReplay {
+  from {
+    opacity: 0;
+    transform: translateY(48px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter {
+  animation: pageSlideUp 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.onepage-section {
+  scroll-margin-top: 92px;
+  opacity: 0;
+}
+
+.onepage-section.is-visible {
+  opacity: 1;
+  animation: sectionSlideUp 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.onepage-section.replay-slide-up {
+  opacity: 1;
+  animation: sectionSlideUpReplay 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter,
+  .onepage-section,
+  .onepage-section.is-visible,
+  .onepage-section.replay-slide-up {
+    opacity: 1;
+    animation: none;
   }
 }

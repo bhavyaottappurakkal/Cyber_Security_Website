@@ -1,5 +1,5 @@
 /* ===================================================
-   HEADER & NAVBAR (REFERENCE-STYLE UNIVERSITY LANDING PAGE)
+   CMU.EDU SINGLE-BAR HEADER & MEGA MENU
    =================================================== */
 
 .site-header {
@@ -8,183 +8,281 @@
   left: 0;
   right: 0;
   z-index: 1000;
-  background: var(--white);
-  transition: all 0.3s ease;
-  border-bottom: 1px solid #e8edef;
+  background: #eaf6fa;
+  border-bottom: 1px solid #bee2ed;
+  transition: box-shadow 0.2s ease;
 }
 
 .site-header.header-scrolled {
-  box-shadow: 0 4px 20px rgba(16, 45, 51, 0.08);
+  box-shadow: 0 4px 18px rgba(82, 169, 188, 0.18);
 }
 
-.top-utility-bar {
-  display: none;
-}
-
-.main-navbar {
-  height: 60px;
-  background: var(--white);
+.cmu-header-bar {
+  height: 64px;
+  background: #eaf6fa;
   display: flex;
   align-items: center;
 }
 
-.navbar-inner {
+.cmu-header-inner {
+  width: 100%;
+  max-width: 1248px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
-  height: 100%;
-  max-width: 1440px;
-  padding-left: clamp(24px, 6vw, 80px);
-  padding-right: clamp(24px, 6vw, 80px);
+  gap: 24px;
 }
 
-.navbar-brand {
-  display: flex;
+/* Left Logo */
+.cmu-wordmark-logo {
+  display: inline-flex;
   align-items: center;
   text-decoration: none;
   flex-shrink: 0;
-  min-width: 0;
+  background: #ffffff;
+  padding: 4px 10px;
 }
 
-.navbar-cyber-logo {
-  width: 160px;
-  height: auto;
+.cmu-header-logo {
+  height: 42px;
+  width: auto;
   object-fit: contain;
   display: block;
+}
+
+.cmu-header-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  height: 100%;
 }
 
 .desktop-nav {
   display: flex;
   align-items: center;
-  gap: 4px;
-  margin-left: auto;
-  margin-right: 20px;
+  gap: 8px;
+  height: 100%;
 }
 
 .desk-link {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: #112937;
-  padding: 8px 10px;
-  border-radius: 0;
-  transition: var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #0e2930;
+  padding: 6px 10px;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
 }
 
-.desk-link:hover {
-  color: var(--teal-700);
+.desk-link:hover,
+.desk-link.is-open {
+  color: #276e7d;
 }
 
 .desk-link.active {
-  color: #112937;
-  font-weight: 700;
+  border-bottom-color: #52a9bc;
 }
 
-/* ── Academics Dropdown ── */
-.desk-dropdown {
-  position: relative;
+.desk-link.is-open {
+  border-bottom-color: #52a9bc;
 }
 
-.desk-dropdown-caret {
-  font-size: 0.65rem;
-  margin-left: 2px;
-  opacity: 0.6;
+.desk-caret {
+  font-size: 0.72rem;
+  opacity: 0.85;
 }
 
-.desk-dropdown-menu {
-  display: none;
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  box-shadow: 0 8px 28px rgba(11,25,44,0.12);
-  min-width: 220px;
-  z-index: 2000;
-  overflow: hidden;
-}
-
-.desk-dropdown:hover .desk-dropdown-menu {
-  display: block;
-}
-
-.desk-dropdown-item {
-  display: block;
-  padding: 10px 18px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #112937;
-  text-decoration: none;
-  transition: background 0.15s, color 0.15s;
-  border-bottom: 1px solid #f1f5f9;
-  font-family: var(--font-sans);
-}
-
-.desk-dropdown-item:last-child {
-  border-bottom: none;
-}
-
-.desk-dropdown-item:hover {
-  background: #f4f7fa;
-  color: var(--teal-700, #0d7c8c);
-}
-
-.navbar-end {
-  display: flex;
+.cmu-search-btn {
+  width: 42px;
+  height: 42px;
+  background: #52a9bc;
+  color: #ffffff;
+  border: none;
+  display: inline-flex;
   align-items: center;
-  gap: 18px;
+  justify-content: center;
+  cursor: pointer;
   flex-shrink: 0;
+  transition: background 0.15s ease;
 }
 
-.navbar-divider {
-  width: 1px;
-  height: 26px;
-  background: #c9cdd0;
+.cmu-search-btn:hover {
+  background: #368a9c;
 }
 
-.navbar-university-logo {
-  display: block;
-  width: 130px;
-  height: auto;
-  object-fit: contain;
+.cmu-search-btn svg {
+  width: 18px;
+  height: 18px;
 }
 
-/* ── Responsive Header ── */
-@media (max-width: 880px) {
+@media (max-width: 860px) {
+  .cmu-header-logo {
+    height: 34px;
+  }
   .desktop-nav {
+    overflow-x: auto;
+    gap: 2px;
+  }
+  .desk-link {
+    padding: 6px 8px;
+    font-size: 0.78rem;
+  }
+  .cmu-megamenu {
     display: none;
   }
 }
 
-@media (max-width: 680px) {
-  .navbar-inner {
-    padding-left: 18px;
-    padding-right: 18px;
+/* ===================================================
+   CMU-STYLE FULL-WIDTH SLIDE-DOWN MEGA MENU
+   =================================================== */
+@keyframes megaSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
   }
-  .navbar-cyber-logo {
-    width: 130px;
-  }
-  .navbar-end {
-    gap: 10px;
-  }
-  .navbar-university-logo {
-    width: 104px;
-  }
-  .navbar-divider {
-    height: 22px;
-  }
-  .main-navbar {
-    height: 60px;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-@media (max-width: 370px) {
-  .navbar-cyber-logo {
-    width: 108px;
-  }
-  .navbar-university-logo {
-    width: 88px;
+.cmu-megamenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #334155;
+  color: #ffffff;
+  border-top: 2px solid #52a9bc;
+  box-shadow: 0 18px 40px rgba(30, 41, 59, 0.35);
+  padding: 40px 0 48px;
+  z-index: 999;
+  animation: megaSlideDown 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cmu-megamenu-inner {
+  max-width: 1248px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: 0.9fr 1.25fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.cmu-mega-title {
+  font-family: var(--font-sans);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 24px;
+}
+
+.cmu-mega-links {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 36px;
+}
+
+.cmu-mega-link {
+  display: block;
+  padding: 13px 0;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+  transition: color 0.15s ease, border-color 0.15s ease, padding-left 0.15s ease;
+}
+
+.cmu-mega-link:hover {
+  color: #52a9bc;
+  border-bottom-color: #52a9bc;
+  padding-left: 4px;
+}
+
+.cmu-mega-featured {
+  display: grid;
+  grid-template-columns: 0.9fr 1.2fr;
+  background: #ffffff;
+  color: #140903;
+  text-decoration: none;
+  min-height: 290px;
+  overflow: hidden;
+  border-bottom: 4px solid #52a9bc;
+  transition: transform 0.2s ease;
+}
+
+.cmu-mega-featured:hover {
+  transform: translateY(-2px);
+}
+
+.cmu-mega-feat-img {
+  position: relative;
+  min-height: 290px;
+}
+
+.cmu-mega-feat-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cmu-mega-feat-body {
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+}
+
+.cmu-mega-feat-heading {
+  font-family: var(--font-heading);
+  font-size: 1.45rem;
+  font-weight: 600;
+  color: #140903;
+  margin: 0;
+}
+
+.cmu-mega-feat-lead {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #140903;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.cmu-mega-feat-text {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: #334047;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.cmu-mega-feat-note {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-style: italic;
+  color: #64757c;
+  line-height: 1.45;
+  margin: 0;
+}
+
+@media (max-width: 1024px) {
+  .cmu-megamenu-inner {
+    grid-template-columns: 1fr;
+    gap: 28px;
   }
 }

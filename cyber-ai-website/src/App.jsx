@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
-import Home from './pages/Home'
+import OnePage from './pages/OnePage'
 import About from './pages/About'
 import Academics from './pages/Academics'
 import Research from './pages/Research'
@@ -30,24 +30,26 @@ function AppLayout() {
     <div className={hideChrome ? '' : 'app'}>
       {!hideChrome && <Navbar />}
       <main className={hideChrome ? '' : 'main-content'}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/academics" element={<Academics />} />
-          <Route path="/academics/postgraduate" element={<PostGraduate />} />
-          <Route path="/academics/phd" element={<PhD />} />
-          <Route path="/academics/online-mca" element={<OnlineMCA />} />
-          <Route path="/research" element={<Research />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/faculty" element={<Faculty />} />
-          <Route path="/placements" element={<Placements />} />
-          <Route path="/speakers" element={<Speakers />} />
-          <Route path="/news-events" element={<NewsEvents />} />
-          <Route path="/contact" element={<Contact />} />
-          {/* Admin login — hidden from public nav */}
-          <Route path="/cyber-panel" element={<AdminLogin />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-        </Routes>
+        <div key={location.pathname} className={hideChrome ? '' : 'page-enter'}>
+          <Routes>
+            <Route path="/" element={<OnePage />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/academics" element={<Academics />} />
+            <Route path="/academics/postgraduate" element={<PostGraduate />} />
+            <Route path="/academics/phd" element={<PhD />} />
+            <Route path="/academics/online-mca" element={<OnlineMCA />} />
+            <Route path="/research" element={<Research />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/faculty" element={<Faculty />} />
+            <Route path="/placements" element={<Placements />} />
+            <Route path="/speakers" element={<Speakers />} />
+            <Route path="/news-events" element={<NewsEvents />} />
+            <Route path="/contact" element={<Contact />} />
+            {/* Admin login — hidden from public nav */}
+            <Route path="/cyber-panel" element={<AdminLogin />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          </Routes>
+        </div>
       </main>
       {!hideChrome && <Footer />}
     </div>
