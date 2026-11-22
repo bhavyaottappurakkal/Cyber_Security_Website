@@ -676,6 +676,14 @@
   text-align: left;
 }
 
+.cmu-academic-card-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+  margin-bottom: 18px;
+}
+
 .cmu-academic-card p {
   font-size: 0.95rem;
   color: #4d4d4d;

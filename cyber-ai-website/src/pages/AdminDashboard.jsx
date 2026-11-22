@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { saveMediaFile, resolveMediaUrl, deleteMediaFile } from "../utils/mediaStore";
 import "./AdminDashboard.css";
 
 const DEFAULT_DATA = {
@@ -18,6 +19,25 @@ const DEFAULT_DATA = {
     },
   },
   academicsContent: {
+    sectionTitle: "Academics",
+    sectionSubtitle:
+      "Interdisciplinary degrees designed to inspire rigorous inquiry and creative leadership.",
+    menuLinks: [
+      { id: 1, label: "Undergraduate Programs", targetId: "academics" },
+      { id: 2, label: "Online Programme", targetId: "academics" },
+      { id: 3, label: "Post Graduate Programme", targetId: "academics" },
+      { id: 4, label: "PhD Programme", targetId: "academics" },
+    ],
+    featured: {
+      image: "/hero-students.jpg",
+      mediaItems: [
+        { id: 1, type: "image", src: "/hero-students.jpg" },
+      ],
+      heading: "Interdisciplinary Degrees",
+      lead: "Rigorous academic programs built for emerging global challenges.",
+      body: "Combining foundational theory with hands-on research laboratories and mentorship.",
+      note: "Open for upcoming academic sessions across all degree levels.",
+    },
     programs: [
       {
         id: 1,
@@ -67,9 +87,29 @@ function loadSiteData() {
       ...parsed,
       heroContent: { ...DEFAULT_DATA.heroContent, ...(parsed.heroContent || {}) },
       aboutContent: { ...DEFAULT_DATA.aboutContent, ...(parsed.aboutContent || {}) },
-      academicsContent: parsed.academicsContent?.programs
-        ? parsed.academicsContent
-        : DEFAULT_DATA.academicsContent,
+      academicsContent: {
+        ...DEFAULT_DATA.academicsContent,
+        ...(parsed.academicsContent || {}),
+        featured: {
+          ...DEFAULT_DATA.academicsContent.featured,
+          ...(parsed.academicsContent?.featured || {}),
+          mediaItems: parsed.academicsContent?.featured?.mediaItems?.length
+            ? parsed.academicsContent.featured.mediaItems
+            : [
+                {
+                  id: 1,
+                  type: "image",
+                  src: parsed.academicsContent?.featured?.image || "/hero-students.jpg",
+                },
+              ],
+        },
+        menuLinks: parsed.academicsContent?.menuLinks?.length
+          ? parsed.academicsContent.menuLinks
+          : DEFAULT_DATA.academicsContent.menuLinks,
+        programs: parsed.academicsContent?.programs?.length
+          ? parsed.academicsContent.programs
+          : DEFAULT_DATA.academicsContent.programs,
+      },
       faculty: parsed.faculty?.length ? parsed.faculty : DEFAULT_DATA.faculty,
       news: parsed.news?.length ? parsed.news : DEFAULT_DATA.news,
       events: parsed.events?.length ? parsed.events : DEFAULT_DATA.events,
@@ -197,6 +237,26 @@ const QUICK_CARDS = [
   { key: "newsEvents", label: "News & Events", icon: "newsEvents" },
 ];
 
+function MediaThumb({ type, src, alt }) {
+  const [resolved, setResolved] = useState(() => (src?.startsWith("idb://") ? "" : src));
+
+  useEffect(() => {
+    let active = true;
+    resolveMediaUrl(src).then((url) => {
+      if (active) setResolved(url);
+    });
+    return () => {
+      active = false;
+    };
+  }, [src]);
+
+  if (!resolved) return null;
+  if (type === "video") {
+    return <video src={resolved} className="ia-media-thumb" muted playsInline />;
+  }
+  return <img src={resolved} alt={alt} className="ia-media-thumb" />;
+}
+
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState("overview");
@@ -205,6 +265,9 @@ export default function AdminDashboard() {
   const [toast, setToast] = useState(null);
   const toastTimerRef = useRef(null);
   const [newsTab, setNewsTab] = useState("news");
+  const [newAcadLink, setNewAcadLink] = useState({ label: "", url: "" });
+  const [newMedia, setNewMedia] = useState({ type: "image", src: "" });
+  const [newProgram, setNewProgram] = useState({ eyebrow: "", title: "", desc: "", image: "" });
   const [settingsTab, setSettingsTab] = useState("profile");
   const [users, setUsers] = useState(getStoredUsers);
   const [newUser, setNewUser] = useState({ name: "", email: "", password: "", role: "content_editor" });
@@ -245,9 +308,70 @@ export default function AdminDashboard() {
   };
 
   const persistData = (nextData, msg = "Changes saved successfully!") => {
-    setData(nextData);
-    localStorage.setItem("adminSiteData", JSON.stringify(nextData));
-    showToast(msg, "success");
+    try {
+      localStorage.setItem("adminSiteData", JSON.stringify(nextData));
+      setData(nextData);
+      window.dispatchEvent(new Event("adminSiteDataUpdated"));
+      showToast(msg, "success");
+    } catch {
+      showToast("Storage limit reached. Try using a video URL or smaller file.", "error");
+    }
+  };
+
+  const handleAcademicsImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const isVideo = file.type.startsWith("video/");
+    if (isVideo && file.size > 10 * 1024 * 1024) {
+      showToast("Video size must be below 10 MB.", "error");
+      e.target.value = "";
+      return;
+    }
+    try {
+      const idbKey = await saveMediaFile(file);
+      const nextItems = [
+        ...(data.academicsContent.featured?.mediaItems || []),
+        { id: Date.now(), type: isVideo ? "video" : "image", src: idbKey, name: file.name },
+      ];
+      const nextData = {
+        ...data,
+        academicsContent: {
+          ...data.academicsContent,
+          featured: {
+            ...data.academicsContent.featured,
+            mediaItems: nextItems,
+          },
+        },
+      };
+      persistData(nextData, `${isVideo ? "Video" : "Image"} "${file.name}" uploaded and saved!`);
+    } catch {
+      showToast("Could not store media file in browser storage.", "error");
+    }
+    e.target.value = "";
+  };
+
+  const handleProgramImageUpload = async (e, idx = null) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const idbKey = await saveMediaFile(file);
+      if (idx === null) {
+        setNewProgram((prev) => ({ ...prev, image: idbKey }));
+        showToast(`Image "${file.name}" attached to new card`, "success");
+      } else {
+        const updated = [...data.academicsContent.programs];
+        const prevImg = updated[idx].image;
+        if (prevImg) deleteMediaFile(prevImg);
+        updated[idx] = { ...updated[idx], image: idbKey };
+        persistData(
+          { ...data, academicsContent: { ...data.academicsContent, programs: updated } },
+          "Card image updated and saved!"
+        );
+      }
+    } catch {
+      showToast("Could not store image file.", "error");
+    }
+    e.target.value = "";
   };
 
   const handleLogout = () => {
@@ -512,6 +636,20 @@ export default function AdminDashboard() {
                   Save Home Changes
                 </button>
               </form>
+
+              <div className="ia-list-card" style={{ marginTop: "20px", flexDirection: "row", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap" }}>
+                <div>
+                  <strong>Home — Academics Section &amp; Cards</strong>
+                  <div className="ia-muted">Edit the Home page Academics heading, subtitle, cards, and card images</div>
+                </div>
+                <button
+                  type="button"
+                  className="ia-btn-primary"
+                  onClick={() => setActiveSection("academics")}
+                >
+                  Edit Section &amp; Cards →
+                </button>
+              </div>
             </div>
           )}
 
@@ -577,46 +715,558 @@ export default function AdminDashboard() {
             <div className="ia-panel">
               <div className="ia-page-head">
                 <h1>Academics</h1>
-                <p>Manage Undergraduate, Graduate, and Doctoral program cards</p>
+                <p>Full edit access for the Academics menu links, spotlight images &amp; videos, and text</p>
               </div>
 
-              <div className="ia-list">
-                {data.academicsContent.programs.map((prog, idx) => (
-                  <div key={prog.id} className="ia-list-card">
-                    <div className="ia-field">
-                      <span>Program Title ({prog.eyebrow})</span>
+              <div className="ia-form">
+                  <div className="ia-field">
+                    <span>Spotlight Slideshow — Images &amp; Videos (plays continuously)</span>
+                    <div className="ia-list" style={{ marginBottom: "10px" }}>
+                      {(data.academicsContent.featured?.mediaItems || []).map((item, idx) => (
+                        <div key={item.id} className="ia-list-row">
+                          <div className="ia-media-thumb-wrap">
+                            <MediaThumb type={item.type} src={item.src} alt={`Slide ${idx + 1}`} />
+                          </div>
+                          <span className="ia-tag">{item.type === "video" ? "VIDEO" : "IMAGE"}</span>
+                          <input
+                            type="text"
+                            style={{ flex: 1 }}
+                            value={item.name || item.src}
+                            readOnly={item.src?.startsWith("idb://")}
+                            onChange={(e) => {
+                              const updated = [...data.academicsContent.featured.mediaItems];
+                              updated[idx] = { ...item, src: e.target.value };
+                              setData({
+                                ...data,
+                                academicsContent: {
+                                  ...data.academicsContent,
+                                  featured: { ...data.academicsContent.featured, mediaItems: updated },
+                                },
+                              });
+                            }}
+                          />
+                          <button
+                            type="button"
+                            className="ia-btn-danger"
+                            onClick={() => {
+                              deleteMediaFile(item.src);
+                              const updated = data.academicsContent.featured.mediaItems.filter(
+                                (m) => m.id !== item.id
+                              );
+                              persistData(
+                                {
+                                  ...data,
+                                  academicsContent: {
+                                    ...data.academicsContent,
+                                    featured: { ...data.academicsContent.featured, mediaItems: updated },
+                                  },
+                                },
+                                "Media item removed from slideshow"
+                              );
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="ia-inline-form" style={{ marginBottom: "8px" }}>
+                      <select
+                        className="ia-select"
+                        value={newMedia.type}
+                        onChange={(e) => setNewMedia({ ...newMedia, type: e.target.value })}
+                      >
+                        <option value="image">Image</option>
+                        <option value="video">Video</option>
+                      </select>
                       <input
                         type="text"
-                        value={prog.title}
-                        onChange={(e) => {
-                          const updated = [...data.academicsContent.programs];
-                          updated[idx] = { ...prog, title: e.target.value };
-                          setData({ ...data, academicsContent: { programs: updated } });
-                        }}
+                        placeholder={
+                          newMedia.type === "video"
+                            ? "Video URL (e.g. /promo.mp4 or https://.../video.mp4)"
+                            : "Image URL (e.g. /sample_hero_img.jpg)"
+                        }
+                        value={newMedia.src}
+                        onChange={(e) => setNewMedia({ ...newMedia, src: e.target.value })}
                       />
+                      <button
+                        type="button"
+                        className="ia-btn-primary"
+                        onClick={() => {
+                          if (!newMedia.src.trim()) return;
+                          const nextItems = [
+                            ...(data.academicsContent.featured?.mediaItems || []),
+                            { id: Date.now(), type: newMedia.type, src: newMedia.src.trim() },
+                          ];
+                          persistData(
+                            {
+                              ...data,
+                              academicsContent: {
+                                ...data.academicsContent,
+                                featured: {
+                                  ...data.academicsContent.featured,
+                                  mediaItems: nextItems,
+                                },
+                              },
+                            },
+                            `${newMedia.type === "video" ? "Video" : "Image"} added to slideshow!`
+                          );
+                          setNewMedia({ ...newMedia, src: "" });
+                        }}
+                      >
+                        + Add {newMedia.type === "video" ? "Video" : "Image"}
+                      </button>
                     </div>
-                    <div className="ia-field">
-                      <span>Description</span>
-                      <textarea
-                        rows={2}
-                        value={prog.desc}
-                        onChange={(e) => {
-                          const updated = [...data.academicsContent.programs];
-                          updated[idx] = { ...prog, desc: e.target.value };
-                          setData({ ...data, academicsContent: { programs: updated } });
-                        }}
+
+                    <label className="ia-upload-btn">
+                      Upload Image or Video File (Video &lt; 10 MB)
+                      <input
+                        type="file"
+                        accept="image/*,video/*"
+                        onChange={handleAcademicsImageUpload}
+                        hidden
                       />
+                    </label>
+                  </div>
+
+                  <label className="ia-field">
+                    <span>Spotlight Heading</span>
+                    <input
+                      type="text"
+                      value={data.academicsContent.featured?.heading || ""}
+                      onChange={(e) =>
+                        setData({
+                          ...data,
+                          academicsContent: {
+                            ...data.academicsContent,
+                            featured: {
+                              ...data.academicsContent.featured,
+                              heading: e.target.value,
+                            },
+                          },
+                        })
+                      }
+                    />
+                  </label>
+
+                  <label className="ia-field">
+                    <span>Bold Lead Text</span>
+                    <input
+                      type="text"
+                      value={data.academicsContent.featured?.lead || ""}
+                      onChange={(e) =>
+                        setData({
+                          ...data,
+                          academicsContent: {
+                            ...data.academicsContent,
+                            featured: {
+                              ...data.academicsContent.featured,
+                              lead: e.target.value,
+                            },
+                          },
+                        })
+                      }
+                    />
+                  </label>
+
+                  <label className="ia-field">
+                    <span>Description Text</span>
+                    <textarea
+                      rows={2}
+                      value={data.academicsContent.featured?.body || ""}
+                      onChange={(e) =>
+                        setData({
+                          ...data,
+                          academicsContent: {
+                            ...data.academicsContent,
+                            featured: {
+                              ...data.academicsContent.featured,
+                              body: e.target.value,
+                            },
+                          },
+                        })
+                      }
+                    />
+                  </label>
+
+                  <label className="ia-field">
+                    <span>Footer Note (Italic)</span>
+                    <input
+                      type="text"
+                      value={data.academicsContent.featured?.note || ""}
+                      onChange={(e) =>
+                        setData({
+                          ...data,
+                          academicsContent: {
+                            ...data.academicsContent,
+                            featured: {
+                              ...data.academicsContent.featured,
+                              note: e.target.value,
+                            },
+                          },
+                        })
+                      }
+                    />
+                  </label>
+
+                  <div className="ia-field">
+                    <span>Academics Menu Links</span>
+                    <div className="ia-list">
+                      {(data.academicsContent.menuLinks || []).map((lnk, idx) => (
+                        <div key={lnk.id} className="ia-list-row">
+                          <input
+                            type="text"
+                            style={{ flex: 1 }}
+                            placeholder="Link label"
+                            value={lnk.label}
+                            onChange={(e) => {
+                              const updated = [...data.academicsContent.menuLinks];
+                              updated[idx] = { ...lnk, label: e.target.value };
+                              setData({
+                                ...data,
+                                academicsContent: { ...data.academicsContent, menuLinks: updated },
+                              });
+                            }}
+                          />
+                          <input
+                            type="text"
+                            style={{ flex: 0.8 }}
+                            placeholder="Section or URL (optional)"
+                            value={lnk.url || ""}
+                            onChange={(e) => {
+                              const updated = [...data.academicsContent.menuLinks];
+                              updated[idx] = { ...lnk, url: e.target.value };
+                              setData({
+                                ...data,
+                                academicsContent: { ...data.academicsContent, menuLinks: updated },
+                              });
+                            }}
+                          />
+                          <button
+                            type="button"
+                            className="ia-btn-danger"
+                            onClick={() => {
+                              const updated = data.academicsContent.menuLinks.filter(
+                                (item) => item.id !== lnk.id
+                              );
+                              persistData(
+                                {
+                                  ...data,
+                                  academicsContent: { ...data.academicsContent, menuLinks: updated },
+                                },
+                                "Menu link removed and saved!"
+                              );
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="ia-inline-form" style={{ marginBottom: 0 }}>
+                      <input
+                        type="text"
+                        placeholder="New menu link label (e.g. Certificate Courses)"
+                        value={newAcadLink.label}
+                        onChange={(e) => setNewAcadLink({ ...newAcadLink, label: e.target.value })}
+                      />
+                      <input
+                        type="text"
+                        placeholder="URL or path (optional, e.g. /academics)"
+                        value={newAcadLink.url}
+                        onChange={(e) => setNewAcadLink({ ...newAcadLink, url: e.target.value })}
+                      />
+                      <button
+                        type="button"
+                        className="ia-btn-primary"
+                        onClick={() => {
+                          if (!newAcadLink.label.trim()) return;
+                          const updated = [
+                            ...(data.academicsContent.menuLinks || []),
+                            {
+                              id: Date.now(),
+                              label: newAcadLink.label.trim(),
+                              targetId: "academics",
+                              url: newAcadLink.url.trim(),
+                            },
+                          ];
+                          persistData(
+                            {
+                              ...data,
+                              academicsContent: { ...data.academicsContent, menuLinks: updated },
+                            },
+                            "Academics menu link added and saved!"
+                          );
+                          setNewAcadLink({ label: "", url: "" });
+                        }}
+                      >
+                        + Add Link
+                      </button>
                     </div>
                   </div>
-                ))}
+
+                  <button
+                    type="button"
+                    className="ia-btn-primary"
+                    onClick={() => persistData(data, "Academics menu & spotlight saved successfully!")}
+                  >
+                    Save Academics Changes
+                  </button>
+                </div>
+
+              {/* Academics Page Section & Cards (Add / Edit / Delete + Image) */}
+              <div className="ia-form" style={{ marginTop: "24px" }}>
+                <div className="ia-page-head" style={{ marginBottom: "8px" }}>
+                  <h2 style={{ fontSize: "1.2rem", margin: "0 0 4px" }}>Home — Academics Page Section &amp; Cards</h2>
+                  <p>Edit the Home page Academics section title, subtitle, and add, edit, or delete cards with optional images</p>
+                </div>
+
+                <label className="ia-field">
+                  <span>Section Heading</span>
+                  <input
+                    type="text"
+                    value={data.academicsContent.sectionTitle || "Academics"}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        academicsContent: {
+                          ...data.academicsContent,
+                          sectionTitle: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                </label>
+
+                <label className="ia-field">
+                  <span>Section Subtitle</span>
+                  <input
+                    type="text"
+                    value={data.academicsContent.sectionSubtitle || ""}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        academicsContent: {
+                          ...data.academicsContent,
+                          sectionSubtitle: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                </label>
+
+                <div className="ia-field">
+                  <span>Add New Academic Card</span>
+                  <div className="ia-inline-form" style={{ marginBottom: "8px" }}>
+                    <input
+                      type="text"
+                      placeholder="Category (e.g. Undergraduate)"
+                      value={newProgram.eyebrow}
+                      onChange={(e) => setNewProgram({ ...newProgram, eyebrow: e.target.value })}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Card Title"
+                      value={newProgram.title}
+                      onChange={(e) => setNewProgram({ ...newProgram, title: e.target.value })}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Description"
+                      value={newProgram.desc}
+                      onChange={(e) => setNewProgram({ ...newProgram, desc: e.target.value })}
+                    />
+                  </div>
+                  <div className="ia-inline-form" style={{ marginBottom: 0 }}>
+                    <input
+                      type="text"
+                      placeholder="Image URL (optional, e.g. /hero-students.jpg)"
+                      value={newProgram.image}
+                      onChange={(e) => setNewProgram({ ...newProgram, image: e.target.value })}
+                    />
+                    <label className="ia-upload-btn">
+                      Upload Card Image
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleProgramImageUpload(e, null)}
+                        hidden
+                      />
+                    </label>
+                    <button
+                      type="button"
+                      className="ia-btn-primary"
+                      onClick={() => {
+                        if (!newProgram.title.trim()) return;
+                        const updated = [
+                          ...data.academicsContent.programs,
+                          {
+                            id: Date.now(),
+                            eyebrow: newProgram.eyebrow.trim() || "Program",
+                            title: newProgram.title.trim(),
+                            desc: newProgram.desc.trim(),
+                            image: newProgram.image.trim(),
+                          },
+                        ];
+                        persistData(
+                          {
+                            ...data,
+                            academicsContent: { ...data.academicsContent, programs: updated },
+                          },
+                          "Academic card added and saved!"
+                        );
+                        setNewProgram({ eyebrow: "", title: "", desc: "", image: "" });
+                      }}
+                    >
+                      + Add Card
+                    </button>
+                  </div>
+                </div>
+
+                <div className="ia-list" style={{ marginBottom: "8px" }}>
+                  {data.academicsContent.programs.map((prog, idx) => (
+                    <div key={prog.id} className="ia-list-card">
+                      <div className="ia-list-row" style={{ border: "none", padding: 0 }}>
+                        <span className="ia-tag">{prog.eyebrow}</span>
+                        <button
+                          type="button"
+                          className="ia-btn-danger"
+                          onClick={() => {
+                            if (prog.image) deleteMediaFile(prog.image);
+                            const updated = data.academicsContent.programs.filter(
+                              (p) => p.id !== prog.id
+                            );
+                            persistData(
+                              {
+                                ...data,
+                                academicsContent: { ...data.academicsContent, programs: updated },
+                              },
+                              "Academic card deleted and saved!"
+                            );
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+
+                      <div className="ia-field">
+                        <span>Card Image (URL or Upload)</span>
+                        <div className="ia-img-edit-row">
+                          {prog.image && (
+                            <div className="ia-media-thumb-wrap">
+                              <MediaThumb type="image" src={prog.image} alt={prog.title} />
+                            </div>
+                          )}
+                          <div className="ia-img-inputs">
+                            <input
+                              type="text"
+                              placeholder="Image URL (optional)"
+                              value={prog.image || ""}
+                              readOnly={prog.image?.startsWith("idb://")}
+                              onChange={(e) => {
+                                const updated = [...data.academicsContent.programs];
+                                updated[idx] = { ...prog, image: e.target.value };
+                                setData({
+                                  ...data,
+                                  academicsContent: { ...data.academicsContent, programs: updated },
+                                });
+                              }}
+                            />
+                            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                              <label className="ia-upload-btn">
+                                Upload Image
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={(e) => handleProgramImageUpload(e, idx)}
+                                  hidden
+                                />
+                              </label>
+                              {prog.image && (
+                                <button
+                                  type="button"
+                                  className="ia-btn-danger"
+                                  onClick={() => {
+                                    deleteMediaFile(prog.image);
+                                    const updated = [...data.academicsContent.programs];
+                                    updated[idx] = { ...prog, image: "" };
+                                    persistData(
+                                      {
+                                        ...data,
+                                        academicsContent: { ...data.academicsContent, programs: updated },
+                                      },
+                                      "Card image removed"
+                                    );
+                                  }}
+                                >
+                                  Remove Image
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="ia-field">
+                        <span>Category / Eyebrow</span>
+                        <input
+                          type="text"
+                          value={prog.eyebrow}
+                          onChange={(e) => {
+                            const updated = [...data.academicsContent.programs];
+                            updated[idx] = { ...prog, eyebrow: e.target.value };
+                            setData({
+                              ...data,
+                              academicsContent: { ...data.academicsContent, programs: updated },
+                            });
+                          }}
+                        />
+                      </div>
+
+                      <div className="ia-field">
+                        <span>Title</span>
+                        <input
+                          type="text"
+                          value={prog.title}
+                          onChange={(e) => {
+                            const updated = [...data.academicsContent.programs];
+                            updated[idx] = { ...prog, title: e.target.value };
+                            setData({
+                              ...data,
+                              academicsContent: { ...data.academicsContent, programs: updated },
+                            });
+                          }}
+                        />
+                      </div>
+
+                      <div className="ia-field">
+                        <span>Description</span>
+                        <textarea
+                          rows={2}
+                          value={prog.desc}
+                          onChange={(e) => {
+                            const updated = [...data.academicsContent.programs];
+                            updated[idx] = { ...prog, desc: e.target.value };
+                            setData({
+                              ...data,
+                              academicsContent: { ...data.academicsContent, programs: updated },
+                            });
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  className="ia-btn-primary"
+                  onClick={() => persistData(data, "Academics section & cards saved successfully!")}
+                >
+                  Save Academics Section
+                </button>
               </div>
-              <button
-                type="button"
-                className="ia-btn-primary"
-                onClick={() => persistData(data, "Academics saved")}
-              >
-                Save Academics
-              </button>
             </div>
           )}
 

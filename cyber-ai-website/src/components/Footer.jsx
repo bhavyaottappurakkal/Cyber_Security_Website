@@ -50,11 +50,7 @@ export default function Footer() {
       <div className="cmu-footer-bottom">
         <div className="container cmu-footer-bottom-inner">
           <p>© {new Date().getFullYear()} University Template. All rights reserved.</p>
-          <div className="cmu-footer-legal">
-            <a href="#home" onClick={(e) => e.preventDefault()}>Legal Info</a>
-            <a href="#home" onClick={(e) => e.preventDefault()}>Accessibility</a>
-            <a href="#home" onClick={(e) => e.preventDefault()}>Privacy Notice</a>
-          </div>
+         
         </div>
       </div>
     </footer>

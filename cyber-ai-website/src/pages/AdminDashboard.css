@@ -509,6 +509,77 @@
   color: #ffffff;
 }
 
+.ia-img-edit-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ia-img-preview {
+  width: 140px;
+  height: 92px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #f3f4f6;
+}
+
+.ia-img-inputs {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ia-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #14919b;
+  color: #14919b;
+  background: #eef7f8;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ia-upload-btn:hover {
+  background: #14919b;
+  color: #ffffff;
+}
+
+.ia-select {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  color: #111827;
+  background: #ffffff;
+}
+
+.ia-media-thumb-wrap {
+  width: 72px;
+  height: 48px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #d1d5db;
+  background: #111827;
+  flex-shrink: 0;
+}
+
+.ia-media-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 @media (max-width: 1080px) {
   .ia-cards-grid {
     grid-template-columns: repeat(2, 1fr);

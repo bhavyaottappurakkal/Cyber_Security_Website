@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { resolveMediaUrl } from '../utils/mediaStore'
 import './Navbar.css'
 
 const SECTION_IDS = [
@@ -37,11 +38,14 @@ const MEGA_MENUS = {
     targetId: 'academics',
     links: [
       { label: 'Undergraduate Programs', targetId: 'academics' },
-      { label: 'Master’s Degrees', targetId: 'academics' },
-      { label: 'Doctoral & Ph.D.', targetId: 'academics' },
-      { label: 'Online Programs', targetId: 'academics' },
-      { label: 'Faculty & Mentors', targetId: 'faculty' },
-      { label: 'Academic Events', targetId: 'news' },
+       { label: 'Online Programme', targetId: 'academics' },
+        // { label: 'Academic Events', targetId: 'news' },
+      { label: 'Post Graduate Programme', targetId: 'academics' },
+        // { label: 'Faculty & Mentors', targetId: 'faculty' },
+      { label: 'PhD Programme', targetId: 'academics' },
+     
+    
+    
     ],
     featured: {
       image: '/hero-students.jpg',
@@ -104,9 +108,36 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState('home')
   const [openMenu, setOpenMenu] = useState(null)
+  const [spotSlide, setSpotSlide] = useState(0)
+  const [resolvedMediaSrc, setResolvedMediaSrc] = useState('')
+  const [cmsAcademics, setCmsAcademics] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('adminSiteData') || 'null')
+      return saved?.academicsContent || null
+    } catch {
+      return null
+    }
+  })
   const headerRef = useRef(null)
   const location = useLocation()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const syncCms = () => {
+      try {
+        const saved = JSON.parse(localStorage.getItem('adminSiteData') || 'null')
+        setCmsAcademics(saved?.academicsContent || null)
+      } catch {
+        setCmsAcademics(null)
+      }
+    }
+    window.addEventListener('adminSiteDataUpdated', syncCms)
+    window.addEventListener('storage', syncCms)
+    return () => {
+      window.removeEventListener('adminSiteDataUpdated', syncCms)
+      window.removeEventListener('storage', syncCms)
+    }
+  }, [])
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20)
@@ -171,7 +202,58 @@ export default function Navbar() {
     window.dispatchEvent(new CustomEvent('section-navigate', { detail: { id } }))
   }
 
-  const activeMega = openMenu ? MEGA_MENUS[openMenu] : null
+  const activeMega = openMenu
+    ? openMenu === 'academics' && cmsAcademics
+      ? {
+          ...MEGA_MENUS.academics,
+          links: cmsAcademics.menuLinks?.length
+            ? cmsAcademics.menuLinks
+            : MEGA_MENUS.academics.links,
+          featured: {
+            ...MEGA_MENUS.academics.featured,
+            ...(cmsAcademics.featured || {}),
+          },
+        }
+      : MEGA_MENUS[openMenu]
+    : null
+
+  const featuredMedia = activeMega?.featured?.mediaItems?.length
+    ? activeMega.featured.mediaItems
+    : activeMega?.featured?.image
+      ? [{ id: 1, type: 'image', src: activeMega.featured.image }]
+      : []
+
+  const currentMedia = featuredMedia.length
+    ? featuredMedia[spotSlide % featuredMedia.length]
+    : null
+
+  useEffect(() => {
+    let active = true
+    const raw = currentMedia?.src || activeMega?.featured?.image || ''
+    if (!raw.startsWith('idb://')) {
+      setResolvedMediaSrc(raw)
+      return
+    }
+    resolveMediaUrl(raw).then((url) => {
+      if (active) setResolvedMediaSrc(url)
+    })
+    return () => {
+      active = false
+    }
+  }, [currentMedia?.src, activeMega?.featured?.image])
+
+  useEffect(() => {
+    setSpotSlide(0)
+  }, [openMenu])
+
+  useEffect(() => {
+    if (!activeMega || featuredMedia.length <= 1) return
+    if (currentMedia?.type === 'video') return
+    const timer = setTimeout(() => {
+      setSpotSlide((prev) => (prev + 1) % featuredMedia.length)
+    }, 4000)
+    return () => clearTimeout(timer)
+  }, [activeMega, spotSlide, featuredMedia.length, currentMedia?.type])
 
   return (
     <header
@@ -228,18 +310,6 @@ export default function Navbar() {
                 )
               })}
             </nav>
-
-            <button
-              type="button"
-              className="cmu-search-btn"
-              onClick={(e) => handleNavClick(e, 'news')}
-              aria-label="Search or jump to news"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="7" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-            </button>
           </div>
         </div>
       </div>
@@ -254,8 +324,18 @@ export default function Navbar() {
                 {activeMega.links.map((link, idx) => (
                   <a
                     key={idx}
-                    href={`#${link.targetId}`}
-                    onClick={(e) => handleNavClick(e, link.targetId)}
+                    href={link.url || `#${link.targetId || 'academics'}`}
+                    onClick={(e) => {
+                      if (link.url && link.url.startsWith('/')) {
+                        e.preventDefault()
+                        setOpenMenu(null)
+                        navigate(link.url)
+                      } else if (link.url && link.url.startsWith('http')) {
+                        setOpenMenu(null)
+                      } else {
+                        handleNavClick(e, link.targetId || 'academics')
+                      }
+                    }}
                     className="cmu-mega-link"
                   >
                     {link.label}
@@ -270,7 +350,59 @@ export default function Navbar() {
               className="cmu-mega-featured"
             >
               <div className="cmu-mega-feat-img">
-                <img src={activeMega.featured.image} alt={activeMega.featured.heading} />
+                {currentMedia?.type === 'video' ? (
+                  <video
+                    key={`${resolvedMediaSrc}-${spotSlide}`}
+                    src={resolvedMediaSrc}
+                    autoPlay
+                    muted
+                    playsInline
+                    loop={featuredMedia.length === 1}
+                    onEnded={() => setSpotSlide((prev) => (prev + 1) % featuredMedia.length)}
+                    className="cmu-mega-video"
+                  />
+                ) : (
+                  <img
+                    src={resolvedMediaSrc || activeMega.featured.image}
+                    alt={activeMega.featured.heading}
+                  />
+                )}
+                {featuredMedia.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      className="cmu-mega-slide-btn cmu-mega-slide-prev"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        setSpotSlide((prev) => (prev - 1 + featuredMedia.length) % featuredMedia.length)
+                      }}
+                      aria-label="Previous media"
+                    >
+                      ‹
+                    </button>
+                    <button
+                      type="button"
+                      className="cmu-mega-slide-btn cmu-mega-slide-next"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        setSpotSlide((prev) => (prev + 1) % featuredMedia.length)
+                      }}
+                      aria-label="Next media"
+                    >
+                      ›
+                    </button>
+                    <div className="cmu-mega-slide-dots">
+                      {featuredMedia.map((m, idx) => (
+                        <span
+                          key={m.id || idx}
+                          className={`cmu-mega-slide-dot ${spotSlide % featuredMedia.length === idx ? 'is-active' : ''}`}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
               <div className="cmu-mega-feat-body">
                 <h4 className="cmu-mega-feat-heading">{activeMega.featured.heading}</h4>

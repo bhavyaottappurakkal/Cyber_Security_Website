@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { resolveMediaUrl } from '../utils/mediaStore'
 import './Home.css'
 
 const HERO_SLIDES = [
@@ -195,17 +196,54 @@ function RevealSection({ id, className, children }) {
   )
 }
 
+function AcademicCardImage({ src, alt }) {
+  const [resolved, setResolved] = useState(() => (src?.startsWith('idb://') ? '' : src || ''))
+
+  useEffect(() => {
+    let active = true
+    if (!src) {
+      setResolved('')
+      return
+    }
+    resolveMediaUrl(src).then((url) => {
+      if (active) setResolved(url)
+    })
+    return () => {
+      active = false
+    }
+  }, [src])
+
+  if (!resolved) return null
+  return <img src={resolved} alt={alt} className="cmu-academic-card-img" />
+}
+
 export default function Home() {
   const [heroSlide, setHeroSlide] = useState(0)
   const [heroPaused, setHeroPaused] = useState(false)
 
-  const [cmsData] = useState(() => {
+  const [cmsData, setCmsData] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('adminSiteData') || 'null')
     } catch {
       return null
     }
   })
+
+  useEffect(() => {
+    const syncData = () => {
+      try {
+        setCmsData(JSON.parse(localStorage.getItem('adminSiteData') || 'null'))
+      } catch {
+        setCmsData(null)
+      }
+    }
+    window.addEventListener('adminSiteDataUpdated', syncData)
+    window.addEventListener('storage', syncData)
+    return () => {
+      window.removeEventListener('adminSiteDataUpdated', syncData)
+      window.removeEventListener('storage', syncData)
+    }
+  }, [])
 
   const heroSlides = HERO_SLIDES.map((slide, idx) => {
     if (idx === 0 && cmsData?.heroContent) {
@@ -249,6 +287,10 @@ export default function Home() {
     cmsData?.aboutContent?.overview?.paragraphs?.[0] ||
     'Highlighting milestones, community stories, and collaborative achievements across our campus and global network.'
 
+  const academicTitle = cmsData?.academicsContent?.sectionTitle || 'Academics'
+  const academicSubtitle =
+    cmsData?.academicsContent?.sectionSubtitle ||
+    'Interdisciplinary degrees designed to inspire rigorous inquiry and creative leadership.'
   const academicItems = cmsData?.academicsContent?.programs?.length
     ? cmsData.academicsContent.programs
     : ACADEMIC_CARDS
@@ -449,15 +491,16 @@ export default function Home() {
       <RevealSection id="academics" className="Section Section--centered Section--black Section--bg-split">
         <div className="cmu-wrap">
           <div className="cmu-section-hd cmu-section-hd--center">
-            <h2 className="cmu-h2 cmu-h2--white">Academics</h2>
+            <h2 className="cmu-h2 cmu-h2--white">{academicTitle}</h2>
             <p className="cmu-section-sub cmu-section-sub--light">
-              Interdisciplinary degrees designed to inspire rigorous inquiry and creative leadership.
+              {academicSubtitle}
             </p>
           </div>
 
           <div className="cmu-academics-grid">
             {academicItems.map((card, idx) => (
-              <div key={idx} className="cmu-academic-card">
+              <div key={card.id || idx} className="cmu-academic-card">
+                {card.image && <AcademicCardImage src={card.image} alt={card.title} />}
                 <span className="cmu-eyebrow">{card.eyebrow}</span>
                 <h3 className="cmu-h4">{card.title}</h3>
                 <p>{card.desc}</p>
