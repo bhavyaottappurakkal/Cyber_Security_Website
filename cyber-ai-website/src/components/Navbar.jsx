@@ -19,10 +19,6 @@ const MEGA_MENUS = {
       { label: 'About Us', targetId: 'home' },
       { label: 'Leadership', targetId: 'faculty' },
       { label: 'Vision, Mission & Values', targetId: 'feature' },
-      { label: 'Traditions', targetId: 'feature' },
-      { label: 'Rankings & Awards', targetId: 'news' },
-      { label: 'Campus', targetId: 'home' },
-      { label: 'Global Locations', targetId: 'academics' },
     ],
     featured: {
       image: '/sample_hero_img.jpg',
@@ -37,15 +33,10 @@ const MEGA_MENUS = {
     title: 'Academics',
     targetId: 'academics',
     links: [
-      { label: 'Undergraduate Programs', targetId: 'academics' },
-       { label: 'Online Programme', targetId: 'academics' },
-        // { label: 'Academic Events', targetId: 'news' },
-      { label: 'Post Graduate Programme', targetId: 'academics' },
-        // { label: 'Faculty & Mentors', targetId: 'faculty' },
-      { label: 'PhD Programme', targetId: 'academics' },
-     
-    
-    
+      { label: 'Undergraduate Programs', url: '/academics', targetId: 'academics' },
+      { label: 'Online Programme', url: '/academics/online-mca', targetId: 'academics' },
+      { label: 'Post Graduate Programme', url: '/academics/postgraduate', targetId: 'academics' },
+      { label: 'PhD Programme', url: '/academics/phd', targetId: 'academics' },
     ],
     featured: {
       image: '/hero-students.jpg',
@@ -163,7 +154,26 @@ export default function Navbar() {
   }, [])
 
   useEffect(() => {
-    if (location.pathname !== '/') return
+    if (location.pathname !== '/') {
+      if (location.pathname.startsWith('/academics')) {
+        setActiveSection('academics')
+      } else if (location.pathname === '/about') {
+        setActiveSection('feature')
+      } else if (location.pathname === '/faculty') {
+        setActiveSection('faculty')
+      } else if (location.pathname === '/news-events') {
+        setActiveSection('news')
+      } else {
+        setActiveSection('')
+      }
+      return
+    }
+
+    if (location.hash) {
+      setActiveSection(location.hash.slice(1))
+    } else {
+      setActiveSection('home')
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -182,7 +192,7 @@ export default function Navbar() {
     })
 
     return () => observer.disconnect()
-  }, [location.pathname])
+  }, [location.pathname, location.hash])
 
   const handleNavClick = (e, id) => {
     e.preventDefault()
@@ -213,7 +223,7 @@ export default function Navbar() {
                 if (lower.includes('online')) return { ...lnk, url: '/academics/online-mca' }
                 if (lower.includes('post') || lower.includes('master')) return { ...lnk, url: '/academics/postgraduate' }
                 if (lower.includes('phd') || lower.includes('doctor')) return { ...lnk, url: '/academics/phd' }
-                if (lower.includes('undergrad')) return { ...lnk, url: '/academics' }
+                if (lower.includes('undergrad') || lower.includes('under grad')) return { ...lnk, url: '/academics' }
                 return { ...lnk, url: `/academics/program/${lnk.id ?? idx}` }
               })
             : MEGA_MENUS.academics.links,

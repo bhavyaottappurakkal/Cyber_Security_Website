@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { saveMediaFile, resolveMediaUrl, deleteMediaFile } from "../utils/mediaStore";
+import ProgramPageEditor from "../components/ProgramPageEditor";
+import { DEFAULT_PROGRAM_PAGES, loadProgramPages } from "../data/programPagesData";
 import "./AdminDashboard.css";
 
 const DEFAULT_DATA = {
@@ -23,10 +25,10 @@ const DEFAULT_DATA = {
     sectionSubtitle:
       "Interdisciplinary degrees designed to inspire rigorous inquiry and creative leadership.",
     menuLinks: [
-      { id: 1, label: "Undergraduate Programs", targetId: "academics" },
-      { id: 2, label: "Online Programme", targetId: "academics" },
-      { id: 3, label: "Post Graduate Programme", targetId: "academics" },
-      { id: 4, label: "PhD Programme", targetId: "academics" },
+      { id: 1, label: "Undergraduate Programs", url: "/academics", targetId: "academics" },
+      { id: 2, label: "Online Programme", url: "/academics/online-mca", targetId: "academics" },
+      { id: 3, label: "Post Graduate Programme", url: "/academics/postgraduate", targetId: "academics" },
+      { id: 4, label: "PhD Programme", url: "/academics/phd", targetId: "academics" },
     ],
     featured: {
       image: "/hero-students.jpg",
@@ -75,6 +77,7 @@ const DEFAULT_DATA = {
     { id: 2, month: "DEC", day: "04", title: "Distinguished Lecture Series: Future of Science", venue: "4:30 PM · Lecture Hall A" },
     { id: 3, month: "DEC", day: "12", title: "Graduate Admissions & Program Information Session", venue: "2:00 PM · Virtual & On-Campus" },
   ],
+  programPages: DEFAULT_PROGRAM_PAGES,
 };
 
 function loadSiteData() {
@@ -85,6 +88,7 @@ function loadSiteData() {
     return {
       ...DEFAULT_DATA,
       ...parsed,
+      programPages: loadProgramPages(),
       heroContent: { ...DEFAULT_DATA.heroContent, ...(parsed.heroContent || {}) },
       aboutContent: { ...DEFAULT_DATA.aboutContent, ...(parsed.aboutContent || {}) },
       academicsContent: {
@@ -265,6 +269,7 @@ export default function AdminDashboard() {
   const [toast, setToast] = useState(null);
   const toastTimerRef = useRef(null);
   const [newsTab, setNewsTab] = useState("news");
+  const [academicsSubTab, setAcademicsSubTab] = useState("overview");
   const [newAcadLink, setNewAcadLink] = useState({ label: "", url: "" });
   const [newMedia, setNewMedia] = useState({ type: "image", src: "" });
   const [newProgram, setNewProgram] = useState({ eyebrow: "", title: "", desc: "", image: "" });
@@ -715,9 +720,49 @@ export default function AdminDashboard() {
             <div className="ia-panel">
               <div className="ia-page-head">
                 <h1>Academics</h1>
-                <p>Full edit access for the Academics menu links, spotlight images &amp; videos, and text</p>
+                <p>Full edit access for Home Academics spotlight and Undergraduate, Postgraduate, Online MCA &amp; Ph.D. pages</p>
               </div>
 
+              <div className="ia-tabs" style={{ marginBottom: "20px", flexWrap: "wrap" }}>
+                <button
+                  type="button"
+                  className={`ia-tab ${academicsSubTab === "overview" ? "is-active" : ""}`}
+                  onClick={() => setAcademicsSubTab("overview")}
+                >
+                  Home Academics
+                </button>
+                <button
+                  type="button"
+                  className={`ia-tab ${academicsSubTab === "ug" ? "is-active" : ""}`}
+                  onClick={() => setAcademicsSubTab("ug")}
+                >
+                  Undergraduate
+                </button>
+                <button
+                  type="button"
+                  className={`ia-tab ${academicsSubTab === "pg" ? "is-active" : ""}`}
+                  onClick={() => setAcademicsSubTab("pg")}
+                >
+                  Postgraduate
+                </button>
+                <button
+                  type="button"
+                  className={`ia-tab ${academicsSubTab === "online" ? "is-active" : ""}`}
+                  onClick={() => setAcademicsSubTab("online")}
+                >
+                  Online MCA
+                </button>
+                <button
+                  type="button"
+                  className={`ia-tab ${academicsSubTab === "phd" ? "is-active" : ""}`}
+                  onClick={() => setAcademicsSubTab("phd")}
+                >
+                  Ph.D.
+                </button>
+              </div>
+
+              {academicsSubTab === "overview" && (
+              <>
               <div className="ia-form">
                   <div className="ia-field">
                     <span>Spotlight Slideshow — Images &amp; Videos (plays continuously)</span>
@@ -1267,6 +1312,49 @@ export default function AdminDashboard() {
                   Save Academics Section
                 </button>
               </div>
+              </>
+              )}
+
+              {academicsSubTab !== "overview" && (
+                <ProgramPageEditor
+                  programKey={academicsSubTab}
+                  page={data.programPages?.[academicsSubTab]}
+                  showToast={showToast}
+                  onChangePage={(updatedPage) =>
+                    setData({
+                      ...data,
+                      programPages: {
+                        ...data.programPages,
+                        [academicsSubTab]: updatedPage,
+                      },
+                    })
+                  }
+                  onSavePage={(updatedPage, msg) =>
+                    persistData(
+                      {
+                        ...data,
+                        programPages: {
+                          ...data.programPages,
+                          [academicsSubTab]: updatedPage,
+                        },
+                      },
+                      msg
+                    )
+                  }
+                  onResetPage={() =>
+                    persistData(
+                      {
+                        ...data,
+                        programPages: {
+                          ...data.programPages,
+                          [academicsSubTab]: DEFAULT_PROGRAM_PAGES[academicsSubTab],
+                        },
+                      },
+                      "Page reset to default content!"
+                    )
+                  }
+                />
+              )}
             </div>
           )}
 

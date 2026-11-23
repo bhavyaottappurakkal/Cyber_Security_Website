@@ -157,19 +157,21 @@ export default function Home() {
       {/* 3. QUICK OVERVIEW OF CORE SECTIONS */}
       <RevealSection id="faculty" className="Section Section--white">
         <div className="cmu-wrap">
-          <div className="cmu-section-hd">
-            {/* <span className="cmu-eyebrow">Quick Overview of Core Sections</span> */}
-            <h2 className="cmu-h2">Academics</h2>
-          </div>
+          <div id="academics">
+            <div className="cmu-section-hd">
+              {/* <span className="cmu-eyebrow">Quick Overview of Core Sections</span> */}
+              <h2 className="cmu-h2">Academics</h2>
+            </div>
 
-          <div className="cmu-academics-grid cmu-academics-grid--4" style={{ marginBottom: '64px' }}>
-            {ACADEMICS_OVERVIEW.map((prog, idx) => (
-              <Link key={idx} to={prog.path} className="cmu-overview-prog-card">
-                <span className="cmu-research-num">0{idx + 1}</span>
-                <h3 className="cmu-h5">{prog.label}</h3>
-                <span className="cmu-link">Learn More →</span>
-              </Link>
-            ))}
+            <div className="cmu-academics-grid cmu-academics-grid--4" style={{ marginBottom: '64px' }}>
+              {ACADEMICS_OVERVIEW.map((prog, idx) => (
+                <Link key={idx} to={prog.path} className="cmu-overview-prog-card">
+                  <span className="cmu-research-num">0{idx + 1}</span>
+                  <h3 className="cmu-h5">{prog.label}</h3>
+                  <span className="cmu-link">Learn More →</span>
+                </Link>
+              ))}
+            </div>
           </div>
 
           <div className="cmu-section-hd">

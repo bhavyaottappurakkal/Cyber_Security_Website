@@ -1,8 +1,16 @@
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import './Footer.css'
 
 export default function Footer() {
+  const location = useLocation()
+  const navigate = useNavigate()
+
   const scrollTo = (e, id) => {
     e.preventDefault()
+    if (location.pathname !== '/') {
+      navigate(id === 'home' ? '/' : `/#${id}`)
+      return
+    }
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
@@ -31,9 +39,10 @@ export default function Footer() {
           <div>
             <h4 className="cmu-footer-heading">Academics</h4>
             <ul className="cmu-footer-links">
-              <li><a href="#academics" onClick={(e) => scrollTo(e, 'academics')}>Undergraduate</a></li>
-              <li><a href="#academics" onClick={(e) => scrollTo(e, 'academics')}>Graduate</a></li>
-              <li><a href="#academics" onClick={(e) => scrollTo(e, 'academics')}>Doctoral</a></li>
+              <li><Link to="/academics">Undergraduate</Link></li>
+              <li><Link to="/academics/postgraduate">Postgraduate</Link></li>
+              <li><Link to="/academics/online-mca">Online MCA</Link></li>
+              <li><Link to="/academics/phd">Doctoral</Link></li>
             </ul>
           </div>
         </div>
