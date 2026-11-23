@@ -11,11 +11,11 @@ export default function Footer() {
       <div className="cmu-footer-main">
         <div className="container cmu-footer-grid">
           <div>
-            <div className="cmu-footer-brand">University Wordmark</div>
+            <div className="cmu-footer-brand">Amrita Center for Cybersecurity Systems &amp; Networks</div>
             <p className="cmu-footer-address">
-              5000 Campus Avenue<br />
-              City, State 00000<br />
-              +1 (000) 000-0000
+              Amrita Vishwa Vidyapeetham, Amritapuri Campus<br />
+              Clappanna P.O., Kollam, Kerala – 690525, India<br />
+              +91 (0) 476 2804517 · cyber@am.amrita.edu
             </p>
           </div>
 
@@ -49,7 +49,7 @@ export default function Footer() {
 
       <div className="cmu-footer-bottom">
         <div className="container cmu-footer-bottom-inner">
-          <p>© {new Date().getFullYear()} University Template. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Amrita Center for Cybersecurity Systems &amp; Networks, Amrita Vishwa Vidyapeetham. All rights reserved.</p>
          
         </div>
       </div>

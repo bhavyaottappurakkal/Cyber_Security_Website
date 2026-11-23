@@ -13,7 +13,7 @@ const SECTION_IDS = [
 
 const MEGA_MENUS = {
   about: {
-    title: 'About',
+    title: 'Who We Are',
     targetId: 'feature',
     links: [
       { label: 'About Us', targetId: 'home' },
@@ -98,7 +98,7 @@ const MEGA_MENUS = {
 
 const NAV_ITEMS = [
   { key: 'home', label: 'Home', targetId: 'home' },
-  { key: 'about', label: 'About', targetId: 'feature', hasMega: true },
+  { key: 'about', label: 'Who We Are', targetId: 'feature', hasMega: true },
   { key: 'academics', label: 'Academics', targetId: 'academics', hasMega: true },
   { key: 'faculty', label: 'Faculty', targetId: 'faculty', hasMega: true },
   { key: 'news-events', label: 'News & Events', targetId: 'news', hasMega: true },
@@ -207,7 +207,15 @@ export default function Navbar() {
       ? {
           ...MEGA_MENUS.academics,
           links: cmsAcademics.menuLinks?.length
-            ? cmsAcademics.menuLinks
+            ? cmsAcademics.menuLinks.map((lnk, idx) => {
+                if (lnk.url && (lnk.url.startsWith('/') || lnk.url.startsWith('http'))) return lnk
+                const lower = (lnk.label || '').toLowerCase()
+                if (lower.includes('online')) return { ...lnk, url: '/academics/online-mca' }
+                if (lower.includes('post') || lower.includes('master')) return { ...lnk, url: '/academics/postgraduate' }
+                if (lower.includes('phd') || lower.includes('doctor')) return { ...lnk, url: '/academics/phd' }
+                if (lower.includes('undergrad')) return { ...lnk, url: '/academics' }
+                return { ...lnk, url: `/academics/program/${lnk.id ?? idx}` }
+              })
             : MEGA_MENUS.academics.links,
           featured: {
             ...MEGA_MENUS.academics.featured,

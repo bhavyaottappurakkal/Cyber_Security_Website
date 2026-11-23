@@ -222,7 +222,7 @@ function Icon({ name }) {
 const SIDEBAR_ITEMS = [
   { key: "overview", label: "Dashboard", icon: "dashboard" },
   { key: "home", label: "Home", icon: "home" },
-  { key: "about", label: "About", icon: "about" },
+  { key: "about", label: "Who We Are", icon: "about" },
   { key: "academics", label: "Academics", icon: "academics" },
   { key: "faculty", label: "Faculty", icon: "faculty" },
   { key: "newsEvents", label: "News & Events", icon: "newsEvents" },
@@ -231,7 +231,7 @@ const SIDEBAR_ITEMS = [
 
 const QUICK_CARDS = [
   { key: "home", label: "Home", icon: "dashboard", highlighted: true },
-  { key: "about", label: "About", icon: "about" },
+  { key: "about", label: "Who We Are", icon: "about" },
   { key: "academics", label: "Academics", icon: "academics" },
   { key: "faculty", label: "Faculty", icon: "faculty" },
   { key: "newsEvents", label: "News & Events", icon: "newsEvents" },
@@ -656,8 +656,8 @@ export default function AdminDashboard() {
           {activeSection === "about" && (
             <div className="ia-panel">
               <div className="ia-page-head">
-                <h1>About</h1>
-                <p>Update the Campus Spotlight &amp; About section content</p>
+                <h1>Who We Are</h1>
+                <p>Update the Campus Spotlight &amp; Who We Are section content</p>
               </div>
 
               <form

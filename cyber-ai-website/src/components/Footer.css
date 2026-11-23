@@ -1,8 +1,8 @@
 .cmu-footer {
-  background: #eaf6fa;
-  color: #334047;
+  background: #0f172a;
+  color: #cbd5e1;
   margin-top: auto;
-  border-top: 4px solid #52a9bc;
+  border-top: 4px solid #c59b27;
   font-family: var(--font-sans);
 }
 
@@ -23,14 +23,14 @@
   font-family: var(--font-heading);
   font-size: 1.25rem;
   font-weight: 700;
-  color: #0e2930;
+  color: #ffffff;
   margin-bottom: 14px;
 }
 
 .cmu-footer-address {
   font-size: 0.875rem;
   line-height: 1.7;
-  color: #47565e;
+  color: #cbd5e1;
   margin: 0;
 }
 
@@ -40,7 +40,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #0e2930;
+  color: #c59b27;
   margin: 0 0 16px;
 }
 
@@ -55,20 +55,20 @@
 
 .cmu-footer-links a {
   font-size: 0.875rem;
-  color: #276e7d;
+  color: #e2e8f0;
   text-decoration: none;
   transition: color 0.15s ease;
 }
 
 .cmu-footer-links a:hover {
-  color: #0e2930;
+  color: #c59b27;
   text-decoration: underline;
 }
 
 .cmu-footer-bottom {
-  background: #dff0f6;
+  background: #1e293b;
   padding: 20px 0;
-  border-top: 1px solid #bee2ed;
+  border-top: 1px solid #334155;
 }
 
 .cmu-footer-bottom-inner {
@@ -84,7 +84,7 @@
 
 .cmu-footer-bottom p {
   font-size: 0.8rem;
-  color: #47565e;
+  color: #94a3b8;
   margin: 0;
 }
 

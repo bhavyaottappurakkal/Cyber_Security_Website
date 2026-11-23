@@ -156,30 +156,6 @@ export default function PostGraduate() {
             </div>
           </div>
         </div>
-
-        {/* Hero Stats Bar */}
-        <div className="ug-stats-bar">
-          <div className="ug-container">
-            <div className="ug-stats-grid">
-              {(heroStats || []).map((s) => (
-                <div
-                  key={s.id}
-                  className={`ug-stat-card${s.valueStyle === "crimson" ? " ug-stat-card--crimson-hover" : ""}`}
-                >
-                  <div>
-                    <div className="ug-stat-label">{s.label}</div>
-                    <div className={`ug-stat-value${s.valueStyle === "crimson" ? " ug-stat-value--crimson" : ""}`}>
-                      {s.value}
-                    </div>
-                  </div>
-                  <div className={`ug-stat-badge ug-stat-badge--${s.badgeStyle || "crimson"}`}>
-                    {s.badge}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
       </section>
 
       {/* ── MAIN TWO-COLUMN LAYOUT ── */}
