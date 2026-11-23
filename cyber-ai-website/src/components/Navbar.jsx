@@ -57,7 +57,7 @@ const MEGA_MENUS = {
     },
   },
   faculty: {
-    title: 'Faculty',
+    title: 'Our Team',
     targetId: 'faculty',
     links: [
       { label: 'Faculty Leaders', targetId: 'faculty' },
@@ -100,7 +100,7 @@ const NAV_ITEMS = [
   { key: 'home', label: 'Home', targetId: 'home' },
   { key: 'about', label: 'Who We Are', targetId: 'feature', hasMega: true },
   { key: 'academics', label: 'Academics', targetId: 'academics', hasMega: true },
-  { key: 'faculty', label: 'Faculty', targetId: 'faculty', hasMega: true },
+  { key: 'faculty', label: 'Our Team', targetId: 'faculty', hasMega: true },
   { key: 'news-events', label: 'News & Events', targetId: 'news', hasMega: true },
 ]
 

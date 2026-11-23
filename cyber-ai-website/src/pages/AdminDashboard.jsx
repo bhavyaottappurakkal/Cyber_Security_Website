@@ -224,7 +224,7 @@ const SIDEBAR_ITEMS = [
   { key: "home", label: "Home", icon: "home" },
   { key: "about", label: "Who We Are", icon: "about" },
   { key: "academics", label: "Academics", icon: "academics" },
-  { key: "faculty", label: "Faculty", icon: "faculty" },
+  { key: "faculty", label: "Our Team", icon: "faculty" },
   { key: "newsEvents", label: "News & Events", icon: "newsEvents" },
   { key: "settings", label: "Settings", icon: "settings", isBottom: true },
 ];
@@ -233,7 +233,7 @@ const QUICK_CARDS = [
   { key: "home", label: "Home", icon: "dashboard", highlighted: true },
   { key: "about", label: "Who We Are", icon: "about" },
   { key: "academics", label: "Academics", icon: "academics" },
-  { key: "faculty", label: "Faculty", icon: "faculty" },
+  { key: "faculty", label: "Our Team", icon: "faculty" },
   { key: "newsEvents", label: "News & Events", icon: "newsEvents" },
 ];
 
@@ -1273,8 +1273,8 @@ export default function AdminDashboard() {
           {activeSection === "faculty" && (
             <div className="ia-panel">
               <div className="ia-page-head">
-                <h1>Faculty</h1>
-                <p>Add or remove faculty members</p>
+                <h1>Our Team</h1>
+                <p>Add or remove team &amp; faculty members</p>
               </div>
 
               <form className="ia-inline-form" onSubmit={handleAddFaculty}>

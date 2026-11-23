@@ -24,7 +24,7 @@ export default function Footer() {
             <ul className="cmu-footer-links">
               <li><a href="#home" onClick={(e) => scrollTo(e, 'home')}>Home</a></li>
               <li><a href="#news" onClick={(e) => scrollTo(e, 'news')}>News &amp; Events</a></li>
-              <li><a href="#faculty" onClick={(e) => scrollTo(e, 'faculty')}>Faculty</a></li>
+              <li><a href="#faculty" onClick={(e) => scrollTo(e, 'faculty')}>Our Team</a></li>
             </ul>
           </div>
 
@@ -34,14 +34,6 @@ export default function Footer() {
               <li><a href="#academics" onClick={(e) => scrollTo(e, 'academics')}>Undergraduate</a></li>
               <li><a href="#academics" onClick={(e) => scrollTo(e, 'academics')}>Graduate</a></li>
               <li><a href="#academics" onClick={(e) => scrollTo(e, 'academics')}>Doctoral</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="cmu-footer-heading">Resources</h4>
-            <ul className="cmu-footer-links">
-              <li><a href="#feature" onClick={(e) => scrollTo(e, 'feature')}>Campus Spotlight</a></li>
-              <li><a href="#home" onClick={(e) => scrollTo(e, 'home')}>Contact Us</a></li>
             </ul>
           </div>
         </div>
