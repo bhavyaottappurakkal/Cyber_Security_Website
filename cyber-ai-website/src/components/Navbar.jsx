@@ -51,7 +51,7 @@ const MEGA_MENUS = {
     title: 'Our Team',
     targetId: 'faculty',
     links: [
-      { label: 'Faculty Leaders', targetId: 'faculty' },
+      { label: 'Faculty ', targetId: 'faculty' },
       { label: 'Research Metrics', targetId: 'faculty' },
       { label: 'Academic Council', targetId: 'faculty' },
       { label: 'Upcoming Lectures', targetId: 'news' },
@@ -91,8 +91,10 @@ const NAV_ITEMS = [
   { key: 'home', label: 'Home', targetId: 'home' },
   { key: 'about', label: 'Who We Are', targetId: 'feature', hasMega: true },
   { key: 'academics', label: 'Academics', targetId: 'academics', hasMega: true },
+  { key: 'internships', label: 'Internships', targetId: 'internships', path: '/internships' },
   { key: 'faculty', label: 'Our Team', targetId: 'faculty', hasMega: true },
   { key: 'news-events', label: 'News & Events', targetId: 'news', hasMega: true },
+  { key: 'contact', label: 'Contact Us', targetId: 'contact', path: '/contact' },
 ]
 
 export default function Navbar() {
@@ -109,6 +111,22 @@ export default function Navbar() {
       return null
     }
   })
+  const [cmsNewsMenu, setCmsNewsMenu] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('adminSiteData') || 'null')
+      return saved?.newsEventsMenu || null
+    } catch {
+      return null
+    }
+  })
+  const [cmsFacultyMenu, setCmsFacultyMenu] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('adminSiteData') || 'null')
+      return saved?.facultyMenu || null
+    } catch {
+      return null
+    }
+  })
   const headerRef = useRef(null)
   const location = useLocation()
   const navigate = useNavigate()
@@ -118,8 +136,12 @@ export default function Navbar() {
       try {
         const saved = JSON.parse(localStorage.getItem('adminSiteData') || 'null')
         setCmsAcademics(saved?.academicsContent || null)
+        setCmsNewsMenu(saved?.newsEventsMenu || null)
+        setCmsFacultyMenu(saved?.facultyMenu || null)
       } catch {
         setCmsAcademics(null)
+        setCmsNewsMenu(null)
+        setCmsFacultyMenu(null)
       }
     }
     window.addEventListener('adminSiteDataUpdated', syncCms)
@@ -163,6 +185,10 @@ export default function Navbar() {
         setActiveSection('faculty')
       } else if (location.pathname === '/news-events') {
         setActiveSection('news')
+      } else if (location.pathname === '/internships') {
+        setActiveSection('internships')
+      } else if (location.pathname === '/contact') {
+        setActiveSection('contact')
       } else {
         setActiveSection('')
       }
@@ -232,7 +258,31 @@ export default function Navbar() {
             ...(cmsAcademics.featured || {}),
           },
         }
-      : MEGA_MENUS[openMenu]
+      : openMenu === 'news-events' && cmsNewsMenu
+        ? cmsNewsMenu.hidden
+          ? null
+          : {
+              ...MEGA_MENUS['news-events'],
+              title: cmsNewsMenu.title || MEGA_MENUS['news-events'].title,
+              links: (cmsNewsMenu.links || []).filter((lnk) => !lnk.hidden),
+              featured: {
+                ...MEGA_MENUS['news-events'].featured,
+                ...(cmsNewsMenu.featured || {}),
+              },
+            }
+        : openMenu === 'faculty' && cmsFacultyMenu
+          ? cmsFacultyMenu.hidden
+            ? null
+            : {
+                ...MEGA_MENUS.faculty,
+                title: cmsFacultyMenu.title || MEGA_MENUS.faculty.title,
+                links: (cmsFacultyMenu.links || []).filter((lnk) => !lnk.hidden),
+                featured: {
+                  ...MEGA_MENUS.faculty.featured,
+                  ...(cmsFacultyMenu.featured || {}),
+                },
+              }
+          : MEGA_MENUS[openMenu]
     : null
 
   const featuredMedia = activeMega?.featured?.mediaItems?.length
@@ -305,12 +355,17 @@ export default function Navbar() {
                 return (
                   <a
                     key={item.key}
-                    href={`#${item.targetId}`}
+                    href={item.path || `#${item.targetId}`}
                     onMouseEnter={() => setOpenMenu(item.hasMega ? item.key : null)}
                     onClick={(e) => {
                       if (item.hasMega) {
                         e.preventDefault()
                         setOpenMenu(isOpen ? null : item.key)
+                      } else if (item.path) {
+                        e.preventDefault()
+                        setOpenMenu(null)
+                        setActiveSection(item.targetId)
+                        navigate(item.path)
                       } else {
                         handleNavClick(e, item.targetId)
                       }
@@ -362,6 +417,7 @@ export default function Navbar() {
               </div>
             </div>
 
+            {!activeMega.featured?.hidden && (
             <a
               href={`#${activeMega.featured.targetId}`}
               onClick={(e) => handleNavClick(e, activeMega.featured.targetId)}
@@ -429,6 +485,7 @@ export default function Navbar() {
                 <p className="cmu-mega-feat-note">{activeMega.featured.note}</p>
               </div>
             </a>
+            )}
           </div>
         </div>
       )}

@@ -87,10 +87,40 @@ function RevealSection({ id, className, children }) {
   )
 }
 
+function loadHomeCms() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('adminSiteData') || 'null')
+    return {
+      heroContent: saved?.heroContent || null,
+      visibility: saved?.homeSectionVisibility || {},
+      customSections: Array.isArray(saved?.homeCustomSections) ? saved.homeCustomSections : [],
+    }
+  } catch {
+    return { heroContent: null, visibility: {}, customSections: [] }
+  }
+}
+
 export default function Home() {
+  const [cms, setCms] = useState(loadHomeCms)
+
+  useEffect(() => {
+    const sync = () => setCms(loadHomeCms())
+    window.addEventListener('adminSiteDataUpdated', sync)
+    window.addEventListener('storage', sync)
+    return () => {
+      window.removeEventListener('adminSiteDataUpdated', sync)
+      window.removeEventListener('storage', sync)
+    }
+  }, [])
+
+  const isVisible = (key) => cms.visibility?.[key] !== false
+  const showFeaturePanel = isVisible('welcome') || isVisible('onlineMca')
+  const showCoreSection = isVisible('academics') || isVisible('research') || isVisible('inside')
+
   return (
     <div className="cmu-page">
       {/* 1. HERO BANNER */}
+      {isVisible('hero') && (
       <section id="home" className="Hero Hero--home Hero--tall theme-dark cmu-section-anchor">
         <div className="cmu-hero-slide">
           <img
@@ -105,19 +135,22 @@ export default function Home() {
                 Center of Relevance &amp; Excellence (CORE)
               </span>
               <h1 className="cmu-h1">
-                Amrita Center for Cybersecurity Systems and Networks
+                {cms.heroContent?.title || 'Amrita Center for Cybersecurity Systems and Networks'}
               </h1>
               <p className="cmu-hero-lead">
-                Fostering innovative research and education in Cybersecurity and Artificial Intelligence through partnerships across industry, academia, and the government.
+                {cms.heroContent?.description || 'Fostering innovative research and education in Cybersecurity and Artificial Intelligence through partnerships across industry, academia, and the government.'}
               </p>
             </div>
           </div>
         </div>
       </section>
+      )}
 
       {/* 2. WELCOME & INTRODUCTION (ALTERNATING LEFT/RIGHT PHOTO & DESCRIPTION) */}
+      {showFeaturePanel && (
       <RevealSection id="feature" className="FeaturePanel">
         {/* Row 1: Photo Left, Welcome & Introduction Right */}
+        {isVisible('welcome') && (
         <div className="cmu-feature-grid">
           <div className="cmu-feature-media">
             <img
@@ -135,8 +168,10 @@ export default function Home() {
             </p>
           </div>
         </div>
+        )}
 
         {/* Row 2: Description Left, Photo Right */}
+        {isVisible('onlineMca') && (
         <div className="cmu-feature-grid cmu-feature-grid--reversed">
           <div className="cmu-feature-media">
             <img src="/campus-life.jpg" alt="Amrita Campus Life and Online MCA" />
@@ -152,14 +187,17 @@ export default function Home() {
             </Link>
           </div>
         </div>
+        )}
       </RevealSection>
+      )}
 
       {/* 3. QUICK OVERVIEW OF CORE SECTIONS */}
+      {showCoreSection && (
       <RevealSection id="faculty" className="Section Section--white">
         <div className="cmu-wrap">
+          {isVisible('academics') && (
           <div id="academics">
             <div className="cmu-section-hd">
-              {/* <span className="cmu-eyebrow">Quick Overview of Core Sections</span> */}
               <h2 className="cmu-h2">Academics</h2>
             </div>
 
@@ -173,9 +211,11 @@ export default function Home() {
               ))}
             </div>
           </div>
+          )}
 
+          {isVisible('research') && (
+          <>
           <div className="cmu-section-hd">
-            {/* <span className="cmu-eyebrow">Quick Overview of Core Sections</span> */}
             <h2 className="cmu-h2">Research Focus</h2>
           </div>
 
@@ -189,10 +229,12 @@ export default function Home() {
               </div>
             ))}
           </div>
+          </>
+          )}
 
+          {isVisible('inside') && (
           <div id="news" style={{ marginTop: '64px' }}>
             <div className="cmu-section-hd">
-              {/* <span className="cmu-eyebrow">Quick Overview of Core Sections</span> */}
               <h2 className="cmu-h2">Inside the Center</h2>
             </div>
 
@@ -208,8 +250,22 @@ export default function Home() {
               ))}
             </div>
           </div>
+          )}
         </div>
       </RevealSection>
+      )}
+
+      {/* 4. CUSTOM ADMIN-ADDED HOME SECTIONS */}
+      {(cms.customSections || []).filter((sec) => !sec.hidden).map((sec) => (
+        <section key={sec.id} className="Section Section--white" style={{ borderTop: '1px solid #e2e8f0' }}>
+          <div className="cmu-wrap">
+            <div className="cmu-section-hd">
+              <h2 className="cmu-h2">{sec.title}</h2>
+            </div>
+            {sec.body && <p style={{ fontSize: '1rem', lineHeight: 1.75, color: '#334155', maxWidth: '820px' }}>{sec.body}</p>}
+          </div>
+        </section>
+      ))}
     </div>
   )
 }

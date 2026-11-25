@@ -383,6 +383,140 @@
   margin: 0 0 32px;
 }
 
+.cmu-sub-h2--with-sub {
+  margin-bottom: 10px;
+}
+
+.cmu-band-subtitle {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #64748b;
+  margin: 0 0 28px;
+}
+
+.cmu-rows-list {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.cmu-rows-item {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 24px;
+  align-items: center;
+  padding: 22px 28px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.cmu-rows-item:last-child {
+  border-bottom: none;
+}
+
+.cmu-rows-title {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+}
+
+.cmu-rows-body {
+  font-size: 0.96rem;
+  line-height: 1.6;
+  color: #64748b;
+  margin: 0;
+}
+
+@media (max-width: 720px) {
+  .cmu-rows-item {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 18px 20px;
+  }
+}
+
+/* Semester-wise Curriculum Tabs */
+.cmu-curr-tabs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 5px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.cmu-curr-tab {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: #475569;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cmu-curr-tab:hover {
+  color: #0f172a;
+}
+
+.cmu-curr-tab.is-active {
+  background: #0f172a;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.14);
+}
+
+.cmu-curr-sem-label {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #0f172a;
+  background: var(--prog-accent-soft);
+  border: 1px solid var(--prog-accent);
+  padding: 4px 11px;
+  border-radius: 3px;
+  margin-bottom: 18px;
+}
+
+.cmu-curr-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 13px;
+}
+
+.cmu-curr-item {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.cmu-curr-num {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--prog-accent, #c59b27);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.cmu-curr-name {
+  color: #1e293b;
+  font-weight: 500;
+}
+
 .cmu-col2-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -406,6 +540,25 @@
 
 .cmu-sub-band:not(.cmu-sub-band--grey) .cmu-col2-card {
   background: #f8fafc;
+}
+
+.cmu-card-media {
+  margin: -32px -28px 20px;
+  overflow: hidden;
+  border-bottom: 1px solid #e2e8f0;
+  background: #0f172a;
+}
+
+.cmu-card-media-img {
+  display: block;
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.cmu-col2-card:hover .cmu-card-media-img {
+  transform: scale(1.03);
 }
 
 .cmu-card-badge {
@@ -436,6 +589,50 @@
   line-height: 1.72;
   color: #334155;
   margin: 0;
+}
+
+.cmu-card-bullets {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.cmu-card-bullets li {
+  position: relative;
+  padding-left: 18px;
+  font-size: 0.93rem;
+  line-height: 1.5;
+  color: #1e293b;
+}
+
+.cmu-card-bullets li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--prog-accent, #c59b27);
+}
+
+.cmu-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.cmu-card-tag {
+  display: inline-block;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #3b2f1e;
+  background: #f3ead8;
+  padding: 5px 14px;
+  border-radius: 999px;
 }
 
 .cmu-sub-link {
@@ -491,5 +688,167 @@
 
   .cmu-feature-media img {
     height: 240px;
+  }
+}
+
+/* ===================================================
+   UNDERGRADUATE MOTION DESIGN: SLIDE & BOTTOM-TO-TOP
+   =================================================== */
+
+@keyframes cmuRiseUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cmuHeroPan {
+  0% {
+    transform: scale(1.03) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: scale(1.09) translate3d(-1.5%, -1%, 0);
+  }
+  100% {
+    transform: scale(1.03) translate3d(0, 0, 0);
+  }
+}
+
+@keyframes cmuSlideTab {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cmu-ug-motion .cmu-prog-hero-bg {
+  animation: cmuHeroPan 20s ease-in-out infinite;
+}
+
+.cmu-ug-motion .cmu-prog-eyebrow {
+  animation: cmuRiseUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.cmu-ug-motion .cmu-prog-hero .cmu-sub-h1 {
+  animation: cmuRiseUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+}
+
+.cmu-ug-motion .cmu-prog-hero .cmu-sub-lead {
+  animation: cmuRiseUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.16s both;
+}
+
+.cmu-ug-motion .cmu-prog-hero .cmu-sub-body {
+  animation: cmuRiseUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.24s both;
+}
+
+/* Refined Card Design on UG */
+.cmu-ug-motion .cmu-col2-card {
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  border-top: 4px solid var(--prog-accent);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.25s ease;
+}
+
+.cmu-ug-motion .cmu-col2-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.12);
+}
+
+.cmu-ug-motion .cmu-feature-media {
+  border-radius: 12px;
+}
+
+/* Scroll-Triggered Bottom-to-Top & Slide Reveal */
+.cmu-ug-motion [data-reveal] {
+  opacity: 0;
+  will-change: transform, opacity;
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--stagger, 0ms);
+}
+
+.cmu-ug-motion [data-reveal="up"] {
+  transform: translateY(38px);
+}
+
+.cmu-ug-motion [data-reveal="slide-left"] {
+  transform: translate3d(-40px, 24px, 0);
+}
+
+.cmu-ug-motion [data-reveal="up-left"] {
+  transform: translate3d(-24px, 36px, 0);
+}
+
+.cmu-ug-motion [data-reveal="up-right"] {
+  transform: translate3d(24px, 36px, 0);
+}
+
+.cmu-ug-motion [data-reveal].is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Curriculum Tab Slide Transition */
+.cmu-curr-slide .cmu-curr-card {
+  animation: cmuSlideTab 0.45s cubic-bezier(0.22, 1, 0.36, 1) var(--stagger, 0ms) both;
+}
+
+/* Floating Back-to-Top Button */
+.cmu-back-to-top {
+  position: fixed;
+  right: 26px;
+  bottom: 28px;
+  z-index: 60;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 2px solid var(--prog-accent, #c59b27);
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.25);
+  animation: cmuRiseUp 0.3s ease both;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.cmu-back-to-top:hover {
+  background: var(--prog-accent, #c59b27);
+  color: #0f172a;
+  transform: translateY(-4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cmu-ug-motion .cmu-prog-hero-bg,
+  .cmu-ug-motion .cmu-prog-eyebrow,
+  .cmu-ug-motion .cmu-prog-hero .cmu-sub-h1,
+  .cmu-ug-motion .cmu-prog-hero .cmu-sub-lead,
+  .cmu-ug-motion .cmu-prog-hero .cmu-sub-body,
+  .cmu-curr-slide .cmu-curr-card,
+  .cmu-back-to-top {
+    animation: none;
+  }
+
+  .cmu-ug-motion [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }

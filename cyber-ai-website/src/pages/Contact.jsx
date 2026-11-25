@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { useContactContent } from '../data/contactData'
 import './Contact.css'
 
 export default function Contact() {
+  const contact = useContactContent()
   const [formData, setFormData] = useState({
     name: '', email: '', phone: '', subject: '', category: '', message: ''
   })
@@ -64,85 +66,121 @@ export default function Contact() {
 
   return (
     <div className="contact-page">
+      {!contact.hiddenSections?.hero && (
       <section className="page-hero">
         <div className="container page-hero-content">
-          <span className="page-hero-label">Contact Us</span>
-          <h1>Get in Touch</h1>
-          <p>Reach out for research collaboration, admissions inquiries, industry partnerships, or any other queries.</p>
+          <span className="page-hero-label">{contact.heroLabel}</span>
+          <h1>{contact.heroTitle}</h1>
+          <p>{contact.heroSubtitle}</p>
         </div>
       </section>
+      )}
 
+      {!contact.hiddenSections?.contactMain && (
       <section className="section">
         <div className="container contact-layout">
           {/* Contact Info */}
           <div className="contact-info">
-            <h2>Contact Information</h2>
-            <p>We're always open to new collaborations and conversations. Reach out to us through any of the channels below.</p>
+            <h2>{contact.sectionTitle}</h2>
+            <p>{contact.sectionIntro}</p>
 
             <div className="contact-cards">
-              <div className="contact-info-card">
-                <div className="cic-icon">📍</div>
-                <div>
-                  <h4>Address</h4>
-                  <p>Amrita Center for Cybersecurity Systems &amp; Networks</p>
-                  <p>Amrita Vishwa Vidyapeetham, Amritapuri Campus</p>
-                  <p>Clappanna P.O., Kollam, Kerala – 690525, India</p>
+              {contact.addressLines?.length > 0 && (
+                <div className="contact-info-card">
+                  <div className="cic-icon">📍</div>
+                  <div>
+                    <h4>Address</h4>
+                    {contact.addressLines.map((line, i) => (
+                      <p key={i}>{line}</p>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
-              <div className="contact-info-card">
-                <div className="cic-icon">📞</div>
-                <div>
-                  <h4>Phone Numbers</h4>
-                  <p>+91 (0) 476 2804517</p>
-                  <p>+91 (0) 476 2804531</p>
-                  <p>+91 (0) 476 2804518</p>
-                  <p>+91 (0) 476 2804525</p>
+              {contact.phoneNumbers?.length > 0 && (
+                <div className="contact-info-card">
+                  <div className="cic-icon">📞</div>
+                  <div>
+                    <h4>Phone Numbers</h4>
+                    {contact.phoneNumbers.map((num, i) => (
+                      <p key={i}>
+                        <a
+                          href={`tel:${num.replace(/[^+\d]/g, '')}`}
+                          className="contact-link"
+                        >
+                          {num}
+                        </a>
+                      </p>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
-              <div className="contact-info-card">
-                <div className="cic-icon">✉️</div>
-                <div>
-                  <h4>Email</h4>
-                  <a href="mailto:cyber@am.amrita.edu" className="contact-link">cyber@am.amrita.edu</a>
+              {contact.emails?.length > 0 && (
+                <div className="contact-info-card">
+                  <div className="cic-icon">✉️</div>
+                  <div>
+                    <h4>Email</h4>
+                    {contact.emails.map((email, i) => (
+                      <p key={i}>
+                        <a href={`mailto:${email}`} className="contact-link">
+                          {email}
+                        </a>
+                      </p>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
-              <div className="contact-info-card">
-                <div className="cic-icon">🌐</div>
-                <div>
-                  <h4>Website</h4>
-                  <a href="https://cyber-ai.amrita.edu" target="_blank" rel="noopener noreferrer" className="contact-link">cyber-ai.amrita.edu</a>
-                  <br />
-                  <a href="https://www.amrita.edu" target="_blank" rel="noopener noreferrer" className="contact-link">www.amrita.edu</a>
+              {contact.websites?.length > 0 && (
+                <div className="contact-info-card">
+                  <div className="cic-icon">🌐</div>
+                  <div>
+                    <h4>Website</h4>
+                    {contact.websites.map((site, i) => (
+                      <p key={site.id || i}>
+                        <a
+                          href={site.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="contact-link"
+                        >
+                          {site.label || site.url}
+                        </a>
+                      </p>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Map Placeholder */}
-            <div className="map-placeholder">
-              <div className="map-content">
-                <div className="map-pin">📍</div>
-                <h4>Amritapuri Campus</h4>
-                <p>Clappanna P.O., Kollam, Kerala – 690525</p>
-                <a 
-                  href="https://maps.google.com/?q=Amrita+Vishwa+Vidyapeetham+Amritapuri+Campus+Kerala" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="btn btn-primary btn-sm"
-                  style={{marginTop:'12px'}}
-                >
-                  Open in Google Maps
-                </a>
+            {(contact.mapTitle || contact.mapUrl) && (
+              <div className="map-placeholder">
+                <div className="map-content">
+                  <div className="map-pin">📍</div>
+                  <h4>{contact.mapTitle}</h4>
+                  <p>{contact.mapSubtitle}</p>
+                  {contact.mapUrl && (
+                    <a
+                      href={contact.mapUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-primary btn-sm"
+                      style={{ marginTop: '12px' }}
+                    >
+                      Open in Google Maps
+                    </a>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Contact Form */}
           <div className="contact-form-wrap">
-            <h2>Send Us a Message</h2>
-            <p>Fill out the form below and our team will get back to you within 2–3 business days.</p>
+            <h2>{contact.formHeading}</h2>
+            <p>{contact.formIntro}</p>
 
             {submitted ? (
               <div className="success-message">
@@ -243,32 +281,7 @@ export default function Contact() {
           </div>
         </div>
       </section>
-
-      {/* Additional Contacts */}
-      <section className="section section-alt">
-        <div className="container">
-          <div className="section-header">
-            <span className="section-label">Quick Contacts</span>
-            <h2 className="section-title">Specific Inquiry Contacts</h2>
-            <div className="divider"></div>
-          </div>
-          <div className="quick-contacts">
-            {[
-              { title: 'Admissions', email: 'cyber@am.amrita.edu', desc: 'B.Tech., M.Tech., MCA, Ph.D. program admissions', icon: '🎓' },
-              { title: 'Research Collaboration', email: 'cyber@am.amrita.edu', desc: 'Academic and industry research partnerships', icon: '🔬' },
-              { title: 'Industry Relations', email: 'cyber@am.amrita.edu', desc: 'Placement, internship, and industry engagement', icon: '🏭' },
-              { title: 'General Inquiries', email: 'cyber@am.amrita.edu', desc: 'General questions about the Center', icon: '💬' },
-            ].map((c, i) => (
-              <div key={i} className="quick-contact-card">
-                <div className="qcc-icon">{c.icon}</div>
-                <h4>{c.title}</h4>
-                <p>{c.desc}</p>
-                <a href={`mailto:${c.email}`} className="btn btn-outline btn-sm">Email Us</a>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      )}
     </div>
   )
 }

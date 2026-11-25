@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { recordActivity } from "../utils/activityLog";
 import "./AdminLogin.css";
 
 // Default built-in admin (always present, cannot be deleted)
@@ -35,24 +36,38 @@ function AdminLogin() {
     setLoading(true);
 
     setTimeout(() => {
+      const normalizedInput = username.trim().toLowerCase();
+      const adminPassword =
+        localStorage.getItem("adminPassword") || BUILTIN_ADMIN.password;
+
       // Check built-in admin first
       if (
-        username === BUILTIN_ADMIN.email &&
-        password === BUILTIN_ADMIN.password
+        normalizedInput === BUILTIN_ADMIN.email.toLowerCase() &&
+        password === adminPassword
       ) {
         sessionStorage.setItem("adminAuth", "true");
         sessionStorage.setItem(
           "adminUser",
           JSON.stringify({ ...BUILTIN_ADMIN, password: undefined }),
         );
+        recordActivity({
+          user: BUILTIN_ADMIN.name,
+          email: BUILTIN_ADMIN.email,
+          role: BUILTIN_ADMIN.role,
+          section: "Authentication",
+          action: "Signed in to Admin Portal",
+        });
         navigate("/admin/dashboard");
         setLoading(false);
         return;
       }
-      // Check sub-users (content editors / event editors)
+      // Check sub-users (content editors / event editors / added admins)
       const users = getUsers();
       const match = users.find(
-        (u) => u.email === username && u.password === password && u.active,
+        (u) =>
+          (u.email || "").trim().toLowerCase() === normalizedInput &&
+          u.password === password &&
+          u.active !== false,
       );
       if (match) {
         sessionStorage.setItem("adminAuth", "true");
@@ -60,9 +75,16 @@ function AdminLogin() {
           "adminUser",
           JSON.stringify({ ...match, password: undefined }),
         );
+        recordActivity({
+          user: match.name || match.email,
+          email: match.email,
+          role: match.role || "content_editor",
+          section: "Authentication",
+          action: "Signed in to Admin Portal",
+        });
         navigate("/admin/dashboard");
       } else {
-        setError("Invalid credentials. Access denied.");
+        setError("Invalid credentials or account disabled. Access denied.");
       }
       setLoading(false);
     }, 1000);

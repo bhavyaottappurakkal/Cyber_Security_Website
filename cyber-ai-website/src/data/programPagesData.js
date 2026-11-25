@@ -32,7 +32,7 @@ export const DEFAULT_PROGRAM_PAGES = {
       imageAlt: "Students collaborating on the Amritapuri campus",
       // caption: "Amritapuri Campus · 24/7 Research Labs & Student Innovation Hubs",
       kicker: "Campus Experience",
-      title: "Student life @Amrita & Our Pride",
+      title: "Student life @Amrita",
       body: "Life on campus pairs rigorous academic inquiry with collaborative technical clubs, overnight hackathons, holistic wellness, active ACM/IEEE/SIGSAC student chapters, and real-world rural immersion through Live-in-Labs®.",
       highlights: [
         {
@@ -52,7 +52,7 @@ export const DEFAULT_PROGRAM_PAGES = {
     bands: [
       {
         id: "ug-b0",
-        title: "Our Pride: Student Talent & Accomplishments",
+        title: "Our Pride",
         greyBg: false,
         cards: [
           {
@@ -77,13 +77,13 @@ export const DEFAULT_PROGRAM_PAGES = {
       },
       {
         id: "ug-b1",
-        title: "Technical Communities: Bios & Foss",
+        title: "Student-run Communities",
         greyBg: true,
         cards: [
           {
             id: "ug-c1",
             domId: "bios",
-            badge: "CTF & Security Research",
+            badge: "Cyber security",
             title: "team bi0s (Bios)",
             body: "India’s premier student-run cybersecurity research team and #1 ranked Capture The Flag (CTF) team. Undergraduate students train in binary exploitation, reverse engineering, web & mobile security, cryptography, and hardware security from their very first year.",
             linkLabel: "Visit team bi0s (bi0s.in) →",
@@ -92,7 +92,7 @@ export const DEFAULT_PROGRAM_PAGES = {
           {
             id: "ug-c2",
             domId: "foss",
-            badge: "Open Source Collective",
+            badge: "Open Source",
             title: "amFOSS (Foss)",
             body: "One of India’s leading open-source student collectives, mentoring undergraduates to contribute to global open-source foundations, Google Summer of Code (GSoC), Outreachy, Linux Kernel, and real-world developer tooling.",
             linkLabel: "Visit amFOSS (amfoss.in) →",
@@ -102,24 +102,76 @@ export const DEFAULT_PROGRAM_PAGES = {
       },
       {
         id: "ug-b2",
-        title: "Scholarships & Overseas Experience",
+        domId: "scholarships",
+        title: "Scholarships",
+        subtitle: "Making quality education accessible to every deserving student.",
         greyBg: false,
         cards: [
           {
             id: "ug-c3",
             domId: "",
-            badge: "Merit & Grants",
-            title: "Scholarships",
-            body: "Merit-based tuition waivers are awarded to top applicants through AEEE and JEE Mains, alongside research travel grants, conference sponsorships, and fellowship support for outstanding undergraduate innovators.",
+            badge: "",
+            title: "Merit Scholarship",
+            body: "Tuition fee waiver based on rank in the Amrita Entrance Examination (AEEE) / JEE.",
             linkLabel: "",
             linkUrl: "",
           },
           {
-            id: "ug-c4",
+            id: "ug-c3b",
             domId: "",
-            badge: "Global Mobility",
-            title: "Overseas Experience — Dual Degree & Student Exchange",
-            body: "Dual Degree (3+1 / 3+2): Integrated pathways to earn a B.Tech. from Amrita and an MS from global partner universities in the USA and Europe.\nStudent Exchange: Semester-abroad and thesis research with Vrije Universiteit Amsterdam, University of L’Aquila, University of Göttingen, SUTD, and partners in Japan.",
+            badge: "",
+            title: "Need-based Support",
+            body: "Financial assistance for deserving students from economically weaker backgrounds.",
+            linkLabel: "",
+            linkUrl: "",
+          },
+          {
+            id: "ug-c3c",
+            domId: "",
+            badge: "",
+            title: "Sports & Cultural",
+            body: "Concessions for students with outstanding state or national-level achievements.",
+            linkLabel: "",
+            linkUrl: "",
+          },
+          {
+            id: "ug-c3d",
+            domId: "",
+            badge: "",
+            title: "Government Schemes",
+            body: "Guidance to apply for central and state government scholarship schemes.",
+            linkLabel: "",
+            linkUrl: "",
+          },
+        ],
+      },
+      {
+        id: "ug-b2b",
+        title: "Overseas Experience",
+        greyBg: true,
+        cards: [
+          {
+            id: "ug-c4",
+            domId: "overseas",
+            badge: "",
+            title: "Dual Degree",
+            body: "Study the first years at Amrita and complete your degree at a partner university, graduating with degrees from both institutions.",
+            bullets: [
+              "University at Buffalo, USA",
+              "Arizona State University, USA",
+              "University of New Mexico, USA",
+              "Vrije Universiteit Amsterdam, Netherlands",
+            ],
+            linkLabel: "",
+            linkUrl: "",
+          },
+          {
+            id: "ug-c4b",
+            domId: "",
+            badge: "",
+            title: "Student Exchange",
+            body: "Spend a semester or a summer research internship at a partner university, with credits transferred back to your Amrita degree.",
+            tags: ["Germany", "France", "Italy", "Japan", "Sweden", "Finland"],
             linkLabel: "",
             linkUrl: "",
           },
@@ -127,28 +179,131 @@ export const DEFAULT_PROGRAM_PAGES = {
       },
       {
         id: "ug-b3",
-        title: "Curriculum (8-Semester B.Tech. CSE — Cyber Security)",
-        greyBg: true,
-        cards: [
+        domId: "curriculum",
+        title: "Curriculum",
+        subtitle: "A semester-wise view of the B.Tech Computer Science & Engineering curriculum.",
+        layout: "curriculum",
+        greyBg: false,
+        years: [
           {
-            id: "ug-c5",
-            domId: "",
-            badge: "Semesters 1–4",
-            title: "Core Computing & Security Foundations",
-            body: "Programming in C/Python/Java, Discrete Mathematics, Data Structures & Algorithms, Computer Architecture, Operating Systems, Database Management Systems, Computer Networks, and Foundations of Cryptography.",
-            linkLabel: "",
-            linkUrl: "",
+            id: "yr-1",
+            label: "Year 1",
+            semesters: [
+              {
+                id: "sem-1",
+                title: "SEMESTER 1",
+                courses: [
+                  "Calculus",
+                  "Problem Solving & Algorithmic Thinking",
+                  "Computer Programming",
+                  "Engineering Physics",
+                  "Fundamentals of Electrical & Electronics",
+                  "Amrita Values Programme",
+                ],
+              },
+              {
+                id: "sem-2",
+                title: "SEMESTER 2",
+                courses: [
+                  "Linear Algebra",
+                  "Object Oriented Programming",
+                  "Digital Electronics",
+                  "Engineering Chemistry",
+                  "Elements of Computing Systems",
+                  "Glimpses of Indian Culture",
+                ],
+              },
+            ],
           },
           {
-            id: "ug-c6",
-            domId: "",
-            badge: "Semesters 5–8",
-            title: "Advanced Cybersecurity & AI Defense",
-            body: "Network & System Security, Secure Software Engineering, Malware Analysis & Reverse Engineering, Cloud & Hypervisor Security, IoT & Cyber-Physical Security, AI for Cybersecurity, Capstone Research Project, and Industry Internship.",
-            linkLabel: "",
-            linkUrl: "",
+            id: "yr-2",
+            label: "Year 2",
+            semesters: [
+              {
+                id: "sem-3",
+                title: "SEMESTER 3",
+                courses: [
+                  "Discrete Mathematics",
+                  "Data Structures & Algorithms",
+                  "Computer Organization & Architecture",
+                  "Operating Systems",
+                  "Foundations of Cyber Security",
+                  "Amrita Values Programme II",
+                ],
+              },
+              {
+                id: "sem-4",
+                title: "SEMESTER 4",
+                courses: [
+                  "Probability, Statistics & Random Processes",
+                  "Design & Analysis of Algorithms",
+                  "Database Management Systems",
+                  "Computer Networks",
+                  "Foundations of Cryptography",
+                  "Secure Software Engineering",
+                ],
+              },
+            ],
+          },
+          {
+            id: "yr-3",
+            label: "Year 3",
+            semesters: [
+              {
+                id: "sem-5",
+                title: "SEMESTER 5",
+                courses: [
+                  "Network & System Security",
+                  "Web & Application Security",
+                  "Malware Analysis & Reverse Engineering",
+                  "Machine Learning for Cyber Security",
+                  "Professional Elective I",
+                  "Cyber Security Lab",
+                ],
+              },
+              {
+                id: "sem-6",
+                title: "SEMESTER 6",
+                courses: [
+                  "Cloud & Hypervisor Security",
+                  "Digital Forensics & Incident Response",
+                  "IoT & Cyber-Physical Security",
+                  "Penetration Testing & Vulnerability Assessment",
+                  "Professional Elective II",
+                  "Open Elective / Live-in-Labs®",
+                ],
+              },
+            ],
+          },
+          {
+            id: "yr-4",
+            label: "Year 4",
+            semesters: [
+              {
+                id: "sem-7",
+                title: "SEMESTER 7",
+                courses: [
+                  "AI-Driven Cyber Defense",
+                  "Privacy, Governance & Cyber Law",
+                  "Professional Elective III",
+                  "Professional Elective IV",
+                  "Capstone Project Phase I",
+                  "Technical Seminar",
+                ],
+              },
+              {
+                id: "sem-8",
+                title: "SEMESTER 8",
+                courses: [
+                  "Capstone Research Project Phase II",
+                  "Industry Internship / International Thesis",
+                  "Comprehensive Viva Voce",
+                ],
+              },
+            ],
           },
         ],
+        cards: [],
       },
     ],
   },
@@ -518,6 +673,110 @@ export const DEFAULT_PROGRAM_PAGES = {
       },
     ],
   },
+
+  internships: {
+    key: "internships",
+    tabLabel: "Internships Page",
+    themeClass: "cmu-subpage--ug",
+    pageBgColor: "#ffffff",
+    bandAltBgColor: "#f4f6f9",
+    heroBgColor: "#0f172a",
+    accentColor: "#c59b27",
+    breadcrumbLabel: "Internships",
+    hero: {
+      eyebrow: "Hands-On Training & Research",
+      title: "Internships",
+      lead: "Immerse yourself in real-world cybersecurity research, vulnerability discovery, AI defense, and secure systems engineering at the Amrita Center for Cybersecurity Systems and Networks.",
+      body: "Our structured summer, winter, and semester-long internship programmes connect undergraduate and postgraduate students with faculty mentors, 24/7 security labs, global partner universities, and leading industry teams.",
+      image: "/cybersecurity-lab.jpg",
+      imageAlt: "Students working on cybersecurity internship projects in the lab",
+      stats: [],
+    },
+    feature: {
+      enabled: true,
+      reverse: false,
+      image: "/hero-students.jpg",
+      imageAlt: "Cybersecurity interns collaborating with faculty mentors",
+      kicker: "Research & Industry Exposure",
+      title: "Why Intern at Amrita Cybersecurity?",
+      body: "Interns work side by side with researchers, team bi0s members, and industry practitioners on live problem statements spanning systems security, cloud defense, cryptography, and AI-driven threat intelligence.",
+      highlights: [
+        {
+          id: "int-h1",
+          text: "Direct mentorship from faculty and senior researchers in a Govt. of India designated CORE Center.",
+        },
+        {
+          id: "int-h2",
+          text: "Hands-on access to national cyber testbeds, hardware security labs, and real-world vulnerability research.",
+        },
+        {
+          id: "int-h3",
+          text: "Pathways to IEEE/ACM publications, open-source contributions, and pre-placement offers (PPOs).",
+        },
+      ],
+    },
+    bands: [
+      {
+        id: "int-b1",
+        domId: "tracks",
+        title: "Internship Tracks",
+        greyBg: false,
+        cards: [
+          {
+            id: "int-c1",
+            domId: "",
+            badge: "On-Campus & Remote",
+            title: "Research Internships at Amrita",
+            body: "Open to internal and external B.Tech., M.Tech., and MCA students to work on funded R&D projects in Systems Security, Post-Quantum Cryptography, Cloud & Hypervisor Security, IoT/CPS Defense, and Agentic AI Security.",
+            linkLabel: "Contact for Research Internships →",
+            linkUrl: "/contact",
+          },
+          {
+            id: "int-c2",
+            domId: "",
+            badge: "Industry & Global",
+            title: "Industry & International Internships",
+            body: "Amrita students regularly secure 2-to-12 month internships with leading organizations including Microsoft, Cisco, Palo Alto Networks, DRDO, ISRO, Bosch, Qualcomm, and international partner universities in Europe, USA, and Japan.",
+            linkLabel: "",
+            linkUrl: "",
+          },
+        ],
+      },
+      {
+        id: "int-b2",
+        domId: "domains",
+        title: "Focus Domains & Eligibility",
+        greyBg: true,
+        cards: [
+          {
+            id: "int-c3",
+            domId: "",
+            badge: "Key Domains",
+            title: "Core Research & Engineering Areas",
+            body: "Explore hands-on internship projects across high-impact cybersecurity domains.",
+            bullets: [
+              "Binary Exploitation, Reverse Engineering & Malware Analysis",
+              "Web, Mobile, Cloud & DevSecOps Security",
+              "AI / Machine Learning for Threat Detection & Agentic AI Security",
+              "Hardware, Firmware, Automotive & IoT Security",
+            ],
+            linkLabel: "",
+            linkUrl: "",
+          },
+          {
+            id: "int-c4",
+            domId: "",
+            badge: "Duration & Intake",
+            title: "Programme Structure & Intake Cycles",
+            body: "Flexible internship durations aligned with academic calendars for summer breaks and final-year capstone semesters.",
+            tags: ["Summer (6–8 Weeks)", "Winter (4–6 Weeks)", "Semester-Long (6 Months)", "Full-Time / Hybrid"],
+            linkLabel: "",
+            linkUrl: "",
+          },
+        ],
+      },
+    ],
+  },
 };
 
 function mergePage(defaultPage, storedPage) {
@@ -556,6 +815,7 @@ export function loadProgramPages() {
       pg: mergePage(DEFAULT_PROGRAM_PAGES.pg, stored.pg),
       online: mergePage(DEFAULT_PROGRAM_PAGES.online, stored.online),
       phd: mergePage(DEFAULT_PROGRAM_PAGES.phd, stored.phd),
+      internships: mergePage(DEFAULT_PROGRAM_PAGES.internships, stored.internships),
     };
   } catch {
     return DEFAULT_PROGRAM_PAGES;
@@ -564,8 +824,14 @@ export function loadProgramPages() {
 
 export function useProgramPageData(programKey) {
   const [page, setPage] = useState(() => loadProgramPages()[programKey] || DEFAULT_PROGRAM_PAGES[programKey]);
-  const [heroImg, setHeroImg] = useState("");
-  const [featureImg, setFeatureImg] = useState("");
+  const [heroImg, setHeroImg] = useState(() => {
+    const src = (loadProgramPages()[programKey] || DEFAULT_PROGRAM_PAGES[programKey])?.hero?.image || "";
+    return src && !src.startsWith("idb://") ? src : "";
+  });
+  const [featureImg, setFeatureImg] = useState(() => {
+    const src = (loadProgramPages()[programKey] || DEFAULT_PROGRAM_PAGES[programKey])?.feature?.image || "";
+    return src && !src.startsWith("idb://") ? src : "";
+  });
 
   useEffect(() => {
     const sync = () => {

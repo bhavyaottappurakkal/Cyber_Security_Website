@@ -17,6 +17,7 @@ import AdminDashboard from './pages/AdminDashboard'
 import PostGraduate from './pages/PostGraduate'
 import PhD from './pages/PhD'
 import OnlineMCA from './pages/OnlineMCA'
+import Internships from './pages/Internships'
 import ProgramDetail from './pages/ProgramDetail'
 import './App.css'
 
@@ -39,6 +40,7 @@ function AppLayout() {
             <Route path="/academics/postgraduate" element={<PostGraduate />} />
             <Route path="/academics/phd" element={<PhD />} />
             <Route path="/academics/online-mca" element={<OnlineMCA />} />
+            <Route path="/internships" element={<Internships />} />
             <Route path="/academics/program/:id" element={<ProgramDetail />} />
             <Route path="/research" element={<Research />} />
             <Route path="/projects" element={<Projects />} />

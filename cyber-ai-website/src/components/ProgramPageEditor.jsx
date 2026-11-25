@@ -74,7 +74,6 @@ export default function ProgramPageEditor({
   onResetPage,
   showToast,
 }) {
-  const [newStat, setNewStat] = useState({ label: "", value: "" });
   const [newHighlight, setNewHighlight] = useState("");
   const [newBandTitle, setNewBandTitle] = useState("");
 
@@ -122,6 +121,36 @@ export default function ProgramPageEditor({
       if (page.feature.image?.startsWith("idb://")) deleteMediaFile(page.feature.image);
       onSavePage({ ...page, feature: { ...page.feature, image: "" } }, "Feature image removed.");
     }
+  };
+
+  const handleCardImageUpload = async (e, bIdx, cIdx) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const idbKey = await saveMediaFile(file);
+      const band = page.bands[bIdx];
+      const card = band.cards[cIdx];
+      if (card.image?.startsWith("idb://")) deleteMediaFile(card.image);
+      const nextCards = [...band.cards];
+      nextCards[cIdx] = { ...card, image: idbKey };
+      const nextBands = [...page.bands];
+      nextBands[bIdx] = { ...band, cards: nextCards };
+      onSavePage({ ...page, bands: nextBands }, `Card image "${file.name}" uploaded and saved!`);
+    } catch {
+      showToast("Could not store image in browser storage.", "error");
+    }
+    e.target.value = "";
+  };
+
+  const handleCardImageRemove = (bIdx, cIdx) => {
+    const band = page.bands[bIdx];
+    const card = band.cards[cIdx];
+    if (card.image?.startsWith("idb://")) deleteMediaFile(card.image);
+    const nextCards = [...band.cards];
+    nextCards[cIdx] = { ...card, image: "" };
+    const nextBands = [...page.bands];
+    nextBands[bIdx] = { ...band, cards: nextCards };
+    onSavePage({ ...page, bands: nextBands }, "Card image removed.");
   };
 
   return (
@@ -255,9 +284,23 @@ export default function ProgramPageEditor({
       </div>
 
       {/* 1. BREADCRUMB & HERO BANNER */}
-      <div className="ia-cms-section">
+      <div className="ia-cms-section" style={page.hero?.enabled === false ? { opacity: 0.65 } : undefined}>
         <div className="ia-cms-section-head">
-          <h3>1. Hero Banner &amp; Quick Stats</h3>
+          <h3>
+            1. Hero Banner{" "}
+            {page.hero?.enabled === false && (
+              <span style={{ fontSize: "0.72rem", color: "#b91c1c", marginLeft: "8px" }}>(HIDDEN)</span>
+            )}
+          </h3>
+          <div className="ia-cms-actions">
+            <button
+              type="button"
+              className="ia-btn-secondary"
+              onClick={() => updateHero({ enabled: page.hero?.enabled === false })}
+            >
+              {page.hero?.enabled === false ? "Show Hero" : "Hide Hero"}
+            </button>
+          </div>
         </div>
 
         <label className="ia-field">
@@ -335,100 +378,6 @@ export default function ProgramPageEditor({
             onChange={(e) => updateHero({ body: e.target.value })}
           />
         </label>
-
-        {/* Hero Stats List with Swap & Delete */}
-        <div className="ia-field">
-          <span>Hero Quick-Facts Strip (Edit / Swap Order / Add / Delete)</span>
-          <div className="ia-list" style={{ marginBottom: "8px" }}>
-            {(page.hero.stats || []).map((st, idx) => (
-              <div key={st.id} className="ia-list-row" style={{ flexWrap: "wrap" }}>
-                <input
-                  type="text"
-                  className="ia-cms-input"
-                  placeholder="Label"
-                  style={{ flex: "0.7", minWidth: "120px" }}
-                  value={st.label}
-                  onChange={(e) => {
-                    const updated = [...page.hero.stats];
-                    updated[idx] = { ...st, label: e.target.value };
-                    updateHero({ stats: updated });
-                  }}
-                />
-                <input
-                  type="text"
-                  className="ia-cms-input"
-                  placeholder="Value"
-                  style={{ flex: "1.2", minWidth: "160px" }}
-                  value={st.value}
-                  onChange={(e) => {
-                    const updated = [...page.hero.stats];
-                    updated[idx] = { ...st, value: e.target.value };
-                    updateHero({ stats: updated });
-                  }}
-                />
-                <button
-                  type="button"
-                  className="ia-btn-swap"
-                  disabled={idx === 0}
-                  onClick={() => updateHero({ stats: swapItems(page.hero.stats, idx, idx - 1) })}
-                  title="Swap Up"
-                >
-                  ↑
-                </button>
-                <button
-                  type="button"
-                  className="ia-btn-swap"
-                  disabled={idx === page.hero.stats.length - 1}
-                  onClick={() => updateHero({ stats: swapItems(page.hero.stats, idx, idx + 1) })}
-                  title="Swap Down"
-                >
-                  ↓
-                </button>
-                <button
-                  type="button"
-                  className="ia-btn-danger"
-                  onClick={() =>
-                    updateHero({
-                      stats: page.hero.stats.filter((item) => item.id !== st.id),
-                    })
-                  }
-                >
-                  Delete
-                </button>
-              </div>
-            ))}
-          </div>
-          <div className="ia-inline-form" style={{ marginBottom: 0 }}>
-            <input
-              type="text"
-              placeholder="New stat label (e.g. Credits)"
-              value={newStat.label}
-              onChange={(e) => setNewStat({ ...newStat, label: e.target.value })}
-            />
-            <input
-              type="text"
-              placeholder="New stat value (e.g. 160 Credits)"
-              value={newStat.value}
-              onChange={(e) => setNewStat({ ...newStat, value: e.target.value })}
-            />
-            <button
-              type="button"
-              className="ia-btn-primary"
-              onClick={() => {
-                if (!newStat.label.trim() || !newStat.value.trim()) return;
-                updateHero({
-                  stats: [
-                    ...(page.hero.stats || []),
-                    { id: `st-${Date.now()}`, label: newStat.label.trim(), value: newStat.value.trim() },
-                  ],
-                });
-                setNewStat({ label: "", value: "" });
-              }}
-            >
-              + Add Stat
-            </button>
-          </div>
-        </div>
       </div>
 
       {/* 2. FEATURE SPLIT SECTION */}
@@ -608,7 +557,11 @@ export default function ProgramPageEditor({
         </div>
 
         {(page.bands || []).map((band, bIdx) => (
-          <div key={band.id} className="ia-cms-band">
+          <div
+            key={band.id}
+            className="ia-cms-band"
+            style={band.hidden ? { opacity: 0.6, borderStyle: "dashed" } : undefined}
+          >
             <div className="ia-cms-band-head">
               <input
                 type="text"
@@ -621,7 +574,30 @@ export default function ProgramPageEditor({
                   onChangePage({ ...page, bands: nextBands });
                 }}
               />
+              <input
+                type="text"
+                className="ia-cms-input"
+                style={{ flex: 1, minWidth: "200px" }}
+                placeholder="Section Subtitle (optional)"
+                value={band.subtitle || ""}
+                onChange={(e) => {
+                  const nextBands = [...page.bands];
+                  nextBands[bIdx] = { ...band, subtitle: e.target.value };
+                  onChangePage({ ...page, bands: nextBands });
+                }}
+              />
               <div className="ia-cms-actions">
+                <button
+                  type="button"
+                  className="ia-btn-secondary"
+                  onClick={() => {
+                    const nextBands = [...page.bands];
+                    nextBands[bIdx] = { ...band, hidden: !band.hidden };
+                    onChangePage({ ...page, bands: nextBands });
+                  }}
+                >
+                  {band.hidden ? "Show Section" : "Hide Section"}
+                </button>
                 <button
                   type="button"
                   className="ia-btn-secondary"
@@ -682,10 +658,23 @@ export default function ProgramPageEditor({
                 };
 
                 return (
-                  <div key={card.id} className="ia-cms-card">
+                  <div
+                    key={card.id}
+                    className="ia-cms-card"
+                    style={card.hidden ? { opacity: 0.58, borderStyle: "dashed" } : undefined}
+                  >
                     <div className="ia-cms-card-head">
-                      <span className="ia-cms-card-num">Card #{cIdx + 1}</span>
+                      <span className="ia-cms-card-num">
+                        Card #{cIdx + 1} {card.hidden ? "(Hidden)" : ""}
+                      </span>
                       <div className="ia-cms-actions">
+                        <button
+                          type="button"
+                          className="ia-btn-secondary"
+                          onClick={() => updateCard({ hidden: !card.hidden })}
+                        >
+                          {card.hidden ? "Show" : "Hide"}
+                        </button>
                         <button
                           type="button"
                           className="ia-btn-swap"
@@ -735,6 +724,43 @@ export default function ProgramPageEditor({
                       </div>
                     </div>
 
+                    <div className="ia-cms-mini-label">
+                      <span>Card Image (Add / Upload / Change / Remove)</span>
+                      <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", marginTop: "4px" }}>
+                        <ImagePreview src={card.image || ""} alt={card.title || "Card preview"} />
+                        <div style={{ flex: 1, minWidth: "180px", display: "flex", flexDirection: "column", gap: "6px" }}>
+                          <input
+                            type="text"
+                            className="ia-cms-input"
+                            placeholder="Image URL (e.g. /campus-life.jpg or https://...)"
+                            value={card.image?.startsWith("idb://") ? "Uploaded custom image (stored in browser)" : card.image || ""}
+                            readOnly={card.image?.startsWith("idb://")}
+                            onChange={(e) => updateCard({ image: e.target.value })}
+                          />
+                          <div className="ia-cms-actions">
+                            <label className="ia-upload-btn" style={{ margin: 0 }}>
+                              {card.image ? "Change Image" : "Upload Image"}
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => handleCardImageUpload(e, bIdx, cIdx)}
+                                hidden
+                              />
+                            </label>
+                            {card.image && (
+                              <button
+                                type="button"
+                                className="ia-btn-danger"
+                                onClick={() => handleCardImageRemove(bIdx, cIdx)}
+                              >
+                                Remove Image
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                     <div className="ia-cms-row-2">
                       <label className="ia-cms-mini-label">
                         <span>Badge</span>
@@ -779,6 +805,134 @@ export default function ProgramPageEditor({
                         onChange={(e) => updateCard({ body: e.target.value })}
                       />
                     </label>
+
+                    {/* Card Bullet Points (Add / Edit / Swap / Delete) */}
+                    <div className="ia-cms-mini-label">
+                      <span>Bullet Points (optional — Add / Edit / Swap / Delete)</span>
+                      {(card.bullets || []).length > 0 && (
+                        <div className="ia-list" style={{ marginTop: "6px" }}>
+                          {(card.bullets || []).map((bl, blIdx) => (
+                            <div key={blIdx} className="ia-list-row">
+                              <input
+                                type="text"
+                                className="ia-cms-input"
+                                style={{ flex: 1 }}
+                                value={bl}
+                                onChange={(e) => {
+                                  const next = [...(card.bullets || [])];
+                                  next[blIdx] = e.target.value;
+                                  updateCard({ bullets: next });
+                                }}
+                              />
+                              <button
+                                type="button"
+                                className="ia-btn-swap"
+                                disabled={blIdx === 0}
+                                onClick={() =>
+                                  updateCard({ bullets: swapItems(card.bullets || [], blIdx, blIdx - 1) })
+                                }
+                              >
+                                ↑
+                              </button>
+                              <button
+                                type="button"
+                                className="ia-btn-swap"
+                                disabled={blIdx === (card.bullets || []).length - 1}
+                                onClick={() =>
+                                  updateCard({ bullets: swapItems(card.bullets || [], blIdx, blIdx + 1) })
+                                }
+                              >
+                                ↓
+                              </button>
+                              <button
+                                type="button"
+                                className="ia-btn-danger"
+                                onClick={() =>
+                                  updateCard({
+                                    bullets: (card.bullets || []).filter((_, idx) => idx !== blIdx),
+                                  })
+                                }
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      <button
+                        type="button"
+                        className="ia-btn-secondary"
+                        style={{ marginTop: "6px", alignSelf: "flex-start" }}
+                        onClick={() =>
+                          updateCard({ bullets: [...(card.bullets || []), "New bullet item"] })
+                        }
+                      >
+                        + Add Bullet
+                      </button>
+                    </div>
+
+                    {/* Card Pill Tags (Add / Edit / Swap / Delete) */}
+                    <div className="ia-cms-mini-label">
+                      <span>Pill Tags (optional — Add / Edit / Swap / Delete)</span>
+                      {(card.tags || []).length > 0 && (
+                        <div className="ia-list" style={{ marginTop: "6px" }}>
+                          {(card.tags || []).map((tg, tgIdx) => (
+                            <div key={tgIdx} className="ia-list-row">
+                              <input
+                                type="text"
+                                className="ia-cms-input"
+                                style={{ flex: 1 }}
+                                value={tg}
+                                onChange={(e) => {
+                                  const next = [...(card.tags || [])];
+                                  next[tgIdx] = e.target.value;
+                                  updateCard({ tags: next });
+                                }}
+                              />
+                              <button
+                                type="button"
+                                className="ia-btn-swap"
+                                disabled={tgIdx === 0}
+                                onClick={() =>
+                                  updateCard({ tags: swapItems(card.tags || [], tgIdx, tgIdx - 1) })
+                                }
+                              >
+                                ↑
+                              </button>
+                              <button
+                                type="button"
+                                className="ia-btn-swap"
+                                disabled={tgIdx === (card.tags || []).length - 1}
+                                onClick={() =>
+                                  updateCard({ tags: swapItems(card.tags || [], tgIdx, tgIdx + 1) })
+                                }
+                              >
+                                ↓
+                              </button>
+                              <button
+                                type="button"
+                                className="ia-btn-danger"
+                                onClick={() =>
+                                  updateCard({
+                                    tags: (card.tags || []).filter((_, idx) => idx !== tgIdx),
+                                  })
+                                }
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      <button
+                        type="button"
+                        className="ia-btn-secondary"
+                        style={{ marginTop: "6px", alignSelf: "flex-start" }}
+                        onClick={() => updateCard({ tags: [...(card.tags || []), "New Tag"] })}
+                      >
+                        + Add Tag
+                      </button>
+                    </div>
 
                     <div className="ia-cms-row-2">
                       <label className="ia-cms-mini-label">
