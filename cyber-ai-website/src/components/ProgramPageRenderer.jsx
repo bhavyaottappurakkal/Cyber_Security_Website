@@ -114,7 +114,7 @@ export default function ProgramPageRenderer({ programKey }) {
   const { page, heroImg, featureImg } = useProgramPageData(programKey);
   const [showBackTop, setShowBackTop] = useState(false);
 
-  const isUg = programKey === "ug";
+  const isUg = true;
 
   useEffect(() => {
     const onScroll = () => setShowBackTop(window.scrollY > 360);

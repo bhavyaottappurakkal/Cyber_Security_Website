@@ -87,11 +87,20 @@ function RevealSection({ id, className, children }) {
   )
 }
 
+const DEFAULT_HERO = {
+  eyebrow: 'AMRITA VISHWA VIDYAPEETHAM',
+  title: 'Amrita Centre for Cybersecurity Systems and Networks',
+  description:
+    'Rigorous engineering, hands-on research and a campus that shapes character as much as careers.',
+}
+
 function loadHomeCms() {
   try {
     const saved = JSON.parse(localStorage.getItem('adminSiteData') || 'null')
+    const rawHero = saved?.heroContent || null
+    const isOldTemplate = rawHero?.title === 'Research That Moves the World Forward'
     return {
-      heroContent: saved?.heroContent || null,
+      heroContent: isOldTemplate ? DEFAULT_HERO : rawHero,
       visibility: saved?.homeSectionVisibility || {},
       customSections: Array.isArray(saved?.homeCustomSections) ? saved.homeCustomSections : [],
     }
@@ -132,13 +141,13 @@ export default function Home() {
           <div className="cmu-wrap cmu-hero-inner">
             <div className="cmu-hero-content">
               <span className="cmu-eyebrow cmu-eyebrow--red">
-                Center of Relevance &amp; Excellence (CORE)
+                {cms.heroContent?.eyebrow || DEFAULT_HERO.eyebrow}
               </span>
               <h1 className="cmu-h1">
-                {cms.heroContent?.title || 'Amrita Center for Cybersecurity Systems and Networks'}
+                {cms.heroContent?.title || DEFAULT_HERO.title}
               </h1>
               <p className="cmu-hero-lead">
-                {cms.heroContent?.description || 'Fostering innovative research and education in Cybersecurity and Artificial Intelligence through partnerships across industry, academia, and the government.'}
+                {cms.heroContent?.description || DEFAULT_HERO.description}
               </p>
             </div>
           </div>

@@ -52,9 +52,6 @@ const MEGA_MENUS = {
     targetId: 'faculty',
     links: [
       { label: 'Faculty ', targetId: 'faculty' },
-      { label: 'Research Metrics', targetId: 'faculty' },
-      { label: 'Academic Council', targetId: 'faculty' },
-      { label: 'Upcoming Lectures', targetId: 'news' },
     ],
     featured: {
       image: '/hero-students.jpg',
@@ -70,11 +67,8 @@ const MEGA_MENUS = {
     targetId: 'news',
     links: [
       { label: 'Featured News', targetId: 'news' },
-      { label: 'Rankings & Impact', targetId: 'news' },
       { label: 'Upcoming Events', targetId: 'events' },
-      { label: 'Annual Symposium', targetId: 'events' },
       { label: 'Distinguished Lectures', targetId: 'events' },
-      { label: 'Admissions Sessions', targetId: 'events' },
     ],
     featured: {
       image: '/sample_headline.jpg',
@@ -383,6 +377,21 @@ export default function Navbar() {
                 )
               })}
             </nav>
+
+            {/* Right Amrita University Logo */}
+            <a
+              href="https://www.amrita.edu/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="cmu-wordmark-logo cmu-right-logo"
+              aria-label="Amrita Vishwa Vidyapeetham"
+            >
+              <img
+                src="/amrita-vishwa-vidyapeetham-logo.jpg"
+                alt="Amrita Vishwa Vidyapeetham"
+                className="cmu-right-logo-img"
+              />
+            </a>
           </div>
         </div>
       </div>

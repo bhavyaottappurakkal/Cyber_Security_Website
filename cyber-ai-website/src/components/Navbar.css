@@ -53,6 +53,19 @@
   display: block;
 }
 
+.cmu-right-logo {
+  height: auto;
+  padding: 4px 10px;
+  border-radius: 3px;
+}
+
+.cmu-right-logo-img {
+  height: 42px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
 .cmu-header-right {
   display: flex;
   align-items: center;
@@ -103,6 +116,9 @@
 @media (max-width: 860px) {
   .cmu-header-logo {
     height: 34px;
+  }
+  .cmu-right-logo {
+    display: none;
   }
   .desktop-nav {
     overflow-x: auto;

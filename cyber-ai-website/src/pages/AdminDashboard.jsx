@@ -9,9 +9,10 @@ import "./AdminDashboard.css";
 
 const DEFAULT_DATA = {
   heroContent: {
-    title: "Research That Moves the World Forward",
+    eyebrow: "AMRITA VISHWA VIDYAPEETHAM",
+    title: "Amrita Centre for Cybersecurity Systems and Networks",
     description:
-      "A template showcase for breakthrough research, interdisciplinary collaboration, and global academic impact.",
+      "Rigorous engineering, hands-on research and a campus that shapes character as much as careers.",
     btn1: "Explore Research",
   },
   aboutContent: {
@@ -84,11 +85,8 @@ const DEFAULT_DATA = {
     title: "News & Events",
     links: [
       { id: 1, label: "Featured News", url: "/news-events", targetId: "news", hidden: false },
-      { id: 2, label: "Rankings & Impact", url: "/news-events", targetId: "news", hidden: false },
       { id: 3, label: "Upcoming Events", url: "/news-events", targetId: "events", hidden: false },
-      { id: 4, label: "Annual Symposium", url: "/news-events", targetId: "events", hidden: false },
       { id: 5, label: "Distinguished Lectures", url: "/news-events", targetId: "events", hidden: false },
-      { id: 6, label: "Admissions Sessions", url: "/news-events", targetId: "events", hidden: false },
     ],
     featured: {
       hidden: false,
@@ -105,9 +103,6 @@ const DEFAULT_DATA = {
     title: "Our Team",
     links: [
       { id: 1, label: "Faculty Leaders", url: "/faculty", targetId: "faculty", hidden: false },
-      { id: 2, label: "Research Metrics", url: "/faculty", targetId: "faculty", hidden: false },
-      { id: 3, label: "Academic Council", url: "/faculty", targetId: "faculty", hidden: false },
-      { id: 4, label: "Upcoming Lectures", url: "/news-events", targetId: "news", hidden: false },
     ],
     featured: {
       hidden: false,
@@ -134,7 +129,10 @@ function loadSiteData() {
       ...parsed,
       programPages: loadProgramPages(),
       contactContent: normalizeContactContent(parsed.contactContent),
-      heroContent: { ...DEFAULT_DATA.heroContent, ...(parsed.heroContent || {}) },
+      heroContent:
+        parsed.heroContent?.title === "Research That Moves the World Forward"
+          ? DEFAULT_DATA.heroContent
+          : { ...DEFAULT_DATA.heroContent, ...(parsed.heroContent || {}) },
       aboutContent: { ...DEFAULT_DATA.aboutContent, ...(parsed.aboutContent || {}) },
       academicsContent: {
         ...DEFAULT_DATA.academicsContent,

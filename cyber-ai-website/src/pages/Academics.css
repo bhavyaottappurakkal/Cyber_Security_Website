@@ -11,24 +11,12 @@
   --prog-accent-soft: rgba(197, 155, 39, 0.12);
 }
 
-.cmu-subpage--ug {
+.cmu-subpage--ug,
+.cmu-subpage--pg,
+.cmu-subpage--online,
+.cmu-subpage--phd {
   --prog-accent: #c59b27;
   --prog-accent-soft: rgba(197, 155, 39, 0.14);
-}
-
-.cmu-subpage--pg {
-  --prog-accent: #0284c7;
-  --prog-accent-soft: rgba(2, 132, 199, 0.12);
-}
-
-.cmu-subpage--online {
-  --prog-accent: #0d9488;
-  --prog-accent-soft: rgba(13, 148, 136, 0.12);
-}
-
-.cmu-subpage--phd {
-  --prog-accent: #6366f1;
-  --prog-accent-soft: rgba(99, 102, 241, 0.12);
 }
 
 .cmu-sub-wrap {
